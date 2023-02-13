@@ -7,4 +7,4 @@ $twig = new \Twig\Environment($loader, [
     'cache' => __DIR__ . '/tmp',
 ]);
 
-echo $twig->render('base.html.twig');
+echo $twig->render('base.twig');

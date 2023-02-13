@@ -1,4 +1,4 @@
-@import 'vendor/twbs/bootstrap/build/dist/css/bootstrap.css';
+@import '../../vendor/twbs/bootstrap/dist/css/bootstrap.css';
 
 footer {
     padding-top: 3rem;
