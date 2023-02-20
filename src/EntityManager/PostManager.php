@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Repository;
+namespace App\EntityManager;
 
 use App\Entity\Post;
 use App\Lib\Database\DatabaseConnection;
 
-class PostRepository
+class PostManager
 {
     public DatabaseConnection $connexion;
 
