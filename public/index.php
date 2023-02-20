@@ -7,4 +7,11 @@ $twig = new \Twig\Environment($loader, [
     'cache' => '../tmp',
 ]);
 
-echo $twig->render('base.twig');
+$router = new \Bramus\Router\Router();
+
+$router->get('/',function() use ($twig){
+    echo $twig->render('base.twig');
+});
+
+$router->run();
+
