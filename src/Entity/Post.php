@@ -16,8 +16,16 @@ class Post
         return $this->postId;
     }
 
+    public function setPostId(int $postId){
+        $this->postId = $postId;
+    }
+
     public function getUserId(){
         return $this->userId;
+    }
+
+    public function setUserId(int $userId){
+        $this->userId = $userId;
     }
 
     public function getTitle(){
