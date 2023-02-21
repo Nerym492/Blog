@@ -6,9 +6,11 @@ use \App\Controllers\PostController;
 
 $loader = new \Twig\Loader\FilesystemLoader('../Templates');
 $twig = new \Twig\Environment($loader, [
+    'debug' => true,
     'cache' => '../tmp',
 ]);
 
+$twig->addExtension(new \Twig\Extension\DebugExtension());
 //var_dump(get_included_files());
 
 $router = new \Bramus\Router\Router();
@@ -20,5 +22,5 @@ $router->get('/',function() use ($twig, $postController){
     $postController->afficherPosts($twig);
 });
 
-$router->run();
 
+$router->run();

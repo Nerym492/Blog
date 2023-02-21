@@ -23,13 +23,13 @@ class PostManager
 
         foreach ($result as $row){
             $post = new Post();
-            $post->setUserId($row['userId']);
-            $post->setPostId($row['postId']);
-            $post->setExcerpt($row['exercpt']);
+            $post->setUserId($row['user_id']);
+            $post->setPostId($row['post_id']);
+            $post->setExcerpt($row['excerpt']);
             $post->setTitle($row['title']);
             $post->setContent($row['content']);
-            $post->setLastUpdateDate($row['last_update_date']);
-            $post->setCreationDate($row['creation_date']);
+            $post->setLastUpdateDate(new \DateTime($row['last_update_date']));
+            $post->setCreationDate(new \DateTime($row['creation_date']));
             $posts[$post->getPostId()] = $post;
         }
 
@@ -53,13 +53,13 @@ class PostManager
         // On vérifie si on récupère bien le post
         if ($row) {
             $post = new Post();
-            $post->setUserId($row['userId']);
-            $post->setPostId($row['postId']);
-            $post->setExcerpt($row['exercpt']);
+            $post->setUserId($row['user_id']);
+            $post->setPostId($row['post_id']);
+            $post->setExcerpt($row['excerpt']);
             $post->setTitle($row['title']);
             $post->setContent($row['content']);
-            $post->setLastUpdateDate($row['last_update_date']);
-            $post->setCreationDate($row['creation_date']);
+            $post->setLastUpdateDate(new \DateTime($row['last_update_date']));
+            $post->setCreationDate(new \DateTime($row['creation_date']));
         }
         else{
             echo "Erreur page 404";
