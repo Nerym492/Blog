@@ -13,6 +13,6 @@ class PostController
         $postManager = new PostManager();
         $posts = $postManager->getPosts();
 
-        $twig->render('posts.twig');
+        $twig->render('posts.twig', ['posts' => $posts]);
     }
 }

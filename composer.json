@@ -1,8 +1,14 @@
 {
-    
     "require": {
         "twig/twig": "^3.5",
         "twbs/bootstrap": "5.3.0-alpha1",
         "bramus/router": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Controllers\\": "src/Controllers",
+            "App\\Entity\\": "src/Entity",
+            "App\\EntityManager\\": "src/EntityManager"
+        }
     }
 }
