@@ -3,15 +3,16 @@
 namespace App\EntityManager;
 
 use App\Entity\Post;
-use App\Lib\Database\DatabaseConnection;
+use App\Lib\DatabaseConnection;
 
 class PostManager
 {
-    public DatabaseConnection $connexion;
 
     public function getPosts(): array
     {
-        $statement = $this->connexion->getConnection()->prepare(
+        $connexion = new DatabaseConnection();
+
+        $statement = $connexion->getConnection()->prepare(
             "SELECT post_id, user_id, title, excerpt, content, last_update_date, creation_date
             FROM blog.post"
         );
