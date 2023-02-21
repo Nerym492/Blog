@@ -6,9 +6,7 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\Controllers\\": "src/Controllers",
-            "App\\Entity\\": "src/Entity",
-            "App\\EntityManager\\": "src/EntityManager"
+            "App\\": "src/"
         }
     }
 }

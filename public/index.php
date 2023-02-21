@@ -1,8 +1,8 @@
 <?php
 
-echo phpinfo();
-
 require '../vendor/autoload.php';
+
+use \App\Controllers\PostController;
 
 $loader = new \Twig\Loader\FilesystemLoader('../Templates');
 $twig = new \Twig\Environment($loader, [
@@ -13,7 +13,7 @@ $twig = new \Twig\Environment($loader, [
 
 $router = new \Bramus\Router\Router();
 
-/* $postController = new PostController();
+$postController = new PostController();
 
 $router->get('/',function() use ($twig, $postController){
     $postController = new PostController();
@@ -21,4 +21,4 @@ $router->get('/',function() use ($twig, $postController){
 });
 
 $router->run();
- */
+
