@@ -16,10 +16,10 @@
         <link href="../public/assets/style/app.css" rel="stylesheet" />
     </head>
     <body>
-        {% block header %}{% endblock %}
+        {% include "header.twig" %}
         <!-- Main Content-->
         {% block content %}{% endblock %}
         <!-- Footer-->
-        {% block footer %}{% endblock %}
+        {% include "footer.twig" %}
     </body>
 </html>
