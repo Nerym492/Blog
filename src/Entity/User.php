@@ -66,7 +66,7 @@ class User
     }
 
     public function setLastUpdateDate(\DateTime $lastUpdateDate){
-        $this->lastUpdateDate = $lastUpdateDate
+        $this->lastUpdateDate = $lastUpdateDate;
     }
 
     public function getCreationDate(){

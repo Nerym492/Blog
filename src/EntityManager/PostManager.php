@@ -44,12 +44,12 @@ class PostManager
         $connexion = new DatabaseConnection();
 
         $statement = $connexion->getConnection()->prepare(
-            "SELECT post_id, user_id, title, excerpt, content, last_update_date, creation_date
+            "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, p.creation_date
             FROM blog.post p
-            WHERE p.postId = :postId"
+            WHERE p.post_id = :postId"
         );
 
-        $statement->execute(['postId' => $postId]);
+        $statement->execute([':postId' => $postId]);
         $row = $statement->fetch();
 
         $post = new Post();

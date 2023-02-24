@@ -17,7 +17,7 @@ class UserManager
              WHERE user_id = :user_id"
         );
 
-        $statement->execute();
+        $statement->execute([':user_id' => $userId]);
         $row = $statement->fetch();
 
         $user = new User();
