@@ -1,6 +1,6 @@
 # Blog
 
-Project 5 of my application developer - PHP/Symfony course on [Openclassroom](https://openclassrooms.com/).  
+Project 5 of my application developer - PHP/Symfony course on [Openclassrooms](https://openclassrooms.com/).  
 I had to create a blog using a MVC architecture.
 
 ## Informations
@@ -11,7 +11,7 @@ I also used the [Clean blog](https://startbootstrap.com/previews/clean-blog) Boo
 ## Installation
 
 1. Clone this repository at the root of your Web server.
-2. Install project depedencies by opening a terminal (root of this project) and runing the command  
+2. Install project depedencies by opening a terminal (root of this project) and running the command  
 
  ```sh
  composer update
