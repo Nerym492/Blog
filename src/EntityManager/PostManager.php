@@ -41,7 +41,9 @@ class PostManager
 
     public function getPost(int $postId) : Post
     {
-        $statement = $this->connexion->getConnection()->prepare(
+        $connexion = new DatabaseConnection();
+
+        $statement = $connexion->getConnection()->prepare(
             "SELECT post_id, user_id, title, excerpt, content, last_update_date, creation_date
             FROM blog.post p
             WHERE p.postId = :postId"
@@ -50,9 +52,9 @@ class PostManager
         $statement->execute(['postId' => $postId]);
         $row = $statement->fetch();
 
+        $post = new Post();
         // On vérifie si on récupère bien le post
         if ($row) {
-            $post = new Post();
             $post->setUserId($row['user_id']);
             $post->setPostId($row['post_id']);
             $post->setExcerpt($row['excerpt']);
