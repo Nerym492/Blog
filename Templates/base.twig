@@ -16,7 +16,9 @@
         <link href="/blog/public/assets/style/app.css" rel="stylesheet" />
     </head>
     <body>
-        {% include "header.twig" %}
+        {% block header %}
+            {% include "header_home.twig" %}
+        {% endblock %}
         <!-- Main Content-->
         {% block content %}{% endblock %}
         <!-- Footer-->
