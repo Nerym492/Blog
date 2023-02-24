@@ -18,9 +18,11 @@ $router = new \Bramus\Router\Router();
 $postController = new PostController();
 
 $router->get('/homepage',function() use ($twig, $postController){
-    $postController = new PostController();
-    $postController->afficherPosts($twig);
+    $postController->showPosts($twig);
 });
 
+$router->get('/post/(\d+)',function($postId) use ($twig, $postController){
+    $postController->showPost($twig, $postId);
+});
 
 $router->run();
