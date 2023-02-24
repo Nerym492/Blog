@@ -13,8 +13,10 @@ class PostManager
         $connexion = new DatabaseConnection();
 
         $statement = $connexion->getConnection()->prepare(
-            "SELECT post_id, user_id, title, excerpt, content, last_update_date, creation_date
-            FROM blog.post"
+            "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, p.creation_date,
+                    u.pseudo
+            FROM blog.post p
+            LEFT OUTER JOIN blog.user u on p.user_id = u.user_id"
         );
 
         $statement->execute();
@@ -30,7 +32,7 @@ class PostManager
             $post->setContent($row['content']);
             $post->setLastUpdateDate(new \DateTime($row['last_update_date']));
             $post->setCreationDate(new \DateTime($row['creation_date']));
-            $posts[$post->getPostId()] = $post;
+            $posts[$post->getPostId()] = ['post' => $post, 'pseudoUser'=> $row['pseudo']];
         }
 
         $statement->closeCursor();
