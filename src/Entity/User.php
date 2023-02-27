@@ -12,68 +12,112 @@ class User
     private string $password;
     private \DateTime $lastUpdateDate;
     private \DateTime $creationDate;
+    private int $userTypeId;
+    private bool $isAdmin;
 
-    public function getUserId(){
+    public function getUserId()
+    {
         return $this->userId;
     }
 
-    public function setUserId(int $userId){
+    public function setUserId(int $userId)
+    {
         $this->userId = $userId;
     }
 
-    public function getMail(){
+    public function getMail()
+    {
         return $this->mail;
     }
 
-    public function setMail(string $mail){
+    public function setMail(string $mail)
+    {
         $this->mail = $mail;
     }
 
-    public function getPseudo(){
+    public function getPseudo()
+    {
         return $this->pseudo;
     }
 
-    public function setPseudo(string $pseudo){
+    public function setPseudo(string $pseudo)
+    {
         $this->pseudo = $pseudo;
     }
 
-    public function getLastName(){
+    public function getLastName()
+    {
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName){
+    public function setLastName(string $lastName)
+    {
         $this->lastName = $lastName;
     }
 
-    public function getFirstName(){
+    public function getFirstName()
+    {
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName){
+    public function setFirstName(string $firstName)
+    {
         $this->firstName = $firstName;
     }
 
-    public function getPassword(){
+    public function getPassword()
+    {
         return $this->password;
     }
 
-    public function setPassword(string $password){
+    public function setPassword(string $password)
+    {
         $this->password = $password;
     }
 
-    public function getLastUpdateDate(){
+    public function getLastUpdateDate()
+    {
         return $this->lastUpdateDate;
     }
 
-    public function setLastUpdateDate(\DateTime $lastUpdateDate){
+    public function setLastUpdateDate(\DateTime $lastUpdateDate)
+    {
         $this->lastUpdateDate = $lastUpdateDate;
     }
 
-    public function getCreationDate(){
+    public function getCreationDate()
+    {
         return $this->creationDate;
     }
 
-    public function setCreationDate(\DateTime $creationDate){
+    public function setCreationDate(\DateTime $creationDate)
+    {
         $this->creationDate = $creationDate;
+    }
+
+    public function getUserTypeId()
+    {
+        return $this->userTypeId;
+    }
+
+    public function setUserTypeId(int $userTypeId)
+    {
+        $this->userTypeId = $userTypeId;
+        $this->setIsAdmin();
+    }
+
+    public function getIsAdmin(){
+        return $this->isAdmin;
+    }
+
+    private function setIsAdmin()
+    {
+        if ($this->userTypeId < 3) {
+            $isAdmin = true;
+        } else {
+            $isAdmin = false;
+        }
+
+        return $isAdmin;
     }
 }
