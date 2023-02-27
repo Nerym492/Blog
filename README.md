@@ -11,7 +11,7 @@ I also used the [Clean blog](https://startbootstrap.com/previews/clean-blog) Boo
 ## Installation
 
 1. Clone this repository at the root of your Web server.
-2. Install project depedencies by opening a terminal (root of this project) and running the command  
+2. Install project dependencies by opening a terminal (root of this project) and running the command  
 
  ```sh
  composer update
