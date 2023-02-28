@@ -14,7 +14,7 @@ class PostController
         $postManager = new PostManager();
         $posts = $postManager->getPosts();
 
-        echo $twig->render('posts.twig', ['posts' => $posts]);
+        echo $twig->render('posts.twig', ['posts' => $posts, 'page' => 'Blog posts']);
     }
 
     public function showPost(Twig $twig, int $postId): void

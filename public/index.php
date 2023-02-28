@@ -17,7 +17,7 @@ $router = new \Bramus\Router\Router();
 
 $postController = new PostController();
 
-$router->get('/homepage',function() use ($twig, $postController){
+$router->get('/posts',function() use ($twig, $postController){
     $postController->showPosts($twig);
 });
 
