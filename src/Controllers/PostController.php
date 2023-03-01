@@ -9,12 +9,16 @@ use App\EntityManager\UserManager;
 
 class PostController
 {
+    public function showHome(Twig $twig): void{
+        echo $twig->render('home.twig',['page' => "Phrase d'accroche"]);
+    }
+
     public function showPosts(Twig $twig): void
     {
         $postManager = new PostManager();
         $posts = $postManager->getPosts();
 
-        echo $twig->render('posts.twig', ['posts' => $posts]);
+        echo $twig->render('posts.twig', ['posts' => $posts, 'page' => 'Blog posts']);
     }
 
     public function showPost(Twig $twig, int $postId): void
