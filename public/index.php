@@ -2,6 +2,7 @@
 
 require '../vendor/autoload.php';
 
+use App\Controllers\HomeController;
 use \App\Controllers\PostController;
 
 $loader = new \Twig\Loader\FilesystemLoader('../Templates');
@@ -16,9 +17,11 @@ $twig->addExtension(new \Twig\Extension\DebugExtension());
 $router = new \Bramus\Router\Router();
 
 $postController = new PostController();
+$homeController = new HomeController();
 
-$router->get('/home',function() use ($twig, $postController){
-    $postController->showHome($twig);
+
+$router->get('/home',function() use ($twig, $homeController){
+    $homeController->showHome($twig);
 });
 
 $router->get('/posts',function() use ($twig, $postController){
@@ -27,6 +30,10 @@ $router->get('/posts',function() use ($twig, $postController){
 
 $router->get('/post/(\d+)',function($postId) use ($twig, $postController){
     $postController->showPost($twig, $postId);
+});
+
+$router->get('/contact',function() use ($twig, $postController){
+    $postController->showPosts($twig);
 });
 
 $router->run();
