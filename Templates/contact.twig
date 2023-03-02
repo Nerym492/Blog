@@ -3,22 +3,22 @@
 {% block content %}
 	<form class="form-contact container mb-5 justify-content-center" method="post" action="sendMessage">
 		<div class="form-floating mb-3" id="group-first-name-contact">
-			<input type="text" class="form-control" id="first-name-contact" placeholder="First Name">
+			<input type="text" class="form-control" name="firstName" id="first-name-contact" placeholder="First Name">
 			<label for="first-name-contact">First Name</label>
 		</div>
 		<div class="form-floating mb-3" id="group-last-name-contact">
-			<input type="text" class="form-control" id="last-name-contact" placeholder="Last Name">
+			<input type="text" class="form-control" name="lastName" id="last-name-contact" placeholder="Last Name">
 			<label for="last-name-contact">Last Name</label>
 		</div>
 		<div class="form-floating mb-3" id="group-mail-contact">
-			<input type="text" class="form-control" id="mail-contact" placeholder="name@example.com">
+			<input type="text" class="form-control" name="mail" id="mail-contact" placeholder="name@example.com">
 			<label for="mail-contact">Email address</label>
 		</div>
 		<div class="form-floating mb-3" id="group-comment-contact">
-			<textarea class="form-control" id="comment-contact" placeholder="Comment" row="5"></textarea>
+			<textarea class="form-control" name="comment" id="comment-contact" placeholder="Comment" row="5"></textarea>
 			<label for="comment-contact">Comment</label>
 		</div>
-		<button class="btn btn-contact-form">
+		<button class="btn btn-contact-form" type="submit">
 			<span>
 				<i class="fa fa-paper-plane-o m-r-6" aria-hidden="true"></i>
 				Send

@@ -38,4 +38,8 @@ $router->get('/contact',function() use ($twig, $contactController){
     $contactController->showContactForm($twig);
 });
 
+$router->post('/contact/sendMessage',function() use ($twig, $contactController){
+    $contactController->sendMessage($twig);
+});
+
 $router->run();

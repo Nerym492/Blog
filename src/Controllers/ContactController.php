@@ -14,6 +14,6 @@ class ContactController
 
     public function sendMessage(Twig $twig)
     {
-        
+        var_dump($_POST);
     }
 }
