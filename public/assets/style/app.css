@@ -196,6 +196,24 @@ p {
   grid-column: 2;
 }
 
+.form-contact{
+    display: grid;
+    grid-template-columns: repeat(3, 150px);
+    column-gap: 10px;
+}
+
+#group-mail-contact{
+    grid-column: span 2;
+}
+
+#group-comment-contact{
+    grid-column: span 3;
+}
+
+#comment-contact{
+    height: 150px;
+}
+
 @media (max-width: 767px) {
     .presentation {
         grid-template-columns: minmax(250px, 500px);
@@ -206,4 +224,25 @@ p {
     .presentation p {
         margin-top: 30px;
     }
+}
+
+.btn-contact-form {
+    grid-column: span 3;
+    background-color: #181C25;
+    color: #D0E588;
+    justify-self: center;
+    width: 200px;
+}
+
+.btn-contact-form:hover {
+    background-color: #D6EE8D;
+    color: #040508;
+}
+
+.fa-stack{
+    color: #181C25;
+}
+
+.fa-facebook-f, .fa-github, .fa-twitter{
+    color: #D6EE8D;
 }

@@ -1,0 +1,28 @@
+{% extends "base.twig" %}
+
+{% block content %}
+	<form class="form-contact container mb-5 justify-content-center">
+		<div class="form-floating mb-3" id="group-first-name-contact">
+			<input type="text" class="form-control" id="first-name-contact" placeholder="First Name">
+			<label for="first-name-contact">First Name</label>
+		</div>
+		<div class="form-floating mb-3" id="group-last-name-contact">
+			<input type="text" class="form-control" id="last-name-contact" placeholder="Last Name">
+			<label for="last-name-contact">Last Name</label>
+		</div>
+		<div class="form-floating mb-3" id="group-mail-contact">
+			<input type="text" class="form-control" id="mail-contact" placeholder="name@example.com">
+			<label for="mail-contact">Email address</label>
+		</div>
+		<div class="form-floating mb-3" id="group-comment-contact">
+			<textarea class="form-control" id="comment-contact" placeholder="Comment" row="5"></textarea>
+			<label for="comment-contact">Comment</label>
+		</div>
+		<button class="btn btn-contact-form">
+			<span>
+				<i class="fa fa-paper-plane-o m-r-6" aria-hidden="true"></i>
+				Send
+			</span>
+		</button>
+	</form>
+{% endblock %}

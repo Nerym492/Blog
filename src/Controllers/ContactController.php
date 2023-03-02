@@ -7,7 +7,12 @@ use \Twig\Environment as Twig;
 class ContactController
 {
 
-    public function sendForm()
+    public function showContactForm(Twig $twig)
+    {
+        echo $twig->render('contact.twig', ['page' => 'Contact']);
+    }
+
+    public function sendForm(Twig $twig)
     {
         
     }
