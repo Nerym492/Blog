@@ -1,7 +1,7 @@
 {% extends "base.twig" %}
 
 {% block content %}
-	<form class="form-contact container mb-5 justify-content-center">
+	<form class="form-contact container mb-5 justify-content-center" method="post" action="sendMessage">
 		<div class="form-floating mb-3" id="group-first-name-contact">
 			<input type="text" class="form-control" id="first-name-contact" placeholder="First Name">
 			<label for="first-name-contact">First Name</label>

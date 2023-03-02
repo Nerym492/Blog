@@ -12,7 +12,7 @@ class ContactController
         echo $twig->render('contact.twig', ['page' => 'Contact']);
     }
 
-    public function sendForm(Twig $twig)
+    public function sendMessage(Twig $twig)
     {
         
     }
