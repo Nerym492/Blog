@@ -10,7 +10,11 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
-$dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS'])->notEmpty();
+
+$dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER'])->notEmpty();
+$dotenv->required('DB_PASS');
+
+
 
 $loader = new \Twig\Loader\FilesystemLoader('../Templates');
 $twig = new \Twig\Environment($loader, [
