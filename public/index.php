@@ -3,7 +3,18 @@
 require '../vendor/autoload.php';
 
 use App\Controllers\HomeController;
-use \App\Controllers\PostController;
+use App\Controllers\PostController;
+use App\Controllers\ContactController;
+use Dotenv\Dotenv;
+use PHPMailer\PHPMailer\PHPMailer;
+
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+$dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER'])->notEmpty();
+$dotenv->required('DB_PASS');
+
+
 
 $loader = new \Twig\Loader\FilesystemLoader('../Templates');
 $twig = new \Twig\Environment($loader, [
@@ -18,6 +29,8 @@ $router = new \Bramus\Router\Router();
 
 $postController = new PostController();
 $homeController = new HomeController();
+$contactController = new ContactController();
+$mail = new PHPMailer(true);
 
 
 $router->get('/home',function() use ($twig, $homeController){
@@ -32,8 +45,12 @@ $router->get('/post/(\d+)',function($postId) use ($twig, $postController){
     $postController->showPost($twig, $postId);
 });
 
-$router->get('/contact',function() use ($twig, $postController){
-    $postController->showPosts($twig);
+$router->get('/contact',function() use ($twig, $contactController){
+    $contactController->showContactForm($twig);
+});
+
+$router->post('/contact/sendMessage',function() use ($twig, $contactController, $mail){
+    $contactController->sendMessage($twig, $mail);
 });
 
 $router->run();
