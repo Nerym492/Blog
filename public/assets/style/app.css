@@ -192,25 +192,25 @@ p {
     margin-right: 20px;
 }
 
-#resume{
-  grid-column: 2;
+#resume {
+    grid-column: 2;
 }
 
-.form-contact{
+.form-contact {
     display: grid;
     grid-template-columns: repeat(3, 150px);
     column-gap: 10px;
 }
 
-#group-mail-contact{
+#group-mail-contact {
     grid-column: span 2;
 }
 
-#group-comment-contact{
+#group-comment-contact {
     grid-column: span 3;
 }
 
-#comment-contact{
+#comment-contact {
     height: 150px;
 }
 
@@ -228,21 +228,28 @@ p {
 
 .btn-contact-form {
     grid-column: span 3;
-    background-color: #181C25;
-    color: #D0E588;
+    background-color: #181c25;
+    color: #d0e588;
     justify-self: center;
     width: 200px;
 }
 
 .btn-contact-form:hover {
-    background-color: #D6EE8D;
+    background-color: #d6ee8d;
     color: #040508;
 }
 
-.fa-stack{
-    color: #181C25;
+.fa-stack {
+    color: #181c25;
 }
 
-.fa-facebook-f, .fa-github, .fa-twitter{
-    color: #D6EE8D;
+.fa-facebook-f,
+.fa-github,
+.fa-twitter {
+    color: #d6ee8d;
+}
+
+.avatar{
+    width: 65px;
+    height: 65px;
 }
