@@ -12,8 +12,9 @@ class CommentManager
         $connexion = new DatabaseConnection();
 
         $statement = $connexion->getConnection()->prepare(
-            "SELECT *
-             FROM comment c 
+            "SELECT c.*, u.pseudo
+             FROM comment c
+             LEFT OUTER JOIN user u ON c.user_id = u.user_id 
              WHERE post_id = :post_id"
         );
 
@@ -29,7 +30,10 @@ class CommentManager
             $comment->setComment($row['comment']);
             $comment->setCreationDate(new \DateTime($row['creation_date']));
             $comment->setValid($row['valid']);
-            $comments[$comment->getcommentId()] = $comment;
+            $comments[$comment->getcommentId()] = [
+                'comment' => $comment,
+                'userPseudo' => $row['pseudo']
+            ];
         }
 
         $statement->closeCursor();
