@@ -27,8 +27,6 @@ class PostController
         $commentManager = new CommentManager();
         $comments = $commentManager->getComments($postId);
 
-        var_dump($comments);
-
         echo $twig->render('post.twig', [
             'post' => $post,
             'userPost' => $userPost,

@@ -4,16 +4,30 @@
             <div class="col-md-12 col-lg-10 col-xl-8">
                 <div class="card">
                     <div class="card-body p-4">
+                        <form class="row mb-3 comment-form">
+                            <div class="d-flex flex-start">
+                                <div class="form-group col-10">
+                                    <textarea class="form-control" id="message" placeholder="Your message" rows="5" required=""></textarea>
+                                </div>
+                            </div>
+                            <button class="btn btn-contact-form mt-3" type="submit">
+                                <span>
+                                    <i class="fa fa-paper-plane-o m-r-6" aria-hidden="true"></i>
+                                    Send
+                                </span>
+                            </button>
+                        </form>
                         <h4 class="text-center mb-4 pb-2">Comments</h4>
                         {% for commentLine in comments %}
                             <div class="row mb-3">
                                 <div class="d-flex flex-start">
-                                    <img class="avatar rounded-circle shadow-1-strong me-3" src="/blog/public/assets/images/profiles/{{ commentLine.userPseudo }}.webp" alt="avatar"/>
                                     <div>
                                         <div class="d-flex justify-content-between align-items-center">
                                             <p class="mb-1">
                                                 {{ commentLine.userPseudo }}
-                                                <span class="small">- {{ commentLine.comment.creationDate |date("M j, Y \\a\\t H:i") }} </span>
+                                                <span class="small">-
+                                                    {{ commentLine.comment.creationDate |date("M j, Y \\a\\t H:i") }}
+                                                </span>
                                             </p>
                                         </div>
                                         <p class="small mb-0">

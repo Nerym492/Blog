@@ -228,25 +228,25 @@ p {
 
 .btn-contact-form {
     grid-column: span 3;
-    background-color: #181c25;
-    color: #d0e588;
+    background-color: #1c2c53;
+    color: white;
     justify-self: center;
     width: 200px;
 }
 
 .btn-contact-form:hover {
-    background-color: #d6ee8d;
-    color: #040508;
+    background-color: #455785;
+    color: #ffffff;
 }
 
 .fa-stack {
-    color: #181c25;
+    color: #1c2c53;
 }
 
 .fa-facebook-f,
 .fa-github,
 .fa-twitter {
-    color: #d6ee8d;
+    color: white;
 }
 
 .avatar{
