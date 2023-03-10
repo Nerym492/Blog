@@ -30,7 +30,6 @@ $router = new \Bramus\Router\Router();
 $postController = new PostController();
 $homeController = new HomeController();
 $contactController = new ContactController();
-$mail = new PHPMailer(true);
 
 
 $router->get('/home',function() use ($twig, $homeController){
@@ -43,14 +42,6 @@ $router->get('/posts',function() use ($twig, $postController){
 
 $router->get('/post/(\d+)',function($postId) use ($twig, $postController){
     $postController->showPost($twig, $postId);
-});
-
-$router->get('/contact',function() use ($twig, $contactController){
-    $contactController->showContactForm($twig);
-});
-
-$router->post('/contact/sendMessage',function() use ($twig, $contactController, $mail){
-    $contactController->sendMessage($twig, $mail);
 });
 
 $router->run();

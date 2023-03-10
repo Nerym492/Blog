@@ -1,28 +1,31 @@
-{% extends "base.twig" %}
+<h2 class="my-4 text-center">Contact</h2>
 
-{% block content %}
-	<form class="form-contact container mb-5 justify-content-center" method="post" action="sendMessage">
-		<div class="form-floating mb-3" id="group-first-name-contact">
-			<input type="text" class="form-control" name="firstName" id="first-name-contact" placeholder="First Name">
-			<label for="first-name-contact">First Name</label>
+<form class="container mb-5 justify-content-center needs-validation" method="post" id="form-contact" action="sendMessage" novalidate>
+	<div class="form-floating" id="group-full-name-contact">
+		<input type="text" class="form-control" name="fullName" id="full-name-contact" placeholder="Full Name" required>
+		<small id="fullNameHelp" class="form-text">
+			Please enter a valid Full name. Example : LastName FirstName (3-25 characters each)
+		</small>
+		<label for="full-name-contact">Full Name</label>
+	</div>
+	<div class="form-floating" id="group-mail-contact">
+		<input type="text" class="form-control" name="mail" id="mail-contact" placeholder="name@example.com" required>
+		<small id="mailHelp" class="form-text">
+			Please enter a valid mail address.
+		</small>
+		<label for="mail-contact">Email address</label>
+	</div>
+	<div class="form-floating mb-4" id="group-comment-contact">
+		<textarea class="form-control" name="comment" id="comment-contact" placeholder="Comment" row="5" required></textarea>
+		<label for="comment-contact">Comment</label>
+		<div class="invalid-feedback">
+			Please write a comment.
 		</div>
-		<div class="form-floating mb-3" id="group-last-name-contact">
-			<input type="text" class="form-control" name="lastName" id="last-name-contact" placeholder="Last Name">
-			<label for="last-name-contact">Last Name</label>
-		</div>
-		<div class="form-floating mb-3" id="group-mail-contact">
-			<input type="text" class="form-control" name="mail" id="mail-contact" placeholder="name@example.com">
-			<label for="mail-contact">Email address</label>
-		</div>
-		<div class="form-floating mb-3" id="group-comment-contact">
-			<textarea class="form-control" name="comment" id="comment-contact" placeholder="Comment" row="5"></textarea>
-			<label for="comment-contact">Comment</label>
-		</div>
-		<button class="btn btn-contact-form" type="submit">
-			<span>
-				<i class="fa fa-paper-plane-o m-r-6" aria-hidden="true"></i>
-				Send
-			</span>
-		</button>
-	</form>
-{% endblock %}
+	</div>
+	<button class="btn btn-contact-form" type="submit">
+		<span>
+			<i class="fa fa-paper-plane-o m-r-6" aria-hidden="true"></i>
+			Send
+		</span>
+	</button>
+</form>
