@@ -185,11 +185,10 @@ p {
 }
 
 #photo-home {
-    height: 200px;
-    width: 200px;
+    height: 150px;
+    width: 150px;
     border-radius: 50%;
-    justify-self: center;
-    margin-right: 20px;
+    margin: 0 auto 10px auto;
 }
 
 #resume {
@@ -198,7 +197,7 @@ p {
 
 #form-contact{
     display: grid;
-    grid-template-columns: repeat(4, 150px);
+    grid-template-columns: repeat(4, 125px);
     grid-template-rows: auto auto auto;
 }
 
@@ -222,23 +221,21 @@ p {
     height: 150px;
 }
 
-
-
-
 @media (max-width: 767px) {
     .presentation {
-        grid-template-columns: minmax(250px, 500px);
         margin-left: 10px !important;
         margin-right: 10px !important;
     }
+}
 
-    .presentation p {
-        margin-top: 30px;
+@media (max-width: 620px){
+    .presentation{
+        grid-template-columns: minmax(250px, 500px);
     }
 }
 
 .btn-contact-form {
-    grid-column: span 3;
+    grid-column: span 4;
     background-color: #181c25;
     color: #d0e588;
     justify-self: center;

@@ -71,6 +71,13 @@ Array.prototype.slice.call(forms)
         /**Adding bootstrap class to show validation status.
         No need to add this on others classes because they 
         are already checked by regex*/
+        inputs.forEach((input) => { 
+            if(input.value == ""){
+              input.className = "form-control invalid";
+              input.parentElement.className = 'form-floating mb-2';
+            }
+        });
+
         document.getElementById("group-comment-contact").classList.add('was-validated');
         event.preventDefault();
         event.stopPropagation();
