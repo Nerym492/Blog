@@ -33,7 +33,7 @@ class FormController
         //Check form data
         foreach ($patterns as $fieldName => $pattern) {
             //We add the name of the fields and their value in this array
-            $form_errors[] = [$fieldName => $_POST[$fieldName]];
+            $form_errors[$fieldName] = $_POST[$fieldName];
             //Check the patterns
             if (!preg_match($pattern, $_POST[$fieldName]) && $is_valid) {
                 $is_valid = false;
@@ -41,10 +41,10 @@ class FormController
         }
 
         //We add the comment data
-        $form_errors[] = ['comment' => $_POST['comment']];
+        $form_errors['comment'] = $_POST['comment'];
 
         //We check if the field is not empty only if the form is still valid
-        if (empty($_POST['comment']) && $is_valid){
+        if (empty($_POST['comment']) && $is_valid) {
             $is_valid = false;
         }
 
@@ -60,6 +60,7 @@ class FormController
             'page' => "Phrase d'accroche",
             'form_errors' => $form_errors
         ]);
+
     }
 
     /**
@@ -76,8 +77,8 @@ class FormController
         try {
             $mail->isSMTP(); //Send using SMTP
             $mail->Host = $_ENV['SMTP_HOST']; //Set the SMTP server to send through
-            $mail->SMTPAuth = true;
-            $mail->SMTPSecure = "tls"; //Enable SMTP authentication
+            $mail->SMTPAuth = true;//Enable SMTP authentication
+            $mail->SMTPSecure = "tls";
             $mail->Username = $_ENV['SMTP_USERNAME']; //SMTP username
             $mail->Password = $_ENV['SMTP_PASSWORD']; //SMTP password
             $mail->Port = $_ENV['SMTP_PORT'];

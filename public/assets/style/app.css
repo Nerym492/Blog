@@ -197,7 +197,7 @@ p {
 
 #form-contact{
     display: grid;
-    grid-template-columns: repeat(4, 125px);
+    grid-template-columns: repeat(4, 130px);
     grid-template-rows: auto auto auto;
 }
 
