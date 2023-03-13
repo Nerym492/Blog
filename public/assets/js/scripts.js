@@ -93,6 +93,7 @@ Array.prototype.slice.call(forms)
                 }
             }
 
+            //Display the errors if there are any
             if (filledFields > 0){
                 for (let fieldName in data){
                     let field = document.getElementsByName(fieldName)
@@ -102,26 +103,6 @@ Array.prototype.slice.call(forms)
         }
     });
 
-
-
-
-function checkform(form) {
-    // get all the inputs within the submitted form
-    let inputs = form.getElementsByTagName('input');
-    inputs.push(form.getElementsByTagName('textarea'));
-
-    for (let i = 0; i < inputs.length; i++) {
-        // only validate the inputs that have the required attribute
-        if (inputs[i].hasAttribute("required")) {
-            if (inputs[i].value === "") {
-                // found an empty field that is required
-                alert("Please fill all required fields");
-                return false;
-            }
-        }
-    }
-    return true;
-}
 
 
 
