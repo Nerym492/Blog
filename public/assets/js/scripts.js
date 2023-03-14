@@ -7,9 +7,9 @@ window.addEventListener('DOMContentLoaded', () => {
     let scrollPos = 0;
     const mainNav = document.getElementById('mainNav');
     const headerHeight = mainNav.clientHeight;
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', function () {
         const currentTop = document.body.getBoundingClientRect().top * -1;
-        if ( currentTop < scrollPos) {
+        if (currentTop < scrollPos) {
             // Scrolling Up
             if (currentTop > 0 && mainNav.classList.contains('is-fixed')) {
                 mainNav.classList.add('is-visible');
@@ -26,4 +26,98 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         scrollPos = currentTop;
     });
-})
+});
+
+
+const inputs = document.querySelectorAll('input');
+
+// Fetch all the forms we want to apply custom Bootstrap validation styles to
+var forms = document.querySelectorAll('.needs-validation');
+
+const patterns = {
+    "full-name-contact": /^([A-z]){3,25}\s([A-z]){3,25}$/,
+    "mail-contact": /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/,
+};
+
+//When the user fills in the field, check if the expected pattern matches.
+inputs.forEach((input) => {
+    input.addEventListener('keyup', (e) => {
+        validate(e.target, patterns[e.target.attributes.id.value]);
+    });
+});
+
+/**Set css classes (invalid = red, valid = green)
+ When the field is empty, the css classes are removed*/
+function validate(field, regex) {
+    if (field.value === "") {
+        field.className = 'form-control';
+        field.parentElement.className = 'form-floating mb-3';
+    } else if (regex.test(field.value)) {
+        field.className = 'form-control valid';
+        field.parentElement.className = 'form-floating mb-3';
+    } else {
+        field.className = 'form-control invalid';
+        field.parentElement.classList.remove('mb-3');
+    }
+}
+
+// Loop over them and prevent submission
+Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            /**We Check if all the fields are valid or match with regex patterns(valid or invalid css class)
+             and it adds the right css class*/
+            if (!form.checkValidity() || document.querySelectorAll('.invalid').length > 0) {
+                inputs.forEach((input) => {
+                    if (input.value === "") {
+                        input.className = "form-control invalid";
+                        input.parentElement.className = 'form-floating';
+                    }
+                });
+
+                //Add css bootstrap class to the comment => display the div block if the field is not valid
+                form.classList.add('was-validated');
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+        }, false);
+
+        window.onload = function () {
+            let data = Object.fromEntries(new FormData(form).entries());
+            let filledFields = 0;
+            //Submitted values(only available when the form is not valid)
+            for (let fieldName in data) {
+                if (data[fieldName] !== "") {
+                    filledFields++;
+                }
+            }
+
+            //Display the errors if there are any
+            if (filledFields > 0) {
+                for (let fieldName in data) {
+                    let field = document.getElementsByName(fieldName);
+                    //A regex pattern exists for the field
+                    if (patterns[field[0].id]) {
+                        validate(field[0], patterns[field[0].id]);
+                    }
+                }
+                form.classList.add('was-validated');
+            } else {
+                let myModal = document.getElementById('exampleModal');
+                //Check if the modal element exists
+                if (myModal) {
+                    let myBtModal = new bootstrap.Modal(myModal);
+                    myBtModal.toggle();
+                }
+            }
+        }
+    });
+
+let myModal = document.getElementById('exampleModal')
+let myInput = document.getElementById('myInput')
+
+
+
+
+

@@ -4,7 +4,7 @@ require '../vendor/autoload.php';
 
 use App\Controllers\HomeController;
 use App\Controllers\PostController;
-use App\Controllers\ContactController;
+use App\Controllers\FormController;
 use Dotenv\Dotenv;
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -29,12 +29,25 @@ $router = new \Bramus\Router\Router();
 
 $postController = new PostController();
 $homeController = new HomeController();
-$contactController = new ContactController();
-$mail = new PHPMailer(true);
+$formController = new FormController();
 
 
 $router->get('/home',function() use ($twig, $homeController){
     $homeController->showHome($twig);
+});
+
+$router->mount('/home', function() use ($router,$twig, $homeController, $formController) {
+
+    //The page is displayed without sending the form
+    $router->get('/',function() use ($twig, $homeController){
+        $homeController->showHome($twig);
+    });
+
+    //The vistor has sent the form
+    $router->post('/', function() use ($twig, $formController){
+        $formController->checkContactForm($twig);
+    });
+
 });
 
 $router->get('/posts',function() use ($twig, $postController){
@@ -43,14 +56,6 @@ $router->get('/posts',function() use ($twig, $postController){
 
 $router->get('/post/(\d+)',function($postId) use ($twig, $postController){
     $postController->showPost($twig, $postId);
-});
-
-$router->get('/contact',function() use ($twig, $contactController){
-    $contactController->showContactForm($twig);
-});
-
-$router->post('/contact/sendMessage',function() use ($twig, $contactController, $mail){
-    $contactController->sendMessage($twig, $mail);
 });
 
 $router->run();

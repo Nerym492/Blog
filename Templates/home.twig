@@ -2,22 +2,36 @@
 
 {% block content %}
 	<!-- Post Content-->
-	<article class="mb-4 mx-5 presentation">
-        <img id="photo-home" src="/blog/public/assets/images/photo_profil.jpg" alt="profile_photo">
-        <p>
-            Donec sapien nunc, accumsan fermentum tempor quis, ullamcorper vitae arcu. 
-            Nullam vel sapien et sapien maximus ornare vel eu purus. Suspendisse eu 
-            ligula sed quam efficitur vestibulum vel in sapien. Nulla ac elementum orci. 
-            Cras in neque porta, rhoncus sapien sit amet, tincidunt tellus. Integer neque
-            est, faucibus sed velit sed, posuere lobortis odio. Praesent molestie ultrices augue, 
-            ac sodales tellus congue ut. Maecenas iaculis lorem hendrerit rutrum finibus. 
-            Pellentesque vel lobortis libero. Suspendisse maximus lorem ac lorem sodales, 
-            id commodo mauris finibus. In dictum viverra turpis, nec luctus risus suscipit eget.
-        </p>
-        <p id="resume">
-            To have more information about my professional carrer :  
-            <a href="">See my resume</a>
-        </p>
-	</article>
+    <h2 class="text-center mb-5">About Me</h2>
+    <div class="presentation mb-4 mx-5">
+        <div class="d-flex flex-column me-3">
+                <img id="photo-home" src="/blog/public/assets/images/photo_profil.jpg" alt="profile_photo">
+                <p class="text-center">
+                    Florian Pohu,<br> 
+                    Creator of this blog. 
+                </p>
+        </div>
+        <article>
+            <p>
+                Welcome to my blog !
+
+                Donec sapien nunc, accumsan fermentum tempor quis, ullamcorper vitae arcu. 
+                Nullam vel sapien et sapien maximus ornare vel eu purus. Suspendisse eu 
+                ligula sed quam efficitur vestibulum vel in sapien. Nulla ac elementum orci. 
+                Cras in neque porta, rhoncus sapien sit amet, tincidunt tellus. Integer neque
+                est, faucibus sed velit sed, posuere lobortis odio. Praesent molestie ultrices augue, 
+                ac sodales tellus congue ut. Maecenas iaculis lorem hendrerit rutrum finibus. 
+                Pellentesque vel lobortis libero. Suspendisse maximus lorem ac lorem sodales, 
+                id commodo mauris finibus. In dictum viverra turpis, nec luctus risus suscipit eget.
+            </p>
+            <p id="resume">
+                To have more information about my professional carrer :  
+                <a href="">See my resume</a>
+            </p>
+        </article>
+    </div>
+
+
+    {% include "contact.twig" %}
 
 {% endblock %}
