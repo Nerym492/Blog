@@ -2,7 +2,7 @@
 
 <form class="container mb-5 justify-content-center needs-validation" method="post"
       action="/blog/public/home/#form-contact" id="form-contact" novalidate>
-    <div class="form-floating" id="group-full-name-contact">
+    <div class="form-floating mb-3" id="group-full-name-contact">
         <input type="text" class="form-control" name="fullName" id="full-name-contact" placeholder="Full Name"
                value="{{ form_errors.fullName }}" pattern="([A-z]){3,25}\s([A-z]){3,25}" required>
         <small id="fullNameHelp" class="form-text">
@@ -10,7 +10,7 @@
         </small>
         <label for="full-name-contact">Full Name</label>
     </div>
-    <div class="form-floating" id="group-mail-contact">
+    <div class="form-floating mb-3" id="group-mail-contact">
         <input type="text" class="form-control" name="mail" id="mail-contact" placeholder="name@example.com"
                value="{{ form_errors.mail }}" pattern="([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?" required>
         <small id="mailHelp" class="form-text">
@@ -18,7 +18,7 @@
         </small>
         <label for="mail-contact">Email address</label>
     </div>
-    <div class="form-floating mb-4" id="group-comment-contact">
+    <div class="form-floating mb-3" id="group-comment-contact">
 		<textarea class="form-control" name="comment" id="comment-contact"
                   placeholder="Comment" required>{{ form_errors.comment|trim }}</textarea>
         <label for="comment-contact">Comment</label>
@@ -26,10 +26,39 @@
             Please write a comment.
         </div>
     </div>
-    <button class="btn btn-contact-form" type="submit">
+    <div id="group-gdpr-checkbox">
+        <input type="checkbox" class="form-check-input me-2" id="gdpr-checkbox" required>
+        <label for="gdpr-checkbox" id="label-gdpr">By ticking this box, I consent to the use of my personal
+            data.</label>
+        <div class="invalid-feedback" id="gdpr-invalid-text">
+            You must agree with this condition to send this form.
+        </div>
+    </div>
+    <button class="btn btn-contact-form mt-3" type="submit">
 		<span>
 			<i class="fa fa-paper-plane-o m-r-6" aria-hidden="true"></i>
 			Send
 		</span>
     </button>
 </form>
+
+<!-- When the form is valid a modal is displayed -->
+{% if isValid %}
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-border-grey">
+                <div class="modal-body text-center">
+                    {% if mailSent %}
+                        <h5 class="alert-heading text-success my-4">Your message has been sent !</h5>
+                    {% else %}
+                        <h5 class="alert-heading text-danger my-4">Your message could not be sent. Please try
+                            again later.</h5>
+                    {% endif %}
+                    <button type="button" class="btn btn-success btn-modal my-2" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+

@@ -1,5 +1,3 @@
-@import "../../../vendor/twbs/bootstrap/dist/css/bootstrap.css";
-
 footer {
     padding-top: 3rem;
     padding-bottom: 3rem;
@@ -197,25 +195,27 @@ p {
 
 #form-contact{
     display: grid;
-    grid-template-columns: repeat(4, 130px);
-    grid-template-rows: auto auto auto;
+    grid-template-columns: minmax(350px, 400px);
+    grid-template-rows: auto auto auto auto;
 }
 
 #group-full-name-contact{
-    grid-area: 1 / span 4 ;
-}
-
-#group-full-name-contact input{
-    width: 300px;
+    grid-area: 1;
 }
 
 #group-mail-contact{
-    grid-area: 2 / span 3;
+    grid-area: 2;
 }
 
 #group-comment-contact{
-    grid-area: 3 / span 4;
+    grid-area: 3;
 }
+
+#group-gdpr-checkbox{
+    grid-area: 4;
+}
+
+
 
 #group-comment-contact textarea{
     height: 150px;
@@ -284,7 +284,8 @@ p {
 }
 
 .form-control + small {
-    color: var(--bs-danger-text);
+    display: block;
+    color: var(--bs-danger);
     opacity: 0;
     height: 0;
     transition: opacity 0.4s ease-out;
@@ -297,4 +298,27 @@ p {
     transition: opacity 0.4s ease-out;
 }
 
+#group-gdpr-checkbox{
+    grid-row: 4;
+    display: grid;
+}
 
+#gdpr-checkbox{
+    grid-column: 1;
+}
+
+#label-gdpr{
+    grid-column: 2;
+}
+
+#gdpr-invalid-text{
+    grid-area: 2 / 2;
+}
+
+.btn-modal{
+    width: 100px
+}
+
+.modal-border-grey{
+    border: solid 1px darkgrey;
+}

@@ -21,8 +21,9 @@ class FormController
     public function checkContactForm(Twig $twig): void
     {
 
-        $form_errors = [];
-        $is_valid = true;
+        $formErrors = [];
+        $mailSent = false;
+        $isValid = true;
 
         // 'htmlName' => 'regexPattern'
         $patterns = [
@@ -33,45 +34,46 @@ class FormController
         //Check form data
         foreach ($patterns as $fieldName => $pattern) {
             //We add the name of the fields and their value in this array
-            $form_errors[$fieldName] = $_POST[$fieldName];
+            $formErrors[$fieldName] = $_POST[$fieldName];
             //Check the patterns
-            if (!preg_match($pattern, $_POST[$fieldName]) && $is_valid) {
-                $is_valid = false;
+            if (!preg_match($pattern, $_POST[$fieldName]) && $isValid) {
+                $isValid = false;
             }
         }
 
         //We add the comment data
-        $form_errors['comment'] = $_POST['comment'];
+        $formErrors['comment'] = $_POST['comment'];
 
         //We check if the field is not empty only if the form is still valid
-        if (empty($_POST['comment']) && $is_valid) {
-            $is_valid = false;
+        if (empty($_POST['comment']) && $isValid) {
+            $isValid = false;
         }
 
         //If the form is valid, we clear the array form_errors
-        if ($is_valid) {
-            $form_errors = [];
+        if ($isValid) {
+            $formErrors = [];
             $mail = new PHPMailer(true);
-            $this->sendContactForm($twig, $mail);
+            //mailSent = true or false
+            $mailSent = $this->sendContactForm($mail);
         }
 
         //Displays the home page with errors if there are any
         echo $twig->render('home.twig', [
             'page' => "Phrase d'accroche",
-            'form_errors' => $form_errors
+            'form_errors' => $formErrors,
+            'isValid' => $isValid,
+            'mailSent' => $mailSent
         ]);
-
     }
 
     /**
      * Summary of sendContactForm
      * This function can only be used after the validation of the form.
      * Used in checkContactForm
-     * @param Twig $twig
      * @param PHPMailer $mail
-     * @return void
+     * @return bool
      */
-    private function sendContactForm(Twig $twig, PHPMailer $mail): void
+    private function sendContactForm(PHPMailer $mail): bool
     {
         // Send a message with the form data
         try {
@@ -90,9 +92,14 @@ class FormController
 
             $mail->Body = htmlspecialchars($_POST['comment']);
             $mail->send();
-            echo 'Message has been sent';
+            $message = 'Message has been sent';
+            $mailSent = true;
         } catch (Exception $e) {
-            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            $message = "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            $mailSent = false;
         }
+
+        return $mailSent;
     }
+
 }

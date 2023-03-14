@@ -51,13 +51,13 @@ inputs.forEach((input) => {
 function validate(field, regex) {
     if (field.value === "") {
         field.className = 'form-control';
-        field.parentElement.classList.remove('mb-2');
+        field.parentElement.className = 'form-floating mb-3';
     } else if (regex.test(field.value)) {
         field.className = 'form-control valid';
-        field.parentElement.classList.remove('mb-2');
+        field.parentElement.className = 'form-floating mb-3';
     } else {
         field.className = 'form-control invalid';
-        field.parentElement.className = 'form-floating mb-2';
+        field.parentElement.classList.remove('mb-3');
     }
 }
 
@@ -71,7 +71,7 @@ Array.prototype.slice.call(forms)
                 inputs.forEach((input) => {
                     if (input.value === "") {
                         input.className = "form-control invalid";
-                        input.parentElement.className = 'form-floating mb-2';
+                        input.parentElement.className = 'form-floating';
                     }
                 });
 
@@ -83,25 +83,40 @@ Array.prototype.slice.call(forms)
 
         }, false);
 
-        window.onload = function (){
+        window.onload = function () {
             let data = Object.fromEntries(new FormData(form).entries());
             let filledFields = 0;
             //Submitted values(only available when the form is not valid)
-            for (let fieldName in data){
-                if (data[fieldName] !== undefined) {
+            for (let fieldName in data) {
+                if (data[fieldName] !== "") {
                     filledFields++;
                 }
             }
 
             //Display the errors if there are any
-            if (filledFields > 0){
-                for (let fieldName in data){
-                    let field = document.getElementsByName(fieldName)
-                    validate(field[0] , patterns[field[0].id]);
+            if (filledFields > 0) {
+                for (let fieldName in data) {
+                    let field = document.getElementsByName(fieldName);
+                    //A regex pattern exists for the field
+                    if (patterns[field[0].id]) {
+                        validate(field[0], patterns[field[0].id]);
+                    }
+                }
+                form.classList.add('was-validated');
+            } else {
+                let myModal = document.getElementById('exampleModal');
+                //Check if the modal element exists
+                if (myModal) {
+                    let myBtModal = new bootstrap.Modal(myModal);
+                    myBtModal.toggle();
                 }
             }
         }
     });
+
+let myModal = document.getElementById('exampleModal')
+let myInput = document.getElementById('myInput')
+
 
 
 
