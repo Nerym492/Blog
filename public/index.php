@@ -28,15 +28,10 @@ $twig->addExtension(new \Twig\Extension\DebugExtension());
 $router = new \Bramus\Router\Router();
 
 $postController = new PostController();
-$homeController = new HomeController();
 $formController = new FormController();
 
-
-$router->get('/home',function() use ($twig, $homeController){
-    $homeController->showHome($twig);
-});
-
-$router->mount('/home', function() use ($router,$twig, $homeController, $formController) {
+$router->mount('/home', function() use ($router,$twig, $formController) {
+    $homeController = new HomeController();
 
     //The page is displayed without sending the form
     $router->get('/',function() use ($twig, $homeController){
@@ -56,6 +51,10 @@ $router->get('/posts',function() use ($twig, $postController){
 
 $router->get('/post/(\d+)',function($postId) use ($twig, $postController){
     $postController->showPost($twig, $postId);
+});
+
+$router->get('/signIn',function() use ($twig, $formController){
+    $formController->showSignInForm($twig);
 });
 
 $router->run();

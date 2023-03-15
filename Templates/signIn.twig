@@ -1,0 +1,35 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    <h2>Sign in</h2>
+    <form class="container mb-5 justify-content-center needs-validation" method="post" action="/blog/public/signIn/"
+          id="form-sign-in">
+        <div class="form-floating mb-3" id="group-mail-sign-in">
+            <input type="text" class="form-control" name="mail" id="mail-sign-in" placeholder="name@example.com"
+                   pattern="([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?" required>
+            <small id="mail-sign-in-error" class="form-text">
+                Please enter a valid mail address.
+            </small>
+            <label for="mail-sign-in">Email address</label>
+        </div>
+        <div class="form-floating mb-3" id="group-password-sign-in">
+            <input type="password" class="form-control" name="password" id="password-sign-in"
+                   pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}" required>
+            <div class="password-help">
+                Minimum 8 characters, at least one uppercase letter, one lowercase letter, one number and one
+                special character
+            </div>
+            <small id="password-error">
+                Your password does not match the criteria described above.
+            </small>
+            <label for="password-sign-in">Password</label>
+        </div>
+        <div class="form-floating mb-3" id="group-password-sign-in-confirm">
+            <input type="text" class="form-control" name="password" id="password-sign-in-confirm" required>
+            <small id="password-sign-in-confirm-error">
+                Passwords are not identical
+            </small>
+            <label for="password-sign-in-confirm">Password confirmation</label>
+        </div>
+    </form>
+{% endblock %}

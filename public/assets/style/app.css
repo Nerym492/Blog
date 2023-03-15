@@ -12,7 +12,7 @@ header.masthead {
             rgba(255, 255, 255, 0.6),
             rgba(255, 255, 255, 0.6)
         ),
-        url("/blog/public/assets/images/conception-web-ligne.jpg");
+        url("../public/assets/images/conception-web-ligne.jpg");
     background-size: cover;
 }
 header.masthead:before {
@@ -193,10 +193,9 @@ p {
     grid-column: 2;
 }
 
-#form-contact{
+#form-contact, #form-sign-in{
     display: grid;
     grid-template-columns: minmax(350px, 400px);
-    grid-template-rows: auto auto auto auto;
 }
 
 #group-full-name-contact{
@@ -214,8 +213,6 @@ p {
 #group-gdpr-checkbox{
     grid-area: 4;
 }
-
-
 
 #group-comment-contact textarea{
     height: 150px;

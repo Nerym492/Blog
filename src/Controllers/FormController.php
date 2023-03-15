@@ -12,6 +12,10 @@ use PHPMailer\PHPMailer\PHPMailer;
  */
 class FormController
 {
+    public function showSignInForm(Twig $twig){
+        echo $twig->render('signIn.twig');
+    }
+
     /**
      * Summary of checkContactForm
      * Check if the submitted form is valid
