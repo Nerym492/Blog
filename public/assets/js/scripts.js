@@ -32,19 +32,119 @@ window.addEventListener('DOMContentLoaded', () => {
 const inputs = document.querySelectorAll('input');
 
 // Fetch all the forms we want to apply custom Bootstrap validation styles to
-var forms = document.querySelectorAll('.needs-validation');
+let forms = document.querySelectorAll('.needs-validation');
+let mailRegEx = /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+
+let password = document.getElementById("password-register");
+let groupPassword = document.getElementById("group-password-register");
+let passwordAlert = document.getElementById("password-alert");
+let passwordInfoMessage = document.getElementById("password-info-message");
+let passwordConfirm = document.getElementById("password-register-confirm");
+
+const passwordPatterns = {
+    "upper-char-required": /[A-Z]/,
+    "lower-char-required": /[a-z]/,
+    "special-char-required": /[@$!%*?&]/,
+    "number-required": /[0-9]/,
+    "length-required": /\S{8,}/
+}
 
 const patterns = {
     "full-name-contact": /^([A-z]){3,25}\s([A-z]){3,25}$/,
-    "mail-contact": /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/,
+    "mail-contact": mailRegEx,
+    "mail-register": mailRegEx
 };
 
 //When the user fills in the field, check if the expected pattern matches.
 inputs.forEach((input) => {
     input.addEventListener('keyup', (e) => {
-        validate(e.target, patterns[e.target.attributes.id.value]);
+        if (e.target.type !== "password") {
+            //For all other inputs
+            validate(e.target, patterns[e.target.attributes.id.value]);
+        }
     });
 });
+
+password.addEventListener("keyup", (e) => {
+    if (e.target.value === "") {
+        groupPassword.classList.remove("valid", "invalid");
+    } else {
+        passwordAlert.classList.remove('mt-3')
+    }
+
+    //Number of valid patterns
+    let nbValidPatterns = 0;
+    let nbPatterns = 0;
+
+    //Regex testing on the password
+    for (let patternId in passwordPatterns) {
+        nbPatterns++;
+        if (passwordPatterns[patternId].test(e.target.value)) {
+            //Valid
+            document.getElementById(patternId).classList.replace("invalid", "valid");
+            nbValidPatterns++;
+        } else {
+            //Invalid
+            document.getElementById(patternId).classList.replace("valid", "invalid");
+        }
+    }
+
+    if (nbValidPatterns === nbPatterns) {
+        passwordInfoMessage.innerHTML = "Your password is secure.";
+        passwordInfoMessage.classList.replace("invalid", "valid");
+        e.target.classList.add("valid");
+        e.target.classList.remove("invalid");
+    } else {
+        passwordInfoMessage.innerHTML = "Your password does not meet all the required criteria.";
+        passwordInfoMessage.classList.replace("valid", "invalid");
+        e.target.classList.add("invalid");
+        e.target.classList.remove("valid");
+    }
+
+    checkPasswordConfirm(e.target, passwordConfirm);
+})
+
+password.addEventListener("focus", () => {
+    passwordAlert.classList.remove("hidden");
+    passwordAlert.classList.add("visible");
+    if (password.classList.contains("valid") || password.classList.contains("invalid")){
+        passwordAlert.classList.remove("mt-3");
+        groupPassword.classList.add("mb-3");
+    } else {
+        if (!password.classList.contains("mt-3")){
+            passwordAlert.classList.add("mt-3");
+        }
+    }
+});
+
+password.addEventListener('blur', () => {
+    passwordAlert.classList.remove("visible");
+    passwordAlert.classList.add("hidden");
+    if (password.classList.contains("valid") || password.classList.contains("invalid")) {
+        groupPassword.classList.remove("mb-3");
+        passwordAlert.classList.remove("mt-3");
+    } else {
+        groupPassword.classList.add("mb-3");
+        passwordAlert.classList.remove("mt-3")
+    }
+})
+
+passwordConfirm.addEventListener('keyup', (e) => {
+    checkPasswordConfirm(password, e.target);
+})
+
+function checkPasswordConfirm(password, passwordConfirm){
+    if (passwordConfirm.value === password.value){
+        passwordConfirm.className = 'form-control valid';
+        passwordConfirm.parentElement.classList.add('mb-3');
+    } else if (passwordConfirm.value !== password && passwordConfirm.value !== ""){
+        passwordConfirm.className = 'form-control invalid';
+        passwordConfirm.parentElement.classList.remove('mb-3');
+    } else {
+        passwordConfirm.className = 'form-control';
+        passwordConfirm.parentElement.classList.add('mb-3');
+    }
+}
 
 /**Set css classes (invalid = red, valid = green)
  When the field is empty, the css classes are removed*/
@@ -114,8 +214,7 @@ Array.prototype.slice.call(forms)
         }
     });
 
-let myModal = document.getElementById('exampleModal')
-let myInput = document.getElementById('myInput')
+
 
 
 

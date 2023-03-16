@@ -1,35 +1,67 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-    <h2>Sign in</h2>
+    <h2 class="text-center mb-5">Register</h2>
     <form class="container mb-5 justify-content-center needs-validation" method="post" action="/blog/public/signIn/"
-          id="form-sign-in">
-        <div class="form-floating mb-3" id="group-mail-sign-in">
-            <input type="text" class="form-control" name="mail" id="mail-sign-in" placeholder="name@example.com"
+          id="form-register">
+        <div class="form-floating mb-3" id="group-mail-register">
+            <input type="text" class="form-control" name="mail" id="mail-register" placeholder="name@example.com"
                    pattern="([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?" required>
-            <small id="mail-sign-in-error" class="form-text">
+            <small id="mail-register-error" class="form-text">
                 Please enter a valid mail address.
             </small>
-            <label for="mail-sign-in">Email address</label>
+            <label for="mail-register">Email address</label>
         </div>
-        <div class="form-floating mb-3" id="group-password-sign-in">
-            <input type="password" class="form-control" name="password" id="password-sign-in"
+        <div class="form-floating mb-3 d-flex flex-column" id="group-password-register">
+            <input type="password" class="form-control" name="password" id="password-register" placeholder="password"
                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}" required>
-            <div class="password-help">
-                Minimum 8 characters, at least one uppercase letter, one lowercase letter, one number and one
-                special character
+            <small id="password-info-message" class="form-text info invalid">
+                Your password does not meet all the required criteria.
+            </small>
+            <div class="px-3 d-flex" id="password-alert">
+                <ul class="list-unstyled mb-0" id="password-requirements">
+                    <li class="requirements d-flex invalid" id="length-required">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <i class="fas fa-times text-danger me-2"></i>
+                        Your password must have at least 8 characters.
+                    </li>
+                    <li class="requirements d-flex invalid" id="lower-char-required">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <i class="fas fa-times text-danger me-2"></i>
+                        Your password must have at least 1 lowercase character.
+                    </li>
+                    <li class="requirements d-flex invalid" id="upper-char-required">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <i class="fas fa-times text-danger me-2"></i>
+                        Your password must have at least 1 uppercase character.
+                    </li>
+                    <li class="requirements d-flex invalid" id="number-required">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <i class="fas fa-times text-danger me-2"></i>
+                        Your password must have at least 1 number.
+                    </li>
+                    <li class="requirements d-flex invalid" id="special-char-required">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <i class="fas fa-times text-danger me-2"></i>
+                        Your password must have at least 1 special char.
+                    </li>
+                </ul>
             </div>
-            <small id="password-error">
-                Your password does not match the criteria described above.
-            </small>
-            <label for="password-sign-in">Password</label>
+            <label for="password-register">Password</label>
         </div>
-        <div class="form-floating mb-3" id="group-password-sign-in-confirm">
-            <input type="text" class="form-control" name="password" id="password-sign-in-confirm" required>
-            <small id="password-sign-in-confirm-error">
-                Passwords are not identical
+        <div class="form-floating mb-3" id="group-password-register-confirm">
+            <input type="password" class="form-control" name="password" id="password-register-confirm"
+                   placeholder="confirm password" required>
+            <small id="password-register-confirm-error">
+                Passwords do not match.
             </small>
-            <label for="password-sign-in-confirm">Password confirmation</label>
+            <label for="password-register-confirm">Password confirmation</label>
         </div>
+        <button class="btn btn-contact-form mt-3" type="submit">
+            <span>
+                <i class="fa fa-paper-plane-o m-r-6" aria-hidden="true"></i>
+                Sign in
+            </span>
+        </button>
     </form>
 {% endblock %}

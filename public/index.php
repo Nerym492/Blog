@@ -53,7 +53,7 @@ $router->get('/post/(\d+)',function($postId) use ($twig, $postController){
     $postController->showPost($twig, $postId);
 });
 
-$router->get('/signIn',function() use ($twig, $formController){
+$router->get('/register',function() use ($twig, $formController){
     $formController->showSignInForm($twig);
 });
 
