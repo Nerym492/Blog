@@ -1,34 +1,3 @@
-/*!
-* Start Bootstrap - Clean Blog v6.0.8 (https://startbootstrap.com/theme/clean-blog)
-* Copyright 2013-2022 Start Bootstrap
-* Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-clean-blog/blob/master/LICENSE)
-*/
-window.addEventListener('DOMContentLoaded', () => {
-    let scrollPos = 0;
-    const mainNav = document.getElementById('mainNav');
-    const headerHeight = mainNav.clientHeight;
-    window.addEventListener('scroll', function () {
-        const currentTop = document.body.getBoundingClientRect().top * -1;
-        if (currentTop < scrollPos) {
-            // Scrolling Up
-            if (currentTop > 0 && mainNav.classList.contains('is-fixed')) {
-                mainNav.classList.add('is-visible');
-            } else {
-                console.log(123);
-                mainNav.classList.remove('is-visible', 'is-fixed');
-            }
-        } else {
-            // Scrolling Down
-            mainNav.classList.remove(['is-visible']);
-            if (currentTop > headerHeight && !mainNav.classList.contains('is-fixed')) {
-                mainNav.classList.add('is-fixed');
-            }
-        }
-        scrollPos = currentTop;
-    });
-});
-
-
 const inputs = document.querySelectorAll('input');
 
 // Fetch all the forms we want to apply custom Bootstrap validation styles to
@@ -55,84 +24,7 @@ const patterns = {
     "mail-register": mailRegEx
 };
 
-//When the user fills in the field, check if the expected pattern matches.
-inputs.forEach((input) => {
-    input.addEventListener('keyup', (e) => {
-        if (e.target.type !== "password") {
-            //For all other inputs
-            validate(e.target, patterns[e.target.attributes.id.value]);
-        }
-    });
-});
-
-password.addEventListener("keyup", (e) => {
-    if (e.target.value === "") {
-        groupPassword.classList.remove("valid", "invalid");
-    } else {
-        passwordAlert.classList.remove('mt-3')
-    }
-
-    //Number of valid patterns
-    let nbValidPatterns = 0;
-    let nbPatterns = 0;
-
-    //Regex testing on the password
-    for (let patternId in passwordPatterns) {
-        nbPatterns++;
-        if (passwordPatterns[patternId].test(e.target.value)) {
-            //Valid
-            document.getElementById(patternId).classList.replace("invalid", "valid");
-            nbValidPatterns++;
-        } else {
-            //Invalid
-            document.getElementById(patternId).classList.replace("valid", "invalid");
-        }
-    }
-
-    if (nbValidPatterns === nbPatterns) {
-        passwordInfoMessage.innerHTML = "Your password is secure.";
-        passwordInfoMessage.classList.replace("invalid", "valid");
-        e.target.classList.add("valid");
-        e.target.classList.remove("invalid");
-    } else {
-        passwordInfoMessage.innerHTML = "Your password does not meet all the required criteria.";
-        passwordInfoMessage.classList.replace("valid", "invalid");
-        e.target.classList.add("invalid");
-        e.target.classList.remove("valid");
-    }
-
-    checkPasswordConfirm(e.target, passwordConfirm);
-})
-
-password.addEventListener("focus", () => {
-    passwordAlert.classList.remove("hidden");
-    passwordAlert.classList.add("visible");
-    if (password.classList.contains("valid") || password.classList.contains("invalid")){
-        passwordAlert.classList.remove("mt-3");
-        groupPassword.classList.add("mb-3");
-    } else {
-        if (!password.classList.contains("mt-3")){
-            passwordAlert.classList.add("mt-3");
-        }
-    }
-});
-
-password.addEventListener('blur', () => {
-    passwordAlert.classList.remove("visible");
-    passwordAlert.classList.add("hidden");
-    if (password.classList.contains("valid") || password.classList.contains("invalid")) {
-        groupPassword.classList.remove("mb-3");
-        passwordAlert.classList.remove("mt-3");
-    } else {
-        groupPassword.classList.add("mb-3");
-        passwordAlert.classList.remove("mt-3")
-    }
-})
-
-passwordConfirm.addEventListener('keyup', (e) => {
-    checkPasswordConfirm(password, e.target);
-})
-
+//Check if the confirmation password match with the password
 function checkPasswordConfirm(password, passwordConfirm){
     if (passwordConfirm.value === password.value){
         passwordConfirm.className = 'form-control valid';
@@ -159,6 +51,113 @@ function validate(field, regex) {
         field.className = 'form-control invalid';
         field.parentElement.classList.remove('mb-3');
     }
+}
+
+/* Bootstrap navbar */
+window.addEventListener('DOMContentLoaded', () => {
+    let scrollPos = 0;
+    const mainNav = document.getElementById('mainNav');
+    const headerHeight = mainNav.clientHeight;
+    window.addEventListener('scroll', function () {
+        const currentTop = document.body.getBoundingClientRect().top * -1;
+        if (currentTop < scrollPos) {
+            // Scrolling Up
+            if (currentTop > 0 && mainNav.classList.contains('is-fixed')) {
+                mainNav.classList.add('is-visible');
+            } else {
+                console.log(123);
+                mainNav.classList.remove('is-visible', 'is-fixed');
+            }
+        } else {
+            // Scrolling Down
+            mainNav.classList.remove(['is-visible']);
+            if (currentTop > headerHeight && !mainNav.classList.contains('is-fixed')) {
+                mainNav.classList.add('is-fixed');
+            }
+        }
+        scrollPos = currentTop;
+    });
+});
+
+
+//When the user fills in the field, check if the expected pattern matches.
+inputs.forEach((input) => {
+    input.addEventListener('keyup', (e) => {
+        if (e.target.type !== "password") {
+            //For all other inputs
+            validate(e.target, patterns[e.target.attributes.id.value]);
+        }
+    });
+});
+
+if (password !== null){
+    password.addEventListener("keyup", (e) => {
+        if (e.target.value === "") {
+            groupPassword.classList.remove("valid", "invalid");
+        } else {
+            passwordAlert.classList.remove('mt-3')
+        }
+
+        //Number of valid patterns
+        let nbValidPatterns = 0;
+        let nbPatterns = 0;
+
+        //Regex testing on the password
+        for (let patternId in passwordPatterns) {
+            nbPatterns++;
+            if (passwordPatterns[patternId].test(e.target.value)) {
+                //Valid
+                document.getElementById(patternId).classList.replace("invalid", "valid");
+                nbValidPatterns++;
+            } else {
+                //Invalid
+                document.getElementById(patternId).classList.replace("valid", "invalid");
+            }
+        }
+
+        if (nbValidPatterns === nbPatterns) {
+            passwordInfoMessage.innerHTML = "Your password is secure.";
+            passwordInfoMessage.classList.replace("invalid", "valid");
+            e.target.classList.add("valid");
+            e.target.classList.remove("invalid");
+        } else {
+            passwordInfoMessage.innerHTML = "Your password does not meet all the required criteria.";
+            passwordInfoMessage.classList.replace("valid", "invalid");
+            e.target.classList.add("invalid");
+            e.target.classList.remove("valid");
+        }
+
+        checkPasswordConfirm(e.target, passwordConfirm);
+    })
+
+    password.addEventListener("focus", () => {
+        passwordAlert.classList.remove("hidden");
+        passwordAlert.classList.add("visible");
+        if (password.classList.contains("valid") || password.classList.contains("invalid")){
+            passwordAlert.classList.remove("mt-3");
+            groupPassword.classList.add("mb-3");
+        } else {
+            if (!password.classList.contains("mt-3")){
+                passwordAlert.classList.add("mt-3");
+            }
+        }
+    });
+
+    password.addEventListener('blur', () => {
+        passwordAlert.classList.remove("visible");
+        passwordAlert.classList.add("hidden");
+        if (password.classList.contains("valid") || password.classList.contains("invalid")) {
+            groupPassword.classList.remove("mb-3");
+            passwordAlert.classList.remove("mt-3");
+        } else {
+            groupPassword.classList.add("mb-3");
+            passwordAlert.classList.remove("mt-3")
+        }
+    })
+
+    passwordConfirm.addEventListener('keyup', (e) => {
+        checkPasswordConfirm(password, e.target);
+    })
 }
 
 // Loop over them and prevent submission

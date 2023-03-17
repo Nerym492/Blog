@@ -6,7 +6,6 @@ use App\Controllers\HomeController;
 use App\Controllers\PostController;
 use App\Controllers\FormController;
 use Dotenv\Dotenv;
-use PHPMailer\PHPMailer\PHPMailer;
 
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
@@ -53,8 +52,15 @@ $router->get('/post/(\d+)',function($postId) use ($twig, $postController){
     $postController->showPost($twig, $postId);
 });
 
-$router->get('/register',function() use ($twig, $formController){
-    $formController->showSignInForm($twig);
+$router->mount('/register', function() use ($router, $twig, $formController){
+    $router->get('/',function() use ($twig, $formController){
+        $formController->showRegisterForm($twig);
+    });
+    
+    //The visitor has sent the register form
+    $router->post('/', function() use ($twig, $formController){
+        $formController->checkRegisterForm($twig);
+    });
 });
 
 $router->run();

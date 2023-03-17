@@ -12,7 +12,7 @@ use PHPMailer\PHPMailer\PHPMailer;
  */
 class FormController
 {
-    public function showSignInForm(Twig $twig){
+    public function showRegisterForm(Twig $twig){
         echo $twig->render('signIn.twig');
     }
 
@@ -24,10 +24,7 @@ class FormController
      */
     public function checkContactForm(Twig $twig): void
     {
-
-        $formErrors = [];
-        $mailSent = false;
-        $isValid = true;
+        $mailStatus = [];
 
         // 'htmlName' => 'regexPattern'
         $patterns = [
@@ -36,38 +33,32 @@ class FormController
         ];
 
         //Check form data
-        foreach ($patterns as $fieldName => $pattern) {
-            //We add the name of the fields and their value in this array
-            $formErrors[$fieldName] = $_POST[$fieldName];
-            //Check the patterns
-            if (!preg_match($pattern, $_POST[$fieldName]) && $isValid) {
-                $isValid = false;
-            }
-        }
+        $checkForm = $this->checkFormPatterns($patterns);
 
         //We add the comment data
-        $formErrors['comment'] = $_POST['comment'];
+        $checkForm['form']['comment'] = $_POST['comment'];
 
         //We check if the field is not empty only if the form is still valid
-        if (empty($_POST['comment']) && $isValid) {
-            $isValid = false;
+        if (empty($_POST['comment']) && $checkForm['isValid']) {
+            $checkForm['isValid'] = false;
         }
 
         //If the form is valid, we clear the array form_errors
-        if ($isValid) {
-            $formErrors = [];
+        if ($checkForm['isValid']) {
+            $checkForm['form'] = [];
             $mail = new PHPMailer(true);
             //mailSent = true or false
-            $mailSent = $this->sendContactForm($mail);
+            $mailStatus = $this->sendContactForm($mail);
         }
 
         //Displays the home page with errors if there are any
         echo $twig->render('home.twig', [
             'page' => "Phrase d'accroche",
-            'form_errors' => $formErrors,
-            'isValid' => $isValid,
-            'mailSent' => $mailSent
+            'form_errors' => $checkForm['form'],
+            'isValid' => $checkForm['isValid'],
+            'mailSent' => $mailStatus['mailSent']
         ]);
+
     }
 
     /**
@@ -77,7 +68,7 @@ class FormController
      * @param PHPMailer $mail
      * @return bool
      */
-    private function sendContactForm(PHPMailer $mail): bool
+    private function sendContactForm(PHPMailer $mail): array
     {
         // Send a message with the form data
         try {
@@ -94,7 +85,7 @@ class FormController
             $mail->isHTML(true); //Set email format to HTML
             $mail->Subject = 'Here is the subject'; //We can format the mail using html
 
-            $mail->Body = htmlspecialchars($_POST['comment']);
+            $mail->Body = strip_tags($_POST['comment']);
             $mail->send();
             $message = 'Message has been sent';
             $mailSent = true;
@@ -103,7 +94,28 @@ class FormController
             $mailSent = false;
         }
 
-        return $mailSent;
+        return ['mailSent' => $mailSent, 'message' => $message];
+    }
+
+    private function checkFormPatterns(array $formPatterns): array{
+        $formErrors = [];
+        $isValid = true;
+
+        foreach ($formPatterns as $fieldName => $pattern) {
+            /*We add the name of the fields and their value in this array
+            + html tags deletion */
+            $formErrors[$fieldName] = strip_tags($_POST[$fieldName]);
+            //Check the patterns
+            if (!preg_match($pattern, $formErrors[$fieldName]) && $isValid) {
+                $isValid = false;
+            }
+        }
+
+        return ['form' => $formErrors, 'isValid' => $isValid];
+    }
+
+    public function checkRegisterForm(Twig $twig){
+
     }
 
 }
