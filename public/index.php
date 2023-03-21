@@ -63,4 +63,17 @@ $router->mount('/register', function() use ($router, $twig, $formController){
     });
 });
 
+$router->mount('/logIn', function() use ($router, $twig, $formController){
+    $router->get('/',function() use ($twig, $formController){
+        $formController->showLogInForm($twig);
+    });
+
+    //The visitor has sent the register form
+//    $router->post('/', function() use ($twig, $formController){
+//        $formController->checkRegisterForm($twig);
+//    });
+});
+
+
+
 $router->run();

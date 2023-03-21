@@ -18,6 +18,11 @@ class FormController
         echo $twig->render('signIn.twig');
     }
 
+    public function showLogInForm(Twig $twig)
+    {
+        echo $twig->render('logIn.twig');
+    }
+
     /**
      * Summary of checkContactForm
      * Check if the submitted form is valid
