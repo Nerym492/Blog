@@ -1,13 +1,36 @@
 {% extends 'base.twig' %}
 
 {% block content %}
+    {% if message != "" %}
+        <div class="alert alert-box {{ messageClass }}-alert fade show" role="alert">
+            <p class="flex-grow-1 mb-0"><strong>{{ message|nl2br }}</strong></p>
+            <button type="button" class="btn-close ms-1" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
     <h2 class="text-center mb-5">Register</h2>
-    <form class="container mb-5 justify-content-center needs-validation" method="post" action="/blog/public/signIn/"
-          id="form-register">
+
+    <form class="container mb-5 justify-content-center needs-validation" method="post" action="/blog/public/register/#form-register"
+          id="form-register" novalidate>
+        <div class="form-floating mb-3" id="group-pseudo-register">
+            <input type="text" class="form-control" name="pseudo" id="pseudo-register" placeholder="Pseudo"
+                   value="{{ form_errors.pseudo }}" pattern="[A-z\d]{3,25}" required>
+            <small id="pseudo-register-help" class="form-text">
+                Please enter a valid Pseudo (3-25 characters)
+            </small>
+            <label for="pseudo-register">Pseudo</label>
+        </div>
+        <div class="form-floating mb-3" id="group-full-name-register">
+            <input type="text" class="form-control" name="fullName" id="full-name-register" placeholder="Full Name"
+                   value="{{ form_errors.fullName }}" pattern="([A-z]){3,25}\s([A-z]){3,25}" required>
+            <small id="full-name-register-help" class="form-text">
+                Please enter a valid Full name. Example : LastName FirstName (3-25 characters each)
+            </small>
+            <label for="full-name-contact">Full Name</label>
+        </div>
         <div class="form-floating mb-3" id="group-mail-register">
             <input type="text" class="form-control" name="mail" id="mail-register" placeholder="name@example.com"
-                   pattern="([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?" required>
-            <small id="mail-register-error" class="form-text">
+                   value="{{ form_errors.mail }}" pattern="([A-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?" required>
+            <small id="mail-register-help" class="form-text">
                 Please enter a valid mail address.
             </small>
             <label for="mail-register">Email address</label>
@@ -15,7 +38,7 @@
         <div class="form-floating mb-3 d-flex flex-column" id="group-password-register">
             <input type="password" class="form-control" name="password" id="password-register" placeholder="password"
                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}" required>
-            <small id="password-info-message" class="form-text info invalid">
+            <small id="password-register-help" class="form-text info invalid">
                 Your password does not meet all the required criteria.
             </small>
             <div class="px-3 d-flex" id="password-alert">
@@ -50,14 +73,14 @@
             <label for="password-register">Password</label>
         </div>
         <div class="form-floating mb-3" id="group-password-register-confirm">
-            <input type="password" class="form-control" name="password" id="password-register-confirm"
+            <input type="password" class="form-control" name="passwordConfirm" id="password-register-confirm"
                    placeholder="confirm password" required>
-            <small id="password-register-confirm-error">
+            <small id="password-register-confirm-help">
                 Passwords do not match.
             </small>
             <label for="password-register-confirm">Password confirmation</label>
         </div>
-        <button class="btn btn-contact-form mt-3" type="submit">
+        <button class="btn btn-form mt-3" type="submit">
             <span>
                 <i class="fa fa-paper-plane-o m-r-6" aria-hidden="true"></i>
                 Sign in
