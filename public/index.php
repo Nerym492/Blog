@@ -6,7 +6,6 @@ use App\Controllers\HomeController;
 use App\Controllers\PostController;
 use App\Controllers\FormController;
 use Dotenv\Dotenv;
-use PHPMailer\PHPMailer\PHPMailer;
 
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
@@ -28,15 +27,10 @@ $twig->addExtension(new \Twig\Extension\DebugExtension());
 $router = new \Bramus\Router\Router();
 
 $postController = new PostController();
-$homeController = new HomeController();
 $formController = new FormController();
 
-
-$router->get('/home',function() use ($twig, $homeController){
-    $homeController->showHome($twig);
-});
-
-$router->mount('/home', function() use ($router,$twig, $homeController, $formController) {
+$router->mount('/home', function() use ($router,$twig, $formController) {
+    $homeController = new HomeController();
 
     //The page is displayed without sending the form
     $router->get('/',function() use ($twig, $homeController){
@@ -56,6 +50,17 @@ $router->get('/posts',function() use ($twig, $postController){
 
 $router->get('/post/(\d+)',function($postId) use ($twig, $postController){
     $postController->showPost($twig, $postId);
+});
+
+$router->mount('/register', function() use ($router, $twig, $formController){
+    $router->get('/',function() use ($twig, $formController){
+        $formController->showRegisterForm($twig);
+    });
+    
+    //The visitor has sent the register form
+    $router->post('/', function() use ($twig, $formController){
+        $formController->checkRegisterForm($twig);
+    });
 });
 
 $router->run();
