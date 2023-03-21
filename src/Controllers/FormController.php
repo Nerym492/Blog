@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\EntityManager\UserManager;
 use Exception;
 use \Twig\Environment as Twig;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -12,7 +13,8 @@ use PHPMailer\PHPMailer\PHPMailer;
  */
 class FormController
 {
-    public function showRegisterForm(Twig $twig){
+    public function showRegisterForm(Twig $twig)
+    {
         echo $twig->render('signIn.twig');
     }
 
@@ -24,31 +26,34 @@ class FormController
      */
     public function checkContactForm(Twig $twig): void
     {
-        $mailStatus = [];
+        $mailStatus['mailSent'] = [];
+        $mailStatus['message'] = "";
 
         // 'htmlName' => 'regexPattern'
         $patterns = [
             'fullName' => '/^([A-z]){3,25}\s{1}([A-z]){3,25}$/',
-            'mail' => '/^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/'
+            'mail' => '/^([A-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/'
         ];
 
-        //Check form data
+        /*Check form data
+        return array $checkForm['form'] and $checkForm['isValid']*/
         $checkForm = $this->checkFormPatterns($patterns);
 
         //We add the comment data
-        $checkForm['form']['comment'] = $_POST['comment'];
+        $checkForm['form']['comment'] = strip_tags($_POST['comment']);
 
         //We check if the field is not empty only if the form is still valid
-        if (empty($_POST['comment']) && $checkForm['isValid']) {
+        if (empty($checkForm['form']['comment']) && $checkForm['isValid']) {
             $checkForm['isValid'] = false;
         }
 
         //If the form is valid, we clear the array form_errors
         if ($checkForm['isValid']) {
-            $checkForm['form'] = [];
-            $mail = new PHPMailer(true);
             //mailSent = true or false
-            $mailStatus = $this->sendContactForm($mail);
+            $mailStatus = $this->sendMail($checkForm['form']['mail'], $checkForm['form']['fullName'],
+                'Here is the subject', $checkForm['form']['comment']);
+            //The form can be deleted, the comment has been sent
+            $checkForm['form'] = [];
         }
 
         //Displays the home page with errors if there are any
@@ -56,7 +61,8 @@ class FormController
             'page' => "Phrase d'accroche",
             'form_errors' => $checkForm['form'],
             'isValid' => $checkForm['isValid'],
-            'mailSent' => $mailStatus['mailSent']
+            'mailSent' => $mailStatus['mailSent'],
+            'message' => $mailStatus['message']
         ]);
 
     }
@@ -65,11 +71,20 @@ class FormController
      * Summary of sendContactForm
      * This function can only be used after the validation of the form.
      * Used in checkContactForm
-     * @param PHPMailer $mail
-     * @return bool
+     * @param string $recipientsMail
+     * @param string $recipientsFullName
+     * @param string $subject
+     * @param string $content
+     * @return array
      */
-    private function sendContactForm(PHPMailer $mail): array
+    private function sendMail(string $recipientsMail, string $recipientsFullName, string $subject, string $content): array
     {
+
+        $recipientsFullName = explode(" ", $recipientsFullName);
+        $recipientsLastName = $recipientsFullName[0];
+        $recipientsFirstName = $recipientsFullName[1];
+
+        $mail = new PHPMailer(true);
         // Send a message with the form data
         try {
             $mail->isSMTP(); //Send using SMTP
@@ -81,11 +96,11 @@ class FormController
             $mail->Port = $_ENV['SMTP_PORT'];
 
             $mail->setFrom('florianpohu49@gmail.com', 'Florian Pohu'); //Sender's address
-            $mail->addAddress('florianpohu49@gmail.com', 'Florian Pohu'); //Blog contact address
+            $mail->addAddress($recipientsMail, $recipientsFirstName . " " . $recipientsLastName); //Recipient's address
             $mail->isHTML(true); //Set email format to HTML
-            $mail->Subject = 'Here is the subject'; //We can format the mail using html
+            $mail->Subject = $subject; //We can format the mail using html
 
-            $mail->Body = strip_tags($_POST['comment']);
+            $mail->Body = $content;
             $mail->send();
             $message = 'Message has been sent';
             $mailSent = true;
@@ -97,7 +112,8 @@ class FormController
         return ['mailSent' => $mailSent, 'message' => $message];
     }
 
-    private function checkFormPatterns(array $formPatterns): array{
+    private function checkFormPatterns(array $formPatterns): array
+    {
         $formErrors = [];
         $isValid = true;
 
@@ -114,8 +130,63 @@ class FormController
         return ['form' => $formErrors, 'isValid' => $isValid];
     }
 
-    public function checkRegisterForm(Twig $twig){
+    public function checkRegisterForm(Twig $twig)
+    {
+        $message = "";
+        $messageClass = "";
 
+        $patterns = [
+            'pseudo' => '/^[A-z\d]{3,25}$/',
+            'fullName' => '/^([A-z]){3,25}\s([A-z]){3,25}$/',
+            'mail' => '/^([A-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/',
+            'password' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'
+        ];
+
+        $checkForm = $this->checkFormPatterns($patterns);
+
+        $checkForm['form']['passwordConfirm'] = strip_tags($_POST['passwordConfirm']);
+
+        if (($checkForm['form']['password'] != $checkForm['form']['passwordConfirm']) && $checkForm['isValid']) {
+            //Passwords are not the same -> form not valid
+            $checkForm['isValid'] = false;
+        } else if ($checkForm['isValid']) {
+            $userManager = new UserManager();
+
+            if (!$userManager->checkDataAlreadyExists("mail", $checkForm['form']['mail'])) {
+                /**This mail is not used, so we can create a new account
+                 * confirmation mail is sent to the user's email address*/
+                try {
+                    $mailConfirmationLink = $userManager->createUser($checkForm['form']);
+                    $this->sendMail($checkForm['form']['mail'], $checkForm['form']['fullName'], "Confirm your email", $mailConfirmationLink);
+                    $message = "Your account has been successfully created !\n";
+                    $message .= "Please confirm your email address by clicking on the link that was sent to you.";
+                    $messageClass = "success";
+                    $checkForm['form'] = [];
+                } catch (Exception $e) {
+                    $message = "An error occurred while creating your account.\nPlease try again later.";
+                    $messageClass = "danger";
+                }
+
+            } else {
+                $message = "This mail is already used !";
+                $messageClass = "danger";
+                $checkForm['form']['mail'] = "";
+                $checkForm['isValid'] = false;
+            }
+        }
+
+        //Passwords are not returned for security reasons (even if it's encrypted)
+        $checkForm['form']['password'] = "";
+        $checkForm['form']['passwordConfirm'] = "";
+
+
+        echo $twig->render('signIn.twig', [
+            'page' => "Create an account",
+            'form_errors' => $checkForm['form'],
+            'isValid' => $checkForm['isValid'],
+            'message' => $message,
+            'messageClass' => $messageClass
+        ]);
     }
 
 }

@@ -7,6 +7,46 @@ use App\Lib\DatabaseConnection;
 
 class UserManager
 {
+    /**
+     * Return the confirmation mail link
+     * @param array $formRegister Contains all form data. Example : $formRegister['inputName']
+     * @return string Link to confirm the mail
+     */
+    public function createUser(array $formRegister): string
+    {
+        $connexion = new DatabaseConnection();
+
+        $fullName = explode(" ", $formRegister['fullName']);
+        $lastName = $fullName[0];
+        $firstName = $fullName[1];
+
+        //Creating a hash for the password
+        $formRegister['password'] = password_hash($formRegister['password'], PASSWORD_DEFAULT);
+
+        //Generates a code that will be used in the confirmation link sent by email
+        $verificationCode = bin2hex(openssl_random_pseudo_bytes(20));
+
+        $statement = $connexion->getConnection()->prepare(
+            "INSERT INTO blog.`user`
+                (mail, pseudo, last_name, first_name, password, verification_code, confirmed_mail, user_type_id)
+                VALUES(:mail, :pseudo, :last_name, :first_name, :password, 
+                       :verification_code, :confirmed_mail, :user_type_id);"
+        );
+
+        $statement->execute([
+            ':mail' => $formRegister['mail'],
+            ':pseudo' => $formRegister['pseudo'],
+            ':last_name' => $lastName,
+            ':first_name' => $firstName,
+            ':password' => $formRegister['password'],
+            ':verification_code' => $verificationCode,
+            ':confirmed_mail' => 0,
+            ':user_type_id' => 3
+        ]);
+
+        return "http://localhost/blog/public/register/" . $formRegister['mail'] . "/" . $verificationCode;
+    }
+
     public function getUser(int $userId): User
     {
         $connexion = new DatabaseConnection();
@@ -22,7 +62,7 @@ class UserManager
 
         $user = new User();
 
-        if ($row){
+        if ($row) {
             $user->setUserId($userId);
             $user->setMail($row['mail']);
             $user->setPseudo($row['pseudo']);
@@ -33,6 +73,28 @@ class UserManager
         }
 
         return $user;
-        
+
+    }
+
+    /**
+     * Check if data is already used by another user
+     * @param string $field Name of the field in the database
+     * @param string $data Data we want to check
+     * @return bool
+     */
+    public function checkDataAlreadyExists(string $field, string $data): bool
+    {
+        $connexion = new DatabaseConnection();
+
+        $statement = $connexion->getConnection()->prepare(
+            "SELECT count(user_id) as 'nbLines'
+                   FROM user
+                   WHERE " . $field . "=:data"
+        );
+
+        $statement->execute([':data' => $data]);
+        $result = $statement->fetch();
+
+        return (int)$result['nbLines'] !== 0;
     }
 }
