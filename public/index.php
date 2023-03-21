@@ -5,6 +5,7 @@ require '../vendor/autoload.php';
 use App\Controllers\HomeController;
 use App\Controllers\PostController;
 use App\Controllers\FormController;
+use App\Controllers\UserController;
 use Dotenv\Dotenv;
 
 $dotenv = Dotenv::createImmutable(__DIR__);
@@ -28,6 +29,7 @@ $router = new \Bramus\Router\Router();
 
 $postController = new PostController();
 $formController = new FormController();
+$userController = new UserController();
 
 $router->mount('/home', function() use ($router,$twig, $formController) {
     $homeController = new HomeController();
@@ -45,14 +47,17 @@ $router->mount('/home', function() use ($router,$twig, $formController) {
 });
 
 $router->get('/posts',function() use ($twig, $postController){
+    //Displays all posts
     $postController->showPosts($twig);
 });
 
 $router->get('/post/(\d+)',function($postId) use ($twig, $postController){
+    //Displays a single post
     $postController->showPost($twig, $postId);
 });
 
 $router->mount('/register', function() use ($router, $twig, $formController){
+    //Displays the register form
     $router->get('/',function() use ($twig, $formController){
         $formController->showRegisterForm($twig);
     });
@@ -63,15 +68,16 @@ $router->mount('/register', function() use ($router, $twig, $formController){
     });
 });
 
-$router->mount('/logIn', function() use ($router, $twig, $formController){
+$router->mount('/logIn', function() use ($router, $twig, $formController, $userController){
+    //Displays the login form
     $router->get('/',function() use ($twig, $formController){
         $formController->showLogInForm($twig);
     });
 
-    //The visitor has sent the register form
-//    $router->post('/', function() use ($twig, $formController){
-//        $formController->checkRegisterForm($twig);
-//    });
+    //The user clicked on the link he received by mail
+    $router->get('/mail/([^/<>]+)/verificationCode/(\w+)', function($mail, $verificationCode) use ($twig, $userController){
+        $userController->confirmMailAddress($twig, $mail, $verificationCode);
+    });
 });
 
 

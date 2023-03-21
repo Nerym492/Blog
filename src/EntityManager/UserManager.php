@@ -47,6 +47,43 @@ class UserManager
         return "http://localhost/blog/public/register/" . $formRegister['mail'] . "/" . $verificationCode;
     }
 
+    /**
+     * Confirm the user's Mail
+     * @param string $mail Mail which needs to be verified
+     * @param string $verificationCode Code associated with the mail to confirm it
+     * @return array
+     * $array['message'] -> status of the mail confirmation,
+     * $array['messageClass'] CSS class of the message
+     */
+    public function confirmMail(string $mail, string $verificationCode): array
+    {
+        $connexion = new DatabaseConnection();
+
+        $statement = $connexion->getConnection()->prepare(
+            "UPDATE blog.`user`
+                   SET confirmed_mail=:confirmed_mail, verification_code=:reset_verification_code
+                   WHERE mail=:mail AND verification_code=:verification_code
+            ");
+
+        //Verification code reset --> mail can only be confirmed once
+        $statement->execute([
+            ':confirmed_mail' => 1,
+            ':verification_code' => $verificationCode,
+            ':reset_verification_code' => '',
+            'mail' => $mail
+        ]);
+
+        if (($statement->rowCount() == 1)) {
+            $message = "Your mail has been successfully confirmed !";
+            $messageClass = "success";
+        } else {
+            $message = "This confirmation link si no longer valid.";
+            $messageClass = "danger";
+        }
+
+        return ['message' => $message, 'messageClass' => $messageClass];
+    }
+
     public function getUser(int $userId): User
     {
         $connexion = new DatabaseConnection();
