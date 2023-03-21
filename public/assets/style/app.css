@@ -3,7 +3,7 @@
     src: url("../style/fonts/Montserrat-VariableFont_wght.ttf");
 }
 
-body{
+body {
     font-family: 'Montserrat', sans-serif;
 }
 
@@ -231,11 +231,11 @@ h1,
     height: 150px;
 }
 
-#pseudo-register{
+#pseudo-register {
     grid-row: 1;
 }
 
-#group-full-name-register{
+#group-full-name-register {
     grid-row: 2;
 }
 
@@ -251,7 +251,7 @@ h1,
     grid-row: 5;
 }
 
-#password-requirements{
+#password-requirements {
     z-index: -1;
 }
 
@@ -273,17 +273,17 @@ h1,
     display: none;
 }
 
-#password-alert{
+#password-alert {
     opacity: 0;
     max-height: 0;
 }
 
-.visible{
+.visible {
     animation: fade-in 700ms ease-in forwards;
 }
 
 .hidden {
-    animation: fade-out 700ms cubic-bezier(.12,1,.62,.89) forwards;
+    animation: fade-out 700ms cubic-bezier(.12, 1, .62, .89) forwards;
 }
 
 @keyframes fade-in {
@@ -302,7 +302,7 @@ h1,
         opacity: 1;
         max-height: 500px;
     }
-    50%{
+    50% {
         opacity: 0;
     }
     100% {
@@ -397,6 +397,38 @@ h1,
     transition: opacity 0.4s ease-out;
 }
 
+.form-check-input:invalid{
+    border-color: var(--bs-danger);
+}
+
+.form-check-input:invalid:focus{
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-danger-rgb), 0.25)
+}
+
+.form-check-input:valid:checked{
+    background-color: var(--bs-success);
+}
+
+.form-check-input:valid:checked:focus{
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-success-rgb), 0.25)
+}
+
+.form-check-input:invalid + small {
+    border-color: var(--bs-danger);
+    color: var(--bs-danger);
+    opacity: 1;
+    height: auto;
+    margin-bottom: 10px;
+    transition: opacity 0.4s ease-out;
+}
+
+.form-check-input:valid:checked + small{
+    background-color: var(--bs-success);
+    opacity: 0;
+    height: 0;
+    transition: opacity 0.4s ease-out;
+}
+
 #group-gdpr-checkbox {
     grid-row: 4;
     display: grid;
@@ -410,7 +442,7 @@ h1,
     grid-column: 2;
 }
 
-#gdpr-invalid-text {
+#gdpr-register-help {
     grid-area: 2 / 2;
 }
 
