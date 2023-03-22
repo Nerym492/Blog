@@ -8,7 +8,7 @@
     <title>Clean Blog - Start Bootstrap Theme</title>
     <link rel="icon" type="image/x-icon" href="/public/assets/images/favicon.ico">
     <!-- Font Awesome icons (free version)-->
-    <!--<script src="https://kit.fontawesome.com/d3a0bd80a1.js" crossorigin="anonymous"></script>-->
+    <script src="https://kit.fontawesome.com/d3a0bd80a1.js" crossorigin="anonymous"></script>
     <!-- Google fonts-->
     <!-- Core theme CSS (includes Bootstrap)-->
     <link rel="stylesheet" href="/blog/node_modules/bootstrap/dist/css/bootstrap.min.css">
@@ -17,11 +17,11 @@
 </head>
 <body>
 {% block header %}
-    {% include "header.twig" %}
+    {% include "partials/header.twig" %}
 {% endblock %}
 <!-- Main Content-->
 {% block content %}{% endblock %}
 <!-- Footer-->
-{% include "footer.twig" %}
+{% include "partials/footer.twig" %}
 </body>
 </html>
