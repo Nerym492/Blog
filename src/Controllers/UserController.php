@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Entity\User;
 use \Twig\Environment as Twig;
 use App\EntityManager\UserManager;
 
@@ -17,4 +18,13 @@ class UserController
             'messageClass' => $mailConfirmation['messageClass']
         ]);
     }
+
+    public function logOut(Twig $twig): void
+    {
+        $userManager = new UserManager();
+        $userManager->disconnectUser();
+        echo $twig->render('home.twig',['session' => '']);
+    }
+
+
 }

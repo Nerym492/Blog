@@ -18,7 +18,11 @@
                     <a class="nav-link px-lg-3 py-3 py-lg-4" href="/blog/public/register/">Sign in</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link px-lg-3 py-3 py-lg-4" href="/blog/public/logIn/">Log in</a>
+                    {% if session %}
+                        <a class="nav-link px-lg-3 py-3 py-lg-4" href="/blog/public/home/loggedOut/">Log out</a>
+                    {% else %}
+                        <a class="nav-link px-lg-3 py-3 py-lg-4" href="/blog/public/logIn/">Log in</a>
+                    {% endif %}
                 </li>
             </ul>
         </div>

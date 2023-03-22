@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Entity\User;
 use App\EntityManager\UserManager;
 use Exception;
 use \Twig\Environment as Twig;
@@ -21,6 +22,32 @@ class FormController
     public function showLogInForm(Twig $twig)
     {
         echo $twig->render('logIn.twig');
+    }
+
+
+    public function checkLogInForm(Twig $twig)
+    {
+        $mail = strip_tags($_POST['mail']);
+        $password = strip_tags($_POST['password']);
+
+        $userManager = new UserManager();
+
+
+        if (!$userManager->checkLogin($mail, $password)) {
+            $message = "Your email or password is not valid !";
+            $messageClass = "danger";
+
+            //Displays a red alert box on the login page
+            echo $twig->render('logIn.twig', [
+                'message' => $message,
+                'messageClass' => $messageClass
+            ]);
+        } else {
+            //Connect the user
+            $userManager->connectUser($twig, $mail);
+            //Displays home page and "Log in" is replaced by "Log out" in the navbar
+            echo $twig->render('home.twig');
+        }
     }
 
     /**
@@ -158,8 +185,8 @@ class FormController
             $userManager = new UserManager();
 
             if (!$userManager->checkDataAlreadyExists("mail", $checkForm['form']['mail'])) {
-                /**This mail is not used, so we can create a new account
-                 * confirmation mail is sent to the user's email address*/
+                /*This mail is not used, so we can create a new account
+                 confirmation mail is sent to the user's email address*/
                 try {
                     $mailConfirmationLink = $userManager->createUser($checkForm['form']);
                     $this->sendMail($checkForm['form']['mail'], $checkForm['form']['fullName'], "Confirm your email", $mailConfirmationLink);

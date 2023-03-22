@@ -4,6 +4,7 @@ namespace App\EntityManager;
 
 use App\Entity\User;
 use App\Lib\DatabaseConnection;
+use \Twig\Environment as Twig;
 
 class UserManager
 {
@@ -84,29 +85,37 @@ class UserManager
         return ['message' => $message, 'messageClass' => $messageClass];
     }
 
-    public function getUser(int $userId): User
+    /**
+     * @param int $userId
+     * @param string $mail
+     * @return User|null
+     */
+    public function getUser(int $userId = 0, string $mail = ""): ?User
     {
         $connexion = new DatabaseConnection();
 
         $statement = $connexion->getConnection()->prepare(
             "SELECT mail, pseudo, last_name, first_name, password, user_type_id
              FROM user
-             WHERE user_id = :user_id"
+             WHERE user_id = :user_id
+             OR mail = :mail"
         );
 
-        $statement->execute([':user_id' => $userId]);
+        $statement->execute([':user_id' => $userId, ':mail' => $mail]);
         $row = $statement->fetch();
 
-        $user = new User();
-
         if ($row) {
+            //A user has been found
+            $user = new User();
             $user->setUserId($userId);
             $user->setMail($row['mail']);
             $user->setPseudo($row['pseudo']);
             $user->setLastName($row['last_name']);
             $user->setFirstName($row['first_name']);
-            $user->setPassword($row['password']);
-            $user->setUserId($row['user_type_id']);
+            $user->setUserTypeId($row['user_type_id']);
+        } else {
+            //No users were found
+            $user = null;
         }
 
         return $user;
@@ -133,5 +142,45 @@ class UserManager
         $result = $statement->fetch();
 
         return (int)$result['nbLines'] !== 0;
+    }
+
+    public function checkLogin(string $mail , string $password): bool
+    {
+        $connexion = new DatabaseConnection();
+
+        $statement = $connexion->getConnection()->prepare(
+            "SELECT password as 'password_hash'
+                   FROM user
+                   WHERE mail=:mail"
+        );
+
+        $statement->execute([':mail' => $mail]);
+
+        $row = $statement->fetch();
+
+         /* check if row is empty
+         and check the password hash (True or false)*/
+        return ($row && password_verify($password, $row['password_hash']));
+    }
+
+    public function connectUser(Twig $twig, string $mail): void
+    {
+        $user = $this->getUser(mail: $mail);
+
+        if ($user){
+
+            $_SESSION['mail'] = $mail;
+            $_SESSION['first_name'] = $user->getFirstName();
+            $_SESSION['last_name'] = $user->getLastName();
+            $_SESSION['pseudo'] = $user->getPseudo();
+            $_SESSION['isAdmin'] = $user->getIsAdmin();
+            $twig->addGlobal('session', $_SESSION);
+        }
+    }
+
+    public function disconnectUser(): void
+    {
+        session_unset();
+        session_destroy();
     }
 }

@@ -22,7 +22,7 @@ class PostController
         $postManager = new PostManager();
         $post = $postManager->getPost($postId);
         $userManager = new UserManager();
-        $userPost = $userManager->getUser($post->getUserId());
+        $userPost = $userManager->getUser(userId: $post->getUserId());
 
         echo $twig->render('post.twig', ['post' => $post, 'userPost' => $userPost]);
     }
