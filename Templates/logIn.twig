@@ -1,17 +1,12 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-    {% if message != "" %}
-        <div class="alert alert-box {{ messageClass }}-alert fade show" role="alert">
-            <p class="flex-grow-1 mb-0"><strong>{{ message|nl2br }}</strong></p>
-            <button type="button" class="btn-close ms-1" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    {% endif %}
+    {% include 'partials/alertBox.twig' %}
     <h2 class="text-center mb-5">Log in</h2>
 
-    <form class="container mb-5 justify-content-center needs-validation" method="post" action="/blog/public/logIn/#form-log-in"
-          id="form-log-in" novalidate>
-         <div class="form-floating mb-3" id="group-mail-log-in">
+    <form class="container mb-5 justify-content-center needs-validation" method="post"
+          action="/blog/public/logIn/#form-log-in" id="form-log-in" novalidate>
+        <div class="form-floating mb-3" id="group-mail-log-in">
             <input type="text" class="form-control" name="mail" id="mail-log-in" placeholder="name@example.com"
                    value="{{ form_errors.mail }}" required>
             <label for="mail-log-in">Email address</label>
