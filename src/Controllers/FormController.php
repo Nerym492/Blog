@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Entity\User;
 use App\EntityManager\UserManager;
 use Exception;
 use \Twig\Environment as Twig;
@@ -14,18 +13,18 @@ use PHPMailer\PHPMailer\PHPMailer;
  */
 class FormController
 {
-    public function showRegisterForm(Twig $twig)
+    public function showRegisterForm(Twig $twig): void
     {
         echo $twig->render('signIn.twig');
     }
 
-    public function showLogInForm(Twig $twig)
+    public function showLogInForm(Twig $twig): void
     {
         echo $twig->render('logIn.twig');
     }
 
 
-    public function checkLogInForm(Twig $twig)
+    public function checkLogInForm(Twig $twig): void
     {
         $mail = strip_tags($_POST['mail']);
         $password = strip_tags($_POST['password']);
@@ -162,7 +161,7 @@ class FormController
         return ['form' => $formErrors, 'isValid' => $isValid];
     }
 
-    public function checkRegisterForm(Twig $twig)
+    public function checkRegisterForm(Twig $twig): void
     {
         $message = "";
         $messageClass = "";

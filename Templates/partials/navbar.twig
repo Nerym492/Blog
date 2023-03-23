@@ -1,13 +1,13 @@
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
-    <div class="container px-4 px-lg-5">
+    <div class="container">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
                 aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             Menu
             <i class="fas fa-bars"></i>
         </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ms-auto py-4 py-lg-0">
+        <div class="collapse navbar-collapse justify-content-center" id="navbarResponsive">
+            <ul class="navbar-nav py-4 py-lg-0 w-50 justify-content-around">
                 <li class="nav-item">
                     <a class="nav-link px-lg-3 py-3 py-lg-4" href="/blog/public/home/">Home</a>
                 </li>
@@ -17,11 +17,23 @@
                 <li class="nav-item">
                     <a class="nav-link px-lg-3 py-3 py-lg-4" href="/blog/public/register/">Sign in</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item dropdown align-self-center" id="login-nav-item">
                     {% if session %}
-                        <a class="nav-link px-lg-3 py-3 py-lg-4" href="/blog/public/home/loggedOut/">Log out</a>
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-regular fa-circle-user fa-2xl"></i>
+                            {{ session.pseudo }}
+                        </a>
+                        <div class="dropdown-menu px-lg-2 py-lg-2 text-center">
+                            <small class="user-info-nav pb-2">{{ session.mail }}</small>
+                            <a class="dropdown-item px-0 mt-2" href="/blog/public/home/loggedOut/">
+                                <i class="fa-solid fa-power-off fa-sm"></i>
+                                Log out
+                            </a>
+                        </div>
                     {% else %}
-                        <a class="nav-link px-lg-3 py-3 py-lg-4" href="/blog/public/logIn/">Log in</a>
+                        <a class="nav-link px-lg-3 py-3 py-lg-4" href="/blog/public/logIn/">
+                            Log in
+                        </a>
                     {% endif %}
                 </li>
             </ul>
