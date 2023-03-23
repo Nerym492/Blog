@@ -17,13 +17,13 @@
                 <li class="nav-item">
                     <a class="nav-link px-lg-3 py-3 py-lg-4" href="/blog/public/register/">Sign in</a>
                 </li>
-                <li class="nav-item dropdown align-self-center" id="login-nav-item">
+                <li class="nav-item dropdown" id="login-nav-item">
                     {% if session %}
                         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa-regular fa-circle-user fa-2xl"></i>
                             {{ session.pseudo }}
                         </a>
-                        <div class="dropdown-menu px-lg-2 py-lg-2 text-center">
+                        <div class="dropdown-menu px-2 py-lg-2 text-center">
                             <small class="user-info-nav pb-2">{{ session.mail }}</small>
                             <a class="dropdown-item px-0 mt-2" href="/blog/public/home/loggedOut/">
                                 <i class="fa-solid fa-power-off fa-sm"></i>
