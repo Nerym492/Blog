@@ -206,7 +206,7 @@ h1,
     grid-column: 2;
 }
 
-#form-contact, #form-register, #form-log-in {
+#form-contact , #form-register, #form-log-in {
     display: grid;
     grid-template-columns: minmax(310px, 400px);
 }
@@ -222,7 +222,7 @@ h1,
 }
 
 #group-full-name-register,
-#group-mail-contact,
+#group-mail-contact ,
 #group-password-log-in {
     grid-row: 2;
 }
