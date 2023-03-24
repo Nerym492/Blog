@@ -28,7 +28,8 @@ const patterns = {
     "full-name-register": fullNameRegEx,
     "mail-register": mailRegEx,
     "mail-log-in": notEmptyRegEx,
-    "password-log-in": notEmptyRegEx
+    "password-log-in": notEmptyRegEx,
+    "message-post": notEmptyRegEx
 };
 
 //Check if the confirmation password match with the password

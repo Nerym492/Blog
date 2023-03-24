@@ -46,7 +46,7 @@ $router->mount('/home', function () use ($router, $twig, $formController, $userC
         $formController->checkContactForm($twig);
     });
 
-    $router->get('/loggedOut', function() use ($twig, $userController){
+    $router->get('/loggedOut', function () use ($twig, $userController) {
         $userController->logOut($twig);
     });
 
@@ -57,10 +57,30 @@ $router->get('/posts', function () use ($twig, $postController) {
     $postController->showPosts($twig);
 });
 
-$router->get('/post/(\d+)', function ($postId) use ($twig, $postController) {
+$router->mount('/posts', function () use ($router, $twig, $postController, $formController) {
+    //Displays all the posts
+    $router->get('/', function () use ($twig, $postController) {
+        $postController->showPosts($twig);
+    });
+
     //Displays a single post
-    $postController->showPost($twig, $postId);
+    $router->get('/(\d+)', function ($postId) use ($twig, $postController) {
+        $postController->showPost($twig, $postId);
+    });
+
+    //Form has been submitted
+    $router->post('/(\d+)', function ($postId) use ($twig, $formController) {
+        if (!empty($_POST['comment'])) {
+            $formController->checkCommentForm($postId);
+            header('Location: /blog/public/posts/' . $postId . '#comments-box-post', true, 303);
+            /*After processing the data, we redirect the browser to the same page with the HTTP status code 303
+            The old header is replaced with a new one that does not contain $_POST data
+            Post/Redirect/Get
+            Prevent the form from being submitted multiple times by refreshing the page*/
+        }
+    });
 });
+
 
 $router->mount('/register', function () use ($router, $twig, $formController) {
     //Displays the register form
@@ -92,3 +112,6 @@ $router->mount('/logIn', function () use ($router, $twig, $formController, $user
 });
 
 $router->run();
+
+//var_dump($_SERVER['REQUEST_METHOD']);
+//var_dump($_SESSION);

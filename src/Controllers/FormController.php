@@ -2,7 +2,9 @@
 
 namespace App\Controllers;
 
+use App\EntityManager\PostManager;
 use App\EntityManager\UserManager;
+use App\EntityManager\CommentManager;
 use Exception;
 use \Twig\Environment as Twig;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -23,6 +25,26 @@ class FormController
         echo $twig->render('logIn.twig');
     }
 
+    public function checkCommentForm(int $postId) :void
+    {
+        $messageClass = "danger";
+        $commentManager = new CommentManager();
+
+        if ($_SESSION['user_id']) {
+            if ($commentManager->createComment($postId)) {
+                $message = "Your comment has been added !";
+                $messageClass = "success";
+            } else {
+                $message = "An error occurred while adding the comment.\nPlease try again later.";
+            }
+        } else {
+            $message = "You must be logged to write a comment.";
+        }
+
+        $_SESSION['message'] = $message;
+        $_SESSION['messageClass'] = $messageClass;
+    }
+
 
     public function checkLogInForm(Twig $twig): void
     {
@@ -30,7 +52,6 @@ class FormController
         $password = strip_tags($_POST['password']);
 
         $userManager = new UserManager();
-
 
         if (!$userManager->checkLogin($mail, $password)) {
             $message = "Your email or password is not valid !";

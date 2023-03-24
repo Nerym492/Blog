@@ -32,5 +32,10 @@ class PostController
             'userPost' => $userPost,
             'comments' => $comments
         ]);
+
+        if (isset($_SESSION['message'])){
+            unset($_SESSION['message']);
+            unset($_SESSION['messageClass']);
+        }
     }
 }

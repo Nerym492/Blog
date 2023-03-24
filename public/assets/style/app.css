@@ -167,16 +167,6 @@ header.masthead .post-heading .meta a {
     }
 }
 
-h6,
-.h6,
-h5,
-.h5,
-h4,
-.h4,
-h3,
-.h3,
-h2,
-.h2,
 h1,
 .h1 {
     margin-top: 0;
@@ -211,7 +201,7 @@ h1,
     grid-template-columns: minmax(310px, 400px);
 }
 
-#group-comment-contact textarea {
+#comment-contact, #message-post {
     height: 150px;
 }
 
@@ -266,6 +256,10 @@ h1,
 #password-alert {
     opacity: 0;
     max-height: 0;
+}
+
+#group-message-post{
+    width: 100%;
 }
 
 .visible {
@@ -468,4 +462,9 @@ h1,
 
 .modal-border-grey {
     border: solid 1px darkgrey;
+}
+
+.fa-avatar {
+    font-size: 2.5em;
+    vertical-align: -.1875em;
 }

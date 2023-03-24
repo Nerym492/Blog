@@ -1,0 +1,56 @@
+<section>
+    <div class="container py-5" id="comments-box-post">
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-12 col-lg-10 col-xl-8">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h4 class="text-center mb-4 pb-2">Leave a comment</h4>
+                        <form class="d-flex flex-column align-items-end mb-4 needs-validation" method="post"
+                              action="/blog/public/posts/{{ post.postId }}" novalidate>
+                            <div class="form-floating mb-2 w-100" id="group-message-post">
+                                <textarea class="form-control" name="comment" id="message-post"
+                                          placeholder="Your message"
+                                          required=""></textarea>
+                                <small id="pseudo-register-help" class="form-text">
+                                    Please enter a comment
+                                </small>
+                                <label for="message-post">Your message</label>
+                            </div>
+                            <button class="btn btn-form" type="submit">
+                                <span>
+                                    <i class="fa fa-paper-plane-o m-r-6" aria-hidden="true"></i>
+                                    Send
+                                 </span>
+                            </button>
+                        </form>
+
+                        {% include 'partials/alertBox.twig'
+                            with {'message': session.message,'messageClass': session.messageClass} %}
+
+                        <h4 class="text-center mb-4 pb-2" id="comments-list-post">Comments</h4>
+                        {% for comment in comments %}
+                            <div class="row mb-4">
+                                <div class="d-flex flex-start">
+                                    <i class="fa-solid fa-circle-user fa-avatar me-3"></i>
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <p class="mb-1">
+                                                {{ comment.userPseudo }}
+                                                <span class="small">
+                                                    - {{ comment.line.creationDate |date("M j, Y \\a\\t H:i") }}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <p class="small mb-0">
+                                            {{ comment.line.comment }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

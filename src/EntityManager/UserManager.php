@@ -95,7 +95,7 @@ class UserManager
         $connexion = new DatabaseConnection();
 
         $statement = $connexion->getConnection()->prepare(
-            "SELECT mail, pseudo, last_name, first_name, password, user_type_id
+            "SELECT user_id, mail, pseudo, last_name, first_name, password, user_type_id
              FROM user
              WHERE user_id = :user_id
              OR mail = :mail"
@@ -107,7 +107,7 @@ class UserManager
         if ($row) {
             //A user has been found
             $user = new User();
-            $user->setUserId($userId);
+            $user->setUserId($row['user_id']);
             $user->setMail($row['mail']);
             $user->setPseudo($row['pseudo']);
             $user->setLastName($row['last_name']);
@@ -168,7 +168,7 @@ class UserManager
         $user = $this->getUser(mail: $mail);
 
         if ($user){
-
+            $_SESSION['user_id'] = $user->getUserId();
             $_SESSION['mail'] = $mail;
             $_SESSION['first_name'] = $user->getFirstName();
             $_SESSION['last_name'] = $user->getLastName();
