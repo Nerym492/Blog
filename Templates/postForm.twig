@@ -1,0 +1,39 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    {% include 'partials/alertBox.twig' with {'message': message , 'messageClass': messageClass} %}
+
+    <h2 class="text-center mb-5">Create a new post</h2>
+
+    <form class="container mb-5 justify-content-center needs-validation" method="post"
+          action="/blog/public/posts/"
+          id="form-post" novalidate>
+        <div class="form-floating mb-3" id="group-title-post">
+            <input type="text" class="form-control" name="title" id="title-post" placeholder="Title" required>
+            <small id="title-post-help" class="form-text">
+                Please enter a title.
+            </small>
+            <label for="title-post">Title</label>
+        </div>
+        <div class="form-floating mb-3" id="group-excerpt-post">
+            <input type="text" class="form-control" name="excerpt" id="excerpt-post" placeholder="Excerpt" required>
+            <small id="excerpt-post-help" class="form-text">
+                Please enter an excerpt.
+            </small>
+            <label for="excerpt-post">Excerpt</label>
+        </div>
+        <div class="form-floating mb-3" id="group-content-post">
+            <textarea class="form-control" name="content" id="content-post" placeholder="Content" required></textarea>
+            <small id="content-post-help" class="form-text">
+                Please enter content.
+            </small>
+            <label for="content-post">Content</label>
+        </div>
+        <button class="btn btn-form mt-3" type="submit">
+            <span>
+                <i class="fa fa-paper-plane-o m-r-6" aria-hidden="true"></i>
+                Create
+            </span>
+        </button>
+    </form>
+{% endblock %}

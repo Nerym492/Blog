@@ -29,7 +29,10 @@ const patterns = {
     "mail-register": mailRegEx,
     "mail-log-in": notEmptyRegEx,
     "password-log-in": notEmptyRegEx,
-    "message-post": notEmptyRegEx
+    "message-post": notEmptyRegEx,
+    "title-post": notEmptyRegEx,
+    "excerpt-post": notEmptyRegEx,
+    "content-post": notEmptyRegEx
 };
 
 //Check if the confirmation password match with the password

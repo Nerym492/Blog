@@ -25,6 +25,11 @@ class FormController
         echo $twig->render('logIn.twig');
     }
 
+    public function showPostForm(Twig $twig): void
+    {
+        echo $twig->render('postForm.twig', ['page' => 'New post']);
+    }
+
     public function checkCommentForm(int $postId) :void
     {
         $messageClass = "danger";

@@ -131,12 +131,13 @@ header.masthead .post-heading .meta a {
 .post-preview > a {
     color: #212529;
     text-decoration: none;
+    transition: all 200ms ease-in-out;
 }
 
 .post-preview > a:focus,
 .post-preview > a:hover {
     text-decoration: none;
-    color: #0085a1;
+    color: #8C5C4A
 }
 
 .post-preview > a > .post-title {
@@ -196,7 +197,7 @@ h1,
     grid-column: 2;
 }
 
-#form-contact , #form-register, #form-log-in {
+.form-container {
     display: grid;
     grid-template-columns: minmax(310px, 400px);
 }
@@ -205,20 +206,23 @@ h1,
     height: 150px;
 }
 
-#pseudo-register,
+#group-pseudo-register,
 #group-full-name-contact,
-#group-mail-log-in {
+#group-mail-log-in,
+#group-title-post {
     grid-row: 1;
 }
 
 #group-full-name-register,
-#group-mail-contact ,
-#group-password-log-in {
+#group-mail-contact,
+#group-password-log-in,
+#group-excerpt-post {
     grid-row: 2;
 }
 
 #group-mail-register,
-#group-comment-contact {
+#group-comment-contact,
+#group-content-post {
     grid-row: 3;
 }
 
@@ -258,7 +262,7 @@ h1,
     max-height: 0;
 }
 
-#group-message-post{
+#group-message-post {
     width: 100%;
 }
 
@@ -310,15 +314,15 @@ h1,
 .btn-form {
     grid-column: span 4;
     background-color: #181c25;
-    color: #d0e588;
+    color: #ffffff;
     justify-self: center;
     width: 130px;
     z-index: 1;
 }
 
 .btn-form:hover {
-    background-color: #d6ee8d;
-    color: #040508;
+    background-color: rgba(24, 28, 37, 0.56);
+    color: #ffffff;
 }
 
 .fa-stack {
@@ -328,7 +332,7 @@ h1,
 .fa-facebook-f,
 .fa-github,
 .fa-twitter {
-    color: #d6ee8d;
+    color: #ffffff;
 }
 
 #login-nav-item {
@@ -347,12 +351,12 @@ h1,
     transition: all 0.3s ease-in-out;
 }
 
-#login-nav-item{
+#login-nav-item {
     align-self: center;
 }
 
 @media (max-width: 992px) {
-    #login-nav-item{
+    #login-nav-item {
         align-self: start;
     }
 }
@@ -467,4 +471,45 @@ h1,
 .fa-avatar {
     font-size: 2.5em;
     vertical-align: -.1875em;
+}
+
+.fa-lh-unset {
+    line-height: unset;
+}
+
+.icon-description {
+    margin-bottom: 0;
+    font-weight: bold;
+}
+
+.link-add-item {
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 200ms ease-in-out;
+    color: #8C5C4A;
+}
+
+.link-add-item p {
+    font-size: 1.2rem;
+}
+
+.link-add-item i {
+    transition: scale 200ms ease;
+}
+
+.link-add-item:hover {
+    color: #593c2f;
+}
+
+.link-add-item:hover i {
+    scale: 1.1;
+}
+
+#form-post{
+    display: grid;
+    grid-template-columns: minmax(320px, 700px);
+}
+
+#content-post{
+    height: 400px;
 }

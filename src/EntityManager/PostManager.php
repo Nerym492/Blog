@@ -16,7 +16,8 @@ class PostManager
             "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, p.creation_date,
                     u.pseudo
             FROM blog.post p
-            LEFT OUTER JOIN blog.user u on p.user_id = u.user_id"
+            LEFT OUTER JOIN blog.user u on p.user_id = u.user_id
+            ORDER BY p.post_id DESC"
         );
 
         $statement->execute();

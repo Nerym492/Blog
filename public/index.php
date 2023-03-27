@@ -79,6 +79,11 @@ $router->mount('/posts', function () use ($router, $twig, $postController, $form
             Prevent the form from being submitted multiple times by refreshing the page*/
         }
     });
+
+    //Displays the post form
+    $router->get('/create', function () use ($twig, $formController) {
+        $formController->showPostForm($twig);
+    });
 });
 
 
@@ -114,4 +119,4 @@ $router->mount('/logIn', function () use ($router, $twig, $formController, $user
 $router->run();
 
 //var_dump($_SERVER['REQUEST_METHOD']);
-//var_dump($_SESSION);
+var_dump($_SESSION);
