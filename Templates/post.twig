@@ -1,21 +1,23 @@
 {% extends "base.twig" %}
 
 {% block content %}
-<!-- Post Content-->
-<article class="mb-4">
-    <div class="container px-4 px-lg-5">
-        <div class="row gx-4 gx-lg-5 justify-content-center">
-            <div class="col-md-10 col-lg-8 col-xl-7">
-                <p>{{ post.content }}</p>
-                <p>
-                    Placeholder text by
-                    <a href="http://spaceipsum.com/">Space Ipsum</a>
-                    &middot; Images by
-                    <a href="https://www.flickr.com/photos/nasacommons/">NASA on The Commons</a>
-                </p>
+    <!-- Post Content-->
+    <article class="mb-2">
+        <div class="container px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <p>{{ post.content }}</p>
+                    <p>
+                        Placeholder text by
+                        <a href="http://spaceipsum.com/">Space Ipsum</a>
+                        &middot; Images by
+                        <a href="https://www.flickr.com/photos/nasacommons/">NASA on The Commons</a>
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-</article>
+    </article>
+
+    {% include 'partials/comments.twig' %}
 
 {% endblock %}

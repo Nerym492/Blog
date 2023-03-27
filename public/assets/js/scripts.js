@@ -1,9 +1,10 @@
-const inputs = document.querySelectorAll('input[type="text"], input[type="checkbox"], textarea');
+const inputs = document.querySelectorAll('input[type="text"], input[type="checkbox"], textarea, #password-log-in');
 
 // Fetch all the forms we want to apply custom Bootstrap validation styles to
 let forms = document.querySelectorAll('.needs-validation');
 const mailRegEx = /^([A-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
-const fullNameRegEx = /^([A-z]){3,25}\s([A-z]){3,25}$/
+const fullNameRegEx = /^([A-z]){3,25}\s([A-z]){3,25}$/;
+const notEmptyRegEx = /^[\s\S]+$/;
 
 let password = document.getElementById("password-register");
 let groupPassword = document.getElementById("group-password-register");
@@ -22,10 +23,13 @@ const passwordPatterns = {
 const patterns = {
     "full-name-contact": fullNameRegEx,
     "mail-contact": mailRegEx,
-    "comment-contact": /^[\s\S]+$/,
+    "comment-contact": notEmptyRegEx,
     "pseudo-register": /^[A-z\d]{3,25}$/,
     "full-name-register": fullNameRegEx,
-    "mail-register": mailRegEx
+    "mail-register": mailRegEx,
+    "mail-log-in": notEmptyRegEx,
+    "password-log-in": notEmptyRegEx,
+    "message-post": notEmptyRegEx
 };
 
 //Check if the confirmation password match with the password

@@ -4,6 +4,7 @@ namespace App\EntityManager;
 
 use App\Entity\User;
 use App\Lib\DatabaseConnection;
+use \Twig\Environment as Twig;
 
 class UserManager
 {
@@ -47,29 +48,74 @@ class UserManager
         return "http://localhost/blog/public/register/" . $formRegister['mail'] . "/" . $verificationCode;
     }
 
-    public function getUser(int $userId): User
+    /**
+     * Confirm the user's Mail
+     * @param string $mail Mail which needs to be verified
+     * @param string $verificationCode Code associated with the mail to confirm it
+     * @return array
+     * $array['message'] -> status of the mail confirmation,
+     * $array['messageClass'] CSS class of the message
+     */
+    public function confirmMail(string $mail, string $verificationCode): array
     {
         $connexion = new DatabaseConnection();
 
         $statement = $connexion->getConnection()->prepare(
-            "SELECT mail, pseudo, last_name, first_name, password, user_type_id
+            "UPDATE blog.`user`
+                   SET confirmed_mail=:confirmed_mail, verification_code=:reset_verification_code
+                   WHERE mail=:mail AND verification_code=:verification_code
+            ");
+
+        //Verification code reset --> mail can only be confirmed once
+        $statement->execute([
+            ':confirmed_mail' => 1,
+            ':verification_code' => $verificationCode,
+            ':reset_verification_code' => '',
+            'mail' => $mail
+        ]);
+
+        if (($statement->rowCount() == 1)) {
+            $message = "Your mail has been successfully confirmed !";
+            $messageClass = "success";
+        } else {
+            $message = "This confirmation link si no longer valid.";
+            $messageClass = "danger";
+        }
+
+        return ['message' => $message, 'messageClass' => $messageClass];
+    }
+
+    /**
+     * @param int $userId
+     * @param string $mail
+     * @return User|null
+     */
+    public function getUser(int $userId = 0, string $mail = ""): ?User
+    {
+        $connexion = new DatabaseConnection();
+
+        $statement = $connexion->getConnection()->prepare(
+            "SELECT user_id, mail, pseudo, last_name, first_name, password, user_type_id
              FROM user
-             WHERE user_id = :user_id"
+             WHERE user_id = :user_id
+             OR mail = :mail"
         );
 
-        $statement->execute([':user_id' => $userId]);
+        $statement->execute([':user_id' => $userId, ':mail' => $mail]);
         $row = $statement->fetch();
 
-        $user = new User();
-
         if ($row) {
-            $user->setUserId($userId);
+            //A user has been found
+            $user = new User();
+            $user->setUserId($row['user_id']);
             $user->setMail($row['mail']);
             $user->setPseudo($row['pseudo']);
             $user->setLastName($row['last_name']);
             $user->setFirstName($row['first_name']);
-            $user->setPassword($row['password']);
-            $user->setUserId($row['user_type_id']);
+            $user->setUserTypeId($row['user_type_id']);
+        } else {
+            //No users were found
+            $user = null;
         }
 
         return $user;
@@ -96,5 +142,45 @@ class UserManager
         $result = $statement->fetch();
 
         return (int)$result['nbLines'] !== 0;
+    }
+
+    public function checkLogin(string $mail , string $password): bool
+    {
+        $connexion = new DatabaseConnection();
+
+        $statement = $connexion->getConnection()->prepare(
+            "SELECT password as 'password_hash'
+                   FROM user
+                   WHERE mail=:mail"
+        );
+
+        $statement->execute([':mail' => $mail]);
+
+        $row = $statement->fetch();
+
+         /* check if row is empty
+         and check the password hash (True or false)*/
+        return ($row && password_verify($password, $row['password_hash']));
+    }
+
+    public function connectUser(Twig $twig, string $mail): void
+    {
+        $user = $this->getUser(mail: $mail);
+
+        if ($user){
+            $_SESSION['user_id'] = $user->getUserId();
+            $_SESSION['mail'] = $mail;
+            $_SESSION['first_name'] = $user->getFirstName();
+            $_SESSION['last_name'] = $user->getLastName();
+            $_SESSION['pseudo'] = $user->getPseudo();
+            $_SESSION['isAdmin'] = $user->getIsAdmin();
+            $twig->addGlobal('session', $_SESSION);
+        }
+    }
+
+    public function disconnectUser(): void
+    {
+        session_unset();
+        session_destroy();
     }
 }

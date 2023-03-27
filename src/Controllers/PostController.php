@@ -5,6 +5,7 @@ namespace App\Controllers;
 use \Twig\Environment as Twig;
 use App\EntityManager\PostManager;
 use App\EntityManager\UserManager;
+use App\EntityManager\CommentManager;
 
 
 class PostController
@@ -22,8 +23,19 @@ class PostController
         $postManager = new PostManager();
         $post = $postManager->getPost($postId);
         $userManager = new UserManager();
-        $userPost = $userManager->getUser($post->getUserId());
+        $userPost = $userManager->getUser(userId: $post->getUserId());
+        $commentManager = new CommentManager();
+        $comments = $commentManager->getComments($postId);
 
-        echo $twig->render('post.twig', ['post' => $post, 'userPost' => $userPost]);
+        echo $twig->render('post.twig', [
+            'post' => $post,
+            'userPost' => $userPost,
+            'comments' => $comments
+        ]);
+
+        if (isset($_SESSION['message'])){
+            unset($_SESSION['message']);
+            unset($_SESSION['messageClass']);
+        }
     }
 }

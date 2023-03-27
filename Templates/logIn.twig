@@ -1,0 +1,32 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    {% include 'partials/alertBox.twig' with {'message': message , 'messageClass': messageClass} %}
+    <h2 class="text-center mb-5">Log in</h2>
+
+    <form class="container mb-5 justify-content-center needs-validation" method="post"
+          action="/blog/public/logIn/#form-log-in" id="form-log-in" novalidate>
+        <div class="form-floating mb-3" id="group-mail-log-in">
+            <input type="text" class="form-control" name="mail" id="mail-log-in" placeholder="name@example.com"
+                   value="{{ form_errors.mail }}" required>
+            <small>
+                Please enter your mail.
+            </small>
+            <label for="mail-log-in">Email address</label>
+        </div>
+        <div class="form-floating mb-3 d-flex flex-column" id="group-password-log-in">
+            <input type="password" class="form-control" name="password" id="password-log-in" placeholder="password"
+                   required>
+            <small>
+                Please enter your password.
+            </small>
+            <label for="password-log-in">Password</label>
+        </div>
+        <button class="btn btn-form mt-3" type="submit">
+            <span>
+                <i class="fa fa-paper-plane-o m-r-6" aria-hidden="true"></i>
+                Log in
+            </span>
+        </button>
+    </form>
+{% endblock %}

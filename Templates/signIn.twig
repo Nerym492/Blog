@@ -1,15 +1,12 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-    {% if message != "" %}
-        <div class="alert alert-box {{ messageClass }}-alert fade show" role="alert">
-            <p class="flex-grow-1 mb-0"><strong>{{ message|nl2br }}</strong></p>
-            <button type="button" class="btn-close ms-1" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    {% endif %}
+    {% include 'partials/alertBox.twig' with {'message': message , 'messageClass': messageClass} %}
+
     <h2 class="text-center mb-5">Register</h2>
 
-    <form class="container mb-5 justify-content-center needs-validation" method="post" action="/blog/public/register/#form-register"
+    <form class="container mb-5 justify-content-center needs-validation" method="post"
+          action="/blog/public/register/#form-register"
           id="form-register" novalidate>
         <div class="form-floating mb-3" id="group-pseudo-register">
             <input type="text" class="form-control" name="pseudo" id="pseudo-register" placeholder="Pseudo"
@@ -25,11 +22,12 @@
             <small id="full-name-register-help" class="form-text">
                 Please enter a valid Full name. Example : LastName FirstName (3-25 characters each)
             </small>
-            <label for="full-name-contact">Full Name</label>
+            <label for="full-name-register">Full Name</label>
         </div>
         <div class="form-floating mb-3" id="group-mail-register">
             <input type="text" class="form-control" name="mail" id="mail-register" placeholder="name@example.com"
-                   value="{{ form_errors.mail }}" pattern="([A-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?" required>
+                   value="{{ form_errors.mail }}" pattern="([A-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?"
+                   required>
             <small id="mail-register-help" class="form-text">
                 Please enter a valid mail address.
             </small>

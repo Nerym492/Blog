@@ -2,7 +2,9 @@
 
 namespace App\Controllers;
 
+use App\EntityManager\PostManager;
 use App\EntityManager\UserManager;
+use App\EntityManager\CommentManager;
 use Exception;
 use \Twig\Environment as Twig;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -13,9 +15,59 @@ use PHPMailer\PHPMailer\PHPMailer;
  */
 class FormController
 {
-    public function showRegisterForm(Twig $twig)
+    public function showRegisterForm(Twig $twig): void
     {
         echo $twig->render('signIn.twig');
+    }
+
+    public function showLogInForm(Twig $twig): void
+    {
+        echo $twig->render('logIn.twig');
+    }
+
+    public function checkCommentForm(int $postId) :void
+    {
+        $messageClass = "danger";
+        $commentManager = new CommentManager();
+
+        if ($_SESSION['user_id']) {
+            if ($commentManager->createComment($postId)) {
+                $message = "Your comment has been added !";
+                $messageClass = "success";
+            } else {
+                $message = "An error occurred while adding the comment.\nPlease try again later.";
+            }
+        } else {
+            $message = "You must be logged to write a comment.";
+        }
+
+        $_SESSION['message'] = $message;
+        $_SESSION['messageClass'] = $messageClass;
+    }
+
+
+    public function checkLogInForm(Twig $twig): void
+    {
+        $mail = strip_tags($_POST['mail']);
+        $password = strip_tags($_POST['password']);
+
+        $userManager = new UserManager();
+
+        if (!$userManager->checkLogin($mail, $password)) {
+            $message = "Your email or password is not valid !";
+            $messageClass = "danger";
+
+            //Displays a red alert box on the login page
+            echo $twig->render('logIn.twig', [
+                'message' => $message,
+                'messageClass' => $messageClass
+            ]);
+        } else {
+            //Connect the user
+            $userManager->connectUser($twig, $mail);
+            //Displays home page and "Log in" is replaced by "Log out" in the navbar
+            echo $twig->render('home.twig');
+        }
     }
 
     /**
@@ -130,7 +182,7 @@ class FormController
         return ['form' => $formErrors, 'isValid' => $isValid];
     }
 
-    public function checkRegisterForm(Twig $twig)
+    public function checkRegisterForm(Twig $twig): void
     {
         $message = "";
         $messageClass = "";
@@ -153,8 +205,8 @@ class FormController
             $userManager = new UserManager();
 
             if (!$userManager->checkDataAlreadyExists("mail", $checkForm['form']['mail'])) {
-                /**This mail is not used, so we can create a new account
-                 * confirmation mail is sent to the user's email address*/
+                /*This mail is not used, so we can create a new account
+                 confirmation mail is sent to the user's email address*/
                 try {
                     $mailConfirmationLink = $userManager->createUser($checkForm['form']);
                     $this->sendMail($checkForm['form']['mail'], $checkForm['form']['fullName'], "Confirm your email", $mailConfirmationLink);
