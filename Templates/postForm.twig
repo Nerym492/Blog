@@ -1,29 +1,32 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-    {% include 'partials/alertBox.twig' with {'message': message , 'messageClass': messageClass} %}
+    {% include 'partials/alertBox.twig' with {'message': session.message , 'messageClass': session.messageClass} %}
 
-    <h2 class="text-center mb-5">Create a new post</h2>
+    <h2 class="text-center mb-5" id="title-post-form">Create a new post</h2>
 
     <form class="container mb-5 justify-content-center needs-validation" method="post"
-          action="/blog/public/posts/"
+          action="/blog/public/posts/create/#alert-box"
           id="form-post" novalidate>
         <div class="form-floating mb-3" id="group-title-post">
-            <input type="text" class="form-control" name="title" id="title-post" placeholder="Title" required>
+            <input type="text" class="form-control" name="title" id="title-post" placeholder="Title"
+                   value="{{ form_errors.title }}" required>
             <small id="title-post-help" class="form-text">
                 Please enter a title.
             </small>
             <label for="title-post">Title</label>
         </div>
         <div class="form-floating mb-3" id="group-excerpt-post">
-            <input type="text" class="form-control" name="excerpt" id="excerpt-post" placeholder="Excerpt" required>
+            <input type="text" class="form-control" name="excerpt" id="excerpt-post" placeholder="Excerpt"
+                   value="{{ form_errors.excerpt }}" required>
             <small id="excerpt-post-help" class="form-text">
                 Please enter an excerpt.
             </small>
             <label for="excerpt-post">Excerpt</label>
         </div>
         <div class="form-floating mb-3" id="group-content-post">
-            <textarea class="form-control" name="content" id="content-post" placeholder="Content" required></textarea>
+            <textarea class="form-control" name="content" id="content-post" placeholder="Content"
+                      required>{{ form_errors.content|trim }}</textarea>
             <small id="content-post-help" class="form-text">
                 Please enter content.
             </small>

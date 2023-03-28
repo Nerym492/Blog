@@ -482,26 +482,26 @@ h1,
     font-weight: bold;
 }
 
-.link-add-item {
+.link-brown {
     text-decoration: none;
     cursor: pointer;
     transition: all 200ms ease-in-out;
     color: #8C5C4A;
 }
 
-.link-add-item p {
+.link-brown p {
     font-size: 1.2rem;
 }
 
-.link-add-item i {
+.link-brown i {
     transition: scale 200ms ease;
 }
 
-.link-add-item:hover {
+.link-brown:hover {
     color: #593c2f;
 }
 
-.link-add-item:hover i {
+.link-brown:hover i {
     scale: 1.1;
 }
 

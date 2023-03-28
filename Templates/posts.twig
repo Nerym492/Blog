@@ -1,11 +1,13 @@
 {% extends "base.twig" %}
 
 {% block content %}
+    {% include 'partials/alertBox.twig' with {'message': session.message , 'messageClass': session.messageClass} %}
+
     <div class="container px-4 px-lg-5">
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
                 {% if session.isAdmin %}
-                    <a class="d-flex align-items-center link-add-item justify-content-center"
+                    <a class="d-flex align-items-center link-brown justify-content-center mb-4"
                        href="/blog/public/posts/create/">
                         <i class="fa-regular fa-plus fa-2xl fa-lh-unset me-2"></i>
                         <p class="icon-description">Create a new post</p>
@@ -29,6 +31,27 @@
                     <!-- Divider-->
                     <hr class="my-4">
                 {% endfor %}
+                {{ dump(paginationMenu) }}
+                {{ dump(iterator) }}
+                <nav aria-label="posts-pagination">
+                    <ul class="pagination">
+                        <li class="page-item">
+                            <a class="page-link" href="page-{{ paginationMenu.previousPage }}" tabindex="-1">Previous</a>
+                        </li>
+                        {% for iterator in paginationMenu.firstPage..paginationMenu.lastPage %}
+                            {% if iterator == paginationMenu.activePage %}
+                                <li class="page-item active">
+                            {% else %}
+                                <li class="page-item">
+                            {% endif %}
+                            <a class="page-link" href="page-{{ iterator }}">{{ iterator }}</a></li>
+                        {% endfor %}
+
+                        <li class="page-item">
+                            <a class="page-link" href="page-{{ paginationMenu.nextPage }}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
                 <!-- Pager-->
                 <div class="d-flex justify-content-end mb-4"><a class="btn btn-primary text-uppercase" href="#!">Older
                         Posts →</a></div>

@@ -30,7 +30,7 @@ class FormController
         echo $twig->render('postForm.twig', ['page' => 'New post']);
     }
 
-    public function checkCommentForm(int $postId) :void
+    public function checkCommentForm(int $postId): void
     {
         $messageClass = "danger";
         $commentManager = new CommentManager();
@@ -124,8 +124,98 @@ class FormController
 
     }
 
+    public function checkRegisterForm(Twig $twig): void
+    {
+        $message = "";
+        $messageClass = "";
+
+        $patterns = [
+            'pseudo' => '/^[A-z\d]{3,25}$/',
+            'fullName' => '/^([A-z]){3,25}\s([A-z]){3,25}$/',
+            'mail' => '/^([A-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/',
+            'password' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'
+        ];
+
+        $checkForm = $this->checkFormPatterns($patterns);
+
+        $checkForm['form']['passwordConfirm'] = strip_tags($_POST['passwordConfirm']);
+
+        if (($checkForm['form']['password'] != $checkForm['form']['passwordConfirm']) && $checkForm['isValid']) {
+            //Passwords are not the same -> form not valid
+            $checkForm['isValid'] = false;
+        } else if ($checkForm['isValid']) {
+            $userManager = new UserManager();
+
+            if (!$userManager->checkDataAlreadyExists("mail", $checkForm['form']['mail'])) {
+                /*This mail is not used, so we can create a new account
+                 confirmation mail is sent to the user's email address*/
+                try {
+                    $mailConfirmationLink = $userManager->createUser($checkForm['form']);
+                    $this->sendMail($checkForm['form']['mail'], $checkForm['form']['fullName'], "Confirm your email", $mailConfirmationLink);
+                    $message = "Your account has been successfully created !\n";
+                    $message .= "Please confirm your email address by clicking on the link that was sent to you.";
+                    $messageClass = "success";
+                    $checkForm['form'] = [];
+                } catch (Exception $e) {
+                    $message = "An error occurred while creating your account.\nPlease try again later.";
+                    $messageClass = "danger";
+                }
+
+            } else {
+                $message = "This mail is already used !";
+                $messageClass = "danger";
+                $checkForm['form']['mail'] = "";
+                $checkForm['isValid'] = false;
+            }
+        }
+
+        //Passwords are not returned for security reasons (even if it's encrypted)
+        $checkForm['form']['password'] = "";
+        $checkForm['form']['passwordConfirm'] = "";
+
+
+        echo $twig->render('signIn.twig', [
+            'page' => "Create an account",
+            'form_errors' => $checkForm['form'],
+            'isValid' => $checkForm['isValid'],
+            'message' => $message,
+            'messageClass' => $messageClass
+        ]);
+    }
+
+    public function checkPostForm(Twig $twig): void
+    {
+        $checkForm['isValid'] = true;
+
+        foreach ($_POST as $inputName => $inputValue) {
+            if ($inputValue == "" && $checkForm['isValid']) {
+                $checkForm['isValid'] = false;
+            }
+
+            $checkForm['form'][$inputName] = strip_tags($inputValue);
+        }
+
+        if ($checkForm['isValid']) {
+            $postManager = new PostManager();
+            if ($postManager->createPost($checkForm['form'])) {
+                $_SESSION['message'] = 'The post has been successfully added !';
+                $_SESSION['messageClass'] = 'success';
+                header('Location: /blog/public/posts/#site-heading', true, 303);
+            }
+        }
+
+
+        if(isset($_SESSION['messageClass']) and $_SESSION['messageClass'] == "danger"){
+            $twig->addGlobal('session', $_SESSION);
+            echo $twig->render('postForm.twig', [
+                'page' => 'New post',
+                'form_errors' => $checkForm['form']
+            ]);
+        }
+
+
+    }
     /**
-     * Summary of sendContactForm
      * This function can only be used after the validation of the form.
      * Used in checkContactForm
      * @param string $recipientsMail
@@ -186,64 +276,4 @@ class FormController
 
         return ['form' => $formErrors, 'isValid' => $isValid];
     }
-
-    public function checkRegisterForm(Twig $twig): void
-    {
-        $message = "";
-        $messageClass = "";
-
-        $patterns = [
-            'pseudo' => '/^[A-z\d]{3,25}$/',
-            'fullName' => '/^([A-z]){3,25}\s([A-z]){3,25}$/',
-            'mail' => '/^([A-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/',
-            'password' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'
-        ];
-
-        $checkForm = $this->checkFormPatterns($patterns);
-
-        $checkForm['form']['passwordConfirm'] = strip_tags($_POST['passwordConfirm']);
-
-        if (($checkForm['form']['password'] != $checkForm['form']['passwordConfirm']) && $checkForm['isValid']) {
-            //Passwords are not the same -> form not valid
-            $checkForm['isValid'] = false;
-        } else if ($checkForm['isValid']) {
-            $userManager = new UserManager();
-
-            if (!$userManager->checkDataAlreadyExists("mail", $checkForm['form']['mail'])) {
-                /*This mail is not used, so we can create a new account
-                 confirmation mail is sent to the user's email address*/
-                try {
-                    $mailConfirmationLink = $userManager->createUser($checkForm['form']);
-                    $this->sendMail($checkForm['form']['mail'], $checkForm['form']['fullName'], "Confirm your email", $mailConfirmationLink);
-                    $message = "Your account has been successfully created !\n";
-                    $message .= "Please confirm your email address by clicking on the link that was sent to you.";
-                    $messageClass = "success";
-                    $checkForm['form'] = [];
-                } catch (Exception $e) {
-                    $message = "An error occurred while creating your account.\nPlease try again later.";
-                    $messageClass = "danger";
-                }
-
-            } else {
-                $message = "This mail is already used !";
-                $messageClass = "danger";
-                $checkForm['form']['mail'] = "";
-                $checkForm['isValid'] = false;
-            }
-        }
-
-        //Passwords are not returned for security reasons (even if it's encrypted)
-        $checkForm['form']['password'] = "";
-        $checkForm['form']['passwordConfirm'] = "";
-
-
-        echo $twig->render('signIn.twig', [
-            'page' => "Create an account",
-            'form_errors' => $checkForm['form'],
-            'isValid' => $checkForm['isValid'],
-            'message' => $message,
-            'messageClass' => $messageClass
-        ]);
-    }
-
 }
