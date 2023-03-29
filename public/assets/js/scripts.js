@@ -1,4 +1,5 @@
 const inputs = document.querySelectorAll('input[type="text"], input[type="checkbox"], textarea, #password-log-in');
+let paginationItems = document.querySelectorAll(".page-link");
 
 // Fetch all the forms we want to apply custom Bootstrap validation styles to
 let forms = document.querySelectorAll('.needs-validation');
@@ -29,7 +30,10 @@ const patterns = {
     "mail-register": mailRegEx,
     "mail-log-in": notEmptyRegEx,
     "password-log-in": notEmptyRegEx,
-    "message-post": notEmptyRegEx
+    "message-post": notEmptyRegEx,
+    "title-post": notEmptyRegEx,
+    "excerpt-post": notEmptyRegEx,
+    "content-post": notEmptyRegEx
 };
 
 //Check if the confirmation password match with the password
@@ -60,6 +64,26 @@ function validate(field, regex, afterSubmit = false) {
         field.className = 'form-control invalid';
         field.parentElement.classList.remove('mb-3');
     }
+}
+
+function reloadPosts(){
+    document.querySelectorAll(".page-link").forEach((pageLink) => {
+        pageLink.addEventListener('click', (event) => {
+            let nextPage = event.target.innerHTML
+            if (event.target.innerHTML === "Previous" || event.target.innerHTML === "Next") {
+                nextPage = event.target.nextElementSibling.innerHTML
+            }
+            let xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    document.getElementById("posts-container").innerHTML = this.responseText;
+                    reloadPosts();
+                }
+            }
+            xmlHttp.open("GET", "page-" + nextPage, true);
+            xmlHttp.send();
+        })
+    });
 }
 
 /* Bootstrap navbar */
@@ -229,7 +253,9 @@ Array.prototype.slice.call(forms)
         }
     });
 
-
+//Adding events listener on pagination items to only reload the posts with Ajax
+//The function calls itself to reload the events listeners after the elements have been reloaded by Ajax
+reloadPosts()
 
 
 

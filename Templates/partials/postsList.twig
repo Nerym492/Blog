@@ -1,0 +1,51 @@
+<div class="row gx-4 gx-lg-5 justify-content-center" id="posts-list">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        {% if session.isAdmin %}
+            <a class="d-flex align-items-center link-brown justify-content-center mb-4"
+               href="/blog/public/posts/create/">
+                <i class="fa-regular fa-plus fa-2xl fa-lh-unset me-2"></i>
+                <p class="icon-description">Create a new post</p>
+            </a>
+            <hr class="my-4">
+        {% endif %}
+
+        {% for post in posts %}
+            <!-- Post preview-->
+            <div class="post-preview">
+                <a href="/blog/public/posts/{{ post.post.postId }}">
+                    <h2 class="post-title">{{ post.post.title }}</h2>
+                    <h3 class="post-subtitle">{{ post.post.excerpt }}</h3>
+                </a>
+                <p class="post-meta">
+                    Posted by
+                    <a href="#!">{{ post.pseudoUser }}</a>
+                    {{ post.post.creationDate|date("F jS, Y \\a\\t H:i") }}
+                </p>
+            </div>
+            <!-- Divider-->
+            <hr class="my-4">
+        {% endfor %}
+        <nav aria-label="posts-pagination">
+            <ul class="pagination justify-content-center mb-4" id="pagination-navbar">
+                <li class="page-item">
+                    <a class="page-link" tabindex="-1">Previous</a>
+                    <span id="nextPage" class="d-none">{{ paginationMenu.previousPage }}</span>
+                </li>
+                {% for iterator in paginationMenu.firstPage..paginationMenu.lastPage %}
+                    {% if iterator == paginationMenu.activePage %}
+                        <li class="page-item active">
+                    {% else %}
+                        <li class="page-item">
+                    {% endif %}
+                    <a class="page-link">{{ iterator }}</a>
+                    </li>
+                {% endfor %}
+
+                <li class="page-item">
+                    <a class="page-link">Next</a>
+                    <span id="previousPage" class="d-none">{{ paginationMenu.nextPage }}</span>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>

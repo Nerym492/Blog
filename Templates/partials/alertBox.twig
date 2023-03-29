@@ -1,5 +1,5 @@
 {% if message != "" %}
-    <div class="alert alert-box {{ messageClass }}-alert fade show" role="alert">
+    <div class="alert alert-box {{ messageClass }}-alert fade show" role="alert" id="alert-box">
         <p class="flex-grow-1 mb-0"><strong>{{ message|nl2br }}</strong></p>
         <button type="button" class="btn-close ms-1" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>

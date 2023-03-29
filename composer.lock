@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b5b0eaf1818b05485f26a0ff3cf1cb22",
+    "content-hash": "3b450b5482affbd350328ddc0b46abc4",
     "packages": [
         {
             "name": "bramus/router",
@@ -118,6 +118,59 @@
                 }
             ],
             "time": "2023-02-25T20:23:15+00:00"
+        },
+        {
+            "name": "php-pagination/php-pagination",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rafapaulino/PHP-Pagination.git",
+                "reference": "22cf08dbe463a5e4d775da9af781f1bff10f49bc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rafapaulino/PHP-Pagination/zipball/22cf08dbe463a5e4d775da9af781f1bff10f49bc",
+                "reference": "22cf08dbe463a5e4d775da9af781f1bff10f49bc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "5.5.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Pagination\\": "src/"
+                },
+                "classmap": [
+                    "src"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Rafael Paulino",
+                    "email": "rafaclasses@gmail.com",
+                    "homepage": "http://rafaacademy.com"
+                }
+            ],
+            "description": "PHP Pagination Class with 4 types: Simple Pagination, Google Pagination, Digg/PHPBB Pagination Style.",
+            "keywords": [
+                "page",
+                "pagination",
+                "paginator",
+                "paging"
+            ],
+            "support": {
+                "issues": "https://github.com/rafapaulino/PHP-Pagination/issues",
+                "source": "https://github.com/rafapaulino/PHP-Pagination/tree/master"
+            },
+            "time": "2017-06-27T19:18:32+00:00"
         },
         {
             "name": "phpmailer/phpmailer",

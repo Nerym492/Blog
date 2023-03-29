@@ -29,7 +29,6 @@ $twig->addGlobal('session', $_SESSION);
 
 $router = new \Bramus\Router\Router();
 
-$postController = new PostController();
 $formController = new FormController();
 $userController = new UserController();
 
@@ -52,15 +51,16 @@ $router->mount('/home', function () use ($router, $twig, $formController, $userC
 
 });
 
-$router->get('/posts', function () use ($twig, $postController) {
-    //Displays all posts
-    $postController->showPosts($twig);
-});
+$router->mount('/posts', function () use ($router, $twig, $formController) {
+    $postController = new PostController();
 
-$router->mount('/posts', function () use ($router, $twig, $postController, $formController) {
     //Displays all the posts
     $router->get('/', function () use ($twig, $postController) {
         $postController->showPosts($twig);
+    });
+    //Posts reload with Ajax
+    $router->get('/page-(\d+)', function ($pageNum) use ($twig, $postController) {
+        $postController->showPosts($twig, $pageNum);
     });
 
     //Displays a single post
@@ -68,7 +68,7 @@ $router->mount('/posts', function () use ($router, $twig, $postController, $form
         $postController->showPost($twig, $postId);
     });
 
-    //Form has been submitted
+    //The comment form has been submitted
     $router->post('/(\d+)', function ($postId) use ($twig, $formController) {
         if (!empty($_POST['comment'])) {
             $formController->checkCommentForm($postId);
@@ -78,6 +78,16 @@ $router->mount('/posts', function () use ($router, $twig, $postController, $form
             Post/Redirect/Get
             Prevent the form from being submitted multiple times by refreshing the page*/
         }
+    });
+
+    //Displays the post form
+    $router->get('/create', function () use ($twig, $formController) {
+        $formController->showPostForm($twig);
+    });
+
+    //The post form has been submitted
+    $router->post('/create', function () use ($twig, $formController) {
+        $formController->checkPostForm($twig);
     });
 });
 
@@ -114,4 +124,5 @@ $router->mount('/logIn', function () use ($router, $twig, $formController, $user
 $router->run();
 
 //var_dump($_SERVER['REQUEST_METHOD']);
+//var_dump($_POST);
 //var_dump($_SESSION);
