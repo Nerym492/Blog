@@ -11,17 +11,28 @@ use Pagination\StrategySimple;
 
 class PostController
 {
-    public function showPosts(Twig $twig, int $pageNum): void
+    public function showPosts(Twig $twig, int $pageNum = 0): void
     {
+        //The user has refreshed the page
+        if ($pageNum == 0){
+            $pageNum = 2;
+            $pageRefreshed = true;
+        } else {
+            //pageNum has been sent with AJAX Get request
+            $pageRefreshed = false;
+        }
+
+        //Number of posts per page
+        $postLimit = 2;
         $postManager = new PostManager();
-        $posts = $postManager->getPosts($pageNum);
+        $posts = $postManager->getPosts($pageNum, $postLimit);
 
         $twig->addGlobal('session', $_SESSION);
 
         //use pagination class with results, per page and page
-        $pagination = new Pagination(count($posts), 2, $pageNum);
+        $pagination = new Pagination($posts['nbLines'], $postLimit, $pageNum);
         //get indexes in page
-        $indexes = $pagination->getIndexes(new StrategySimple(2));
+        $indexes = $pagination->getIndexes(new StrategySimple(5));
         $iterator = $indexes->getIterator();
 
         $paginationMenu = [
@@ -32,12 +43,20 @@ class PostController
             'activePage' => $pagination->getPage()
         ];
 
-        echo $twig->render('posts.twig', [
-            'posts' => $posts,
+        $pageParameters = [
+            'posts' => $posts['data'],
             'page' => 'Blog posts',
             'iterator' => $iterator,
-            'paginationMenu' => $paginationMenu
-        ]);
+            'paginationMenu' => $paginationMenu,
+            'pageRefreshed' => $pageRefreshed
+        ];
+
+        if ($pageRefreshed){
+            echo $twig->render('posts.twig', $pageParameters);
+        } else {
+            unset($pageParameters['page']);
+            echo $twig->render('partials/postsList.twig', $pageParameters);
+        }
 
         if (isset($_SESSION['message'])) {
             unset($_SESSION['message']);

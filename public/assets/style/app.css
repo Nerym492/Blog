@@ -513,3 +513,7 @@ h1,
 #content-post{
     height: 400px;
 }
+
+.page-link{
+    cursor: pointer;
+}

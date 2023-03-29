@@ -29,7 +29,6 @@ $twig->addGlobal('session', $_SESSION);
 
 $router = new \Bramus\Router\Router();
 
-$postController = new PostController();
 $formController = new FormController();
 $userController = new UserController();
 
@@ -52,8 +51,14 @@ $router->mount('/home', function () use ($router, $twig, $formController, $userC
 
 });
 
-$router->mount('/posts', function () use ($router, $twig, $postController, $formController) {
+$router->mount('/posts', function () use ($router, $twig, $formController) {
+    $postController = new PostController();
+
     //Displays all the posts
+    $router->get('/', function () use ($twig, $postController) {
+        $postController->showPosts($twig);
+    });
+    //Posts reload with Ajax
     $router->get('/page-(\d+)', function ($pageNum) use ($twig, $postController) {
         $postController->showPosts($twig, $pageNum);
     });
