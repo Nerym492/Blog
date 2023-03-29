@@ -29,7 +29,7 @@
             <ul class="pagination justify-content-center mb-4" id="pagination-navbar">
                 <li class="page-item">
                     <a class="page-link" tabindex="-1">Previous</a>
-                    <span id="nextPage" class="d-none">{{ paginationMenu.previousPage }}</span>
+                    <span id="previousPage" class="d-none">{{ paginationMenu.previousPage }}</span>
                 </li>
                 {% for iterator in paginationMenu.firstPage..paginationMenu.lastPage %}
                     {% if iterator == paginationMenu.activePage %}
@@ -43,7 +43,7 @@
 
                 <li class="page-item">
                     <a class="page-link">Next</a>
-                    <span id="previousPage" class="d-none">{{ paginationMenu.nextPage }}</span>
+                    <span id="nextPage" class="d-none">{{ paginationMenu.nextPage }}</span>
                 </li>
             </ul>
         </nav>
