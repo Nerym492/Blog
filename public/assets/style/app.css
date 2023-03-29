@@ -493,6 +493,15 @@ h1,
     font-size: 1.2rem;
 }
 
+.link-brown a {
+    color:#8C5C4A;
+    text-decoration: none;
+}
+
+.link-brown a:hover {
+    color: #593c2f;
+}
+
 .link-brown i {
     transition: scale 200ms ease;
 }

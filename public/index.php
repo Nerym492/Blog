@@ -6,6 +6,7 @@ use App\Controllers\HomeController;
 use App\Controllers\PostController;
 use App\Controllers\FormController;
 use App\Controllers\UserController;
+use App\Controllers\AdminController;
 use Dotenv\Dotenv;
 
 
@@ -31,6 +32,7 @@ $router = new \Bramus\Router\Router();
 
 $formController = new FormController();
 $userController = new UserController();
+$adminController = new AdminController();
 
 $router->mount('/home', function () use ($router, $twig, $formController, $userController) {
     $homeController = new HomeController();
@@ -56,11 +58,11 @@ $router->mount('/posts', function () use ($router, $twig, $formController) {
 
     //Displays all the posts
     $router->get('/', function () use ($twig, $postController) {
-        $postController->showPosts($twig);
+        $postController->showPostsPage($twig);
     });
     //Posts reload with Ajax
     $router->get('/page-(\d+)', function ($pageNum) use ($twig, $postController) {
-        $postController->showPosts($twig, $pageNum);
+        $postController->showPostsWidget($twig, $pageNum);
     });
 
     //Displays a single post
@@ -119,6 +121,10 @@ $router->mount('/logIn', function () use ($router, $twig, $formController, $user
     $router->post('/', function () use ($twig, $formController) {
         $formController->checkLogInForm($twig);
     });
+});
+
+$router->get('/administration', function () use ($twig, $adminController) {
+   $adminController->showAdminPanel($twig);
 });
 
 $router->run();

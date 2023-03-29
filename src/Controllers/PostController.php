@@ -11,19 +11,35 @@ use Pagination\StrategySimple;
 
 class PostController
 {
-    public function showPosts(Twig $twig, int $pageNum = 0): void
+    public function showPostsPage(Twig $twig): void
     {
-        //The user has refreshed the page
-        if ($pageNum == 0){
-            $pageNum = 2;
-            $pageRefreshed = true;
-        } else {
-            //pageNum has been sent with AJAX Get request
-            $pageRefreshed = false;
-        }
+        $postsListData = $this->getPostsListData($twig, postLimit: 3);
 
+        echo $twig->render('posts.twig', [
+            'posts' => $postsListData['posts'],
+            'page' => 'Blog posts',
+            'paginationMenu' => $postsListData['paginationMenu']
+        ]);
+
+        if (isset($_SESSION['message'])) {
+            unset($_SESSION['message']);
+            unset($_SESSION['messageClass']);
+        }
+    }
+
+    public function showPostsWidget(Twig $twig, int $pageNum): void
+    {
+        $postsListData = $this->getPostsListData($twig, $pageNum, 3);
+
+        echo $twig->render('partials/postsList.twig', [
+            'posts' => $postsListData['posts'],
+            'paginationMenu' => $postsListData['paginationMenu'],
+        ]);
+    }
+
+    private function getPostsListData(Twig $twig, int $pageNum = 1, int $postLimit = 4): array
+    {
         //Number of posts per page
-        $postLimit = 2;
         $postManager = new PostManager();
         $posts = $postManager->getPosts($pageNum, $postLimit);
 
@@ -33,35 +49,17 @@ class PostController
         $pagination = new Pagination($posts['nbLines'], $postLimit, $pageNum);
         //get indexes in page
         $indexes = $pagination->getIndexes(new StrategySimple(5));
-        $iterator = $indexes->getIterator();
 
         $paginationMenu = [
             'firstPage' => $pagination->getFirstPage(),
             'lastPage' => $pagination->getLastPage(),
             'previousPage' => $pagination->getPreviousPage(),
             'nextPage' => $pagination->getNextPage(),
-            'activePage' => $pagination->getPage()
+            'activePage' => $pagination->getPage(),
+            'iterator' => $indexes->getIterator()
         ];
 
-        $pageParameters = [
-            'posts' => $posts['data'],
-            'page' => 'Blog posts',
-            'iterator' => $iterator,
-            'paginationMenu' => $paginationMenu,
-            'pageRefreshed' => $pageRefreshed
-        ];
-
-        if ($pageRefreshed){
-            echo $twig->render('posts.twig', $pageParameters);
-        } else {
-            unset($pageParameters['page']);
-            echo $twig->render('partials/postsList.twig', $pageParameters);
-        }
-
-        if (isset($_SESSION['message'])) {
-            unset($_SESSION['message']);
-            unset($_SESSION['messageClass']);
-        }
+        return ['paginationMenu' => $paginationMenu, 'posts' => $posts['data']];
     }
 
     public function showPost(Twig $twig, int $postId): void
