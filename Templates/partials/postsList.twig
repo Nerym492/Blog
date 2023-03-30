@@ -11,16 +11,18 @@
 
         {% for post in posts %}
             <!-- Post preview-->
-            <div class="post-preview">
-                <a href="/blog/public/posts/{{ post.post.postId }}">
-                    <h2 class="post-title">{{ post.post.title }}</h2>
-                    <h3 class="post-subtitle">{{ post.post.excerpt }}</h3>
-                </a>
-                <p class="post-meta">
-                    Posted by
-                    <a href="#!">{{ post.pseudoUser }}</a>
-                    {{ post.post.creationDate|date("F jS, Y \\a\\t H:i") }}
-                </p>
+            <div class="d-flex">
+                <div class="post-preview flex-grow-1">
+                    <a href="/blog/public/posts/{{ post.post.postId }}">
+                        <h2 class="post-title">{{ post.post.title }}</h2>
+                        <h3 class="post-subtitle">{{ post.post.excerpt }}</h3>
+                    </a>
+                    <p class="post-meta">
+                        Posted by
+                        <a href="#!">{{ post.pseudoUser }}</a>
+                        {{ post.post.creationDate|date("F jS, Y \\a\\t H:i") }}
+                    </p>
+                </div>
             </div>
             <!-- Divider-->
             <hr class="my-4">

@@ -26,7 +26,6 @@ $twig = new \Twig\Environment($loader, [
 
 $twig->addExtension(new \Twig\Extension\DebugExtension());
 $twig->addGlobal('session', $_SESSION);
-//var_dump(get_included_files());
 
 $router = new \Bramus\Router\Router();
 
@@ -61,7 +60,7 @@ $router->mount('/posts', function () use ($router, $twig, $formController) {
         $postController->showPostsPage($twig);
     });
     //Posts reload with Ajax
-    $router->get('/page-(\d+)', function ($pageNum) use ($twig, $postController) {
+    $router->get('/posts-page-(\d+)', function ($pageNum) use ($twig, $postController) {
         $postController->showPostsWidget($twig, $pageNum);
     });
 
@@ -123,8 +122,16 @@ $router->mount('/logIn', function () use ($router, $twig, $formController, $user
     });
 });
 
-$router->get('/administration', function () use ($twig, $adminController) {
-   $adminController->showAdminPanel($twig);
+$router->mount('/administration', function () use ($router, $twig, $adminController) {
+
+    $router->get('/', function () use ($twig, $adminController) {
+        $adminController->showAdminPanel($twig);
+    });
+
+    $router->get('/posts-page-(\d+)', function ($pageNum) use ($twig, $adminController) {
+        $adminController->reloadPostsList($twig, $pageNum);
+    });
+
 });
 
 $router->run();

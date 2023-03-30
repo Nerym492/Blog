@@ -11,50 +11,19 @@ class PostManager
     public function getPosts(int $pageNum, int $postLimit): array
     {
         $postsRowsData = [];
-        $postsRowsCount = 0;
         $connexion = new DatabaseConnection();
 
-        try {
-            $connexion = $connexion->getConnection();
+        $statement = $connexion->getConnection()->prepare(
+            "SELECT COUNT(p.post_id) as 'nbPosts'
+                     FROM blog.post p"
+        );
 
-            $statement = $connexion->prepare(
-                "SELECT COUNT(p.post_id) as 'nbPosts'
-                         FROM blog.post p"
-            );
+        $statement->execute();
+        $postsRowsCount = $statement->fetch()['nbPosts'];
 
-            $statement->execute();
-            $postsRowsCount = $statement->fetch()['nbPosts'];
-
-            if ($postsRowsCount > 0) {
-                $startToPost = ($postLimit * $pageNum) - $postLimit;
-                //
-                $connexion->setAttribute(\PDO::ATTR_EMULATE_PREPARES, FALSE);
-
-                $statement = $connexion->prepare(
-                    "SELECT *
-                           FROM (
-                                SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, 
-                                       p.creation_date, u.pseudo
-                                from blog.post p
-                                LEFT OUTER JOIN blog.user u on p.user_id = u.user_id
-                                LIMIT :postLimit OFFSET :startToPost
-                            ) p
-                            ORDER BY p.post_id DESC"
-                );
-                $statement->execute([
-                    ':postLimit' => $postLimit,
-                    ':startToPost' => $startToPost
-                ]);
-
-                $postsRowsData = $statement->fetchAll();
-                $statement->closeCursor();
-            }
-
-        } catch (\Throwable $e) {
-            if (!isset($_SESSION['message'])) {
-                $_SESSION['message'] = "An error occurred while getting Posts";
-                $_SESSION['messageClass'] = "danger";
-            }
+        if ($postsRowsCount > 0) {
+            $startToPost = ($postLimit * $pageNum) - $postLimit;
+            $postsRowsData = $connexion->execQueryWithLimit($postsRowsCount, $postLimit, $startToPost);
         }
 
         $posts = [];
