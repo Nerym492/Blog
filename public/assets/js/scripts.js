@@ -1,5 +1,5 @@
 const inputs = document.querySelectorAll('input[type="text"], input[type="checkbox"], textarea, #password-log-in');
-let paginationItems = document.querySelectorAll(".page-link");
+let containersToReload = document.querySelectorAll('#posts-container, #admin-posts-container')
 
 // Fetch all the forms we want to apply custom Bootstrap validation styles to
 let forms = document.querySelectorAll('.needs-validation');
@@ -66,24 +66,26 @@ function validate(field, regex, afterSubmit = false) {
     }
 }
 
-function reloadPosts(){
-    document.querySelectorAll(".page-link").forEach((pageLink) => {
-        pageLink.addEventListener('click', (event) => {
-            let nextPage = event.target.innerHTML
-            if (event.target.innerHTML === "Previous" || event.target.innerHTML === "Next") {
-                nextPage = event.target.nextElementSibling.innerHTML
-            }
-            let xmlHttp = new XMLHttpRequest();
-            xmlHttp.onreadystatechange = function () {
-                if (this.readyState === 4 && this.status === 200) {
-                    document.getElementById("posts-container").innerHTML = this.responseText;
-                    reloadPosts();
+function reloadContainers(containersToReload) {
+    containersToReload.forEach((containerToReload) => {
+        document.querySelectorAll(".page-link").forEach((pageLink) => {
+            pageLink.addEventListener('click', (event) => {
+                let nextPage = event.target.innerHTML
+                if (event.target.innerHTML === "Previous" || event.target.innerHTML === "Next") {
+                    nextPage = event.target.nextElementSibling.innerHTML
                 }
-            }
-            xmlHttp.open("GET", "page-" + nextPage, true);
-            xmlHttp.send();
-        })
-    });
+                let xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+                        containerToReload.innerHTML = this.responseText;
+                        reloadContainers(containersToReload);
+                    }
+                }
+                xmlHttp.open("GET", "posts-page-" + nextPage, true);
+                xmlHttp.send();
+            })
+        });
+    })
 }
 
 /* Bootstrap navbar */
@@ -255,7 +257,7 @@ Array.prototype.slice.call(forms)
 
 //Adding events listener on pagination items to only reload the posts with Ajax
 //The function calls itself to reload the events listeners after the elements have been reloaded by Ajax
-reloadPosts()
+reloadContainers(containersToReload);
 
 
 
