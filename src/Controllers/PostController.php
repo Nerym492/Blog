@@ -9,7 +9,7 @@ use App\EntityManager\CommentManager;
 use Pagination\Pagination;
 use Pagination\StrategySimple;
 
-class PostController
+class PostController extends AbstractController
 {
     public function showPostsPage(Twig $twig): void
     {
@@ -46,18 +46,7 @@ class PostController
         $twig->addGlobal('session', $_SESSION);
 
         //use pagination class with results, per page and page
-        $pagination = new Pagination($posts['nbLines'], $postLimit, $pageNum);
-        //get indexes in page
-        $indexes = $pagination->getIndexes(new StrategySimple(5));
-
-        $paginationMenu = [
-            'firstPage' => $pagination->getFirstPage(),
-            'lastPage' => $pagination->getLastPage(),
-            'previousPage' => $pagination->getPreviousPage(),
-            'nextPage' => $pagination->getNextPage(),
-            'activePage' => $pagination->getPage(),
-            'iterator' => $indexes->getIterator()
-        ];
+        $paginationMenu = $this->getPagination($posts['nbLines'], $postLimit, $pageNum);
 
         return ['paginationMenu' => $paginationMenu, 'posts' => $posts['data']];
     }

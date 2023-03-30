@@ -13,7 +13,7 @@ use PHPMailer\PHPMailer\PHPMailer;
  * Summary of FormController
  * Forms management
  */
-class FormController
+class FormController extends AbstractController
 {
     public function showRegisterForm(Twig $twig): void
     {
