@@ -122,17 +122,19 @@ $router->mount('/logIn', function () use ($router, $twig, $formController, $user
     });
 });
 
-$router->mount('/administration', function () use ($router, $twig, $adminController) {
+if (isset($_SESSION['isAdmin']) and ($_SESSION['isAdmin'])){
+    $router->mount('/administration', function () use ($router, $twig, $adminController) {
 
-    $router->get('/', function () use ($twig, $adminController) {
-        $adminController->showAdminPanel($twig);
+        $router->get('/', function () use ($twig, $adminController) {
+            $adminController->showAdminPanel($twig);
+        });
+
+        $router->get('/posts-page-(\d+)', function ($pageNum) use ($twig, $adminController) {
+            $adminController->reloadPostsList($twig, $pageNum);
+        });
+
     });
-
-    $router->get('/posts-page-(\d+)', function ($pageNum) use ($twig, $adminController) {
-        $adminController->reloadPostsList($twig, $pageNum);
-    });
-
-});
+}
 
 $router->run();
 

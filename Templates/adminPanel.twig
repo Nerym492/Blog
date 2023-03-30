@@ -2,7 +2,7 @@
 
 {% block content %}
     <div id="admin-panel-container" class="d-flex justify-content-center">
-        <div class="card">
+        <div class="card admin-card">
             <div class="card-header text-center">
                 <h2>
                     Recent Posts
@@ -14,4 +14,19 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modal-confirm" tabindex="-1" aria-labelledby="modal-confirm" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center fs-5 fw-bold">
+                    Confirm suppression ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button id="btn-confirm-suppression" type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
