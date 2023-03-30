@@ -482,6 +482,17 @@ h1,
     font-weight: bold;
 }
 
+.btn-brown{
+    background:#8C5C4A;
+    color: white;
+    font-weight: bold;
+}
+
+.btn-brown:hover{
+    background:#593c2f;
+    color: white;
+}
+
 .link-brown {
     text-decoration: none;
     cursor: pointer;

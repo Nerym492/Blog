@@ -3,14 +3,14 @@
 {% block content %}
     {% include 'partials/alertBox.twig' with {'message': session.message , 'messageClass': session.messageClass} %}
 
-    <h2 class="text-center mb-5" id="title-post-form">Create a new post</h2>
+    <h2 class="text-center mb-5" id="title-post-form">{{ formTitle }}</h2>
 
     <form class="container mb-5 justify-content-center needs-validation" method="post"
-          action="/blog/public/posts/create/#alert-box"
+          action="#alert-box"
           id="form-post" novalidate>
         <div class="form-floating mb-3" id="group-title-post">
             <input type="text" class="form-control" name="title" id="title-post" placeholder="Title"
-                   value="{{ form_errors.title }}" required>
+                   value="{{ form.title }}" required>
             <small id="title-post-help" class="form-text">
                 Please enter a title.
             </small>
@@ -18,7 +18,7 @@
         </div>
         <div class="form-floating mb-3" id="group-excerpt-post">
             <input type="text" class="form-control" name="excerpt" id="excerpt-post" placeholder="Excerpt"
-                   value="{{ form_errors.excerpt }}" required>
+                   value="{{ form.excerpt }}" required>
             <small id="excerpt-post-help" class="form-text">
                 Please enter an excerpt.
             </small>
@@ -26,7 +26,7 @@
         </div>
         <div class="form-floating mb-3" id="group-content-post">
             <textarea class="form-control" name="content" id="content-post" placeholder="Content"
-                      required>{{ form_errors.content|trim }}</textarea>
+                      required>{{ form.content|trim }}</textarea>
             <small id="content-post-help" class="form-text">
                 Please enter content.
             </small>
@@ -35,7 +35,7 @@
         <button class="btn btn-form mt-3" type="submit">
             <span>
                 <i class="fa fa-paper-plane-o m-r-6" aria-hidden="true"></i>
-                Create
+                {{ formButtonText }}
             </span>
         </button>
     </form>

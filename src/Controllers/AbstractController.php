@@ -10,22 +10,6 @@ use Twig\Loader\FilesystemLoader as TwigLoader;
 
 abstract class AbstractController
 {
-
-//    protected function renderView(string $view, array $params = []): void
-//    {
-//        $loader = new TwigLoader('../Templates');
-//        $twig = new TwigEnv($loader, [
-//            'debug' => true,
-//            'cache' => '../tmp',
-//        ]);
-//
-//        $twig->addExtension(new TwigDebug());
-//        $twig->addGlobal('session', $_SESSION);
-//
-//        echo $twig->render($view, $params);
-//    }
-
-
     /**
      * @param int $nbRows Total number of rows given by the query
      * @param int $nbMaxPages Number of pages in the pagination
@@ -50,5 +34,4 @@ abstract class AbstractController
             'iterator' => $indexes->getIterator()
         ];
     }
-
 }

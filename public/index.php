@@ -2,6 +2,7 @@
 
 require '../vendor/autoload.php';
 
+use App\Controllers\ErrorController;
 use App\Controllers\HomeController;
 use App\Controllers\PostController;
 use App\Controllers\FormController;
@@ -32,6 +33,13 @@ $router = new \Bramus\Router\Router();
 $formController = new FormController();
 $userController = new UserController();
 $adminController = new AdminController();
+
+$router->set404(function() use ($twig) {
+    header('HTTP/1.1 404 Not Found');
+    $errorController = new ErrorController();
+    $errorController->showPage404($twig);
+});
+
 
 $router->mount('/home', function () use ($router, $twig, $formController, $userController) {
     $homeController = new HomeController();
@@ -81,15 +89,27 @@ $router->mount('/posts', function () use ($router, $twig, $formController) {
         }
     });
 
-    //Displays the post form
-    $router->get('/create', function () use ($twig, $formController) {
-        $formController->showPostForm($twig);
-    });
+    if (isset($_SESSION['isAdmin']) and ($_SESSION['isAdmin'])) {
+        //Displays the post form
+        $router->get('/create', function () use ($twig, $formController) {
+            $formController->showPostForm($twig);
+        });
 
-    //The post form has been submitted
-    $router->post('/create', function () use ($twig, $formController) {
-        $formController->checkPostForm($twig);
-    });
+        //The post form has been submitted
+        $router->post('/create', function () use ($twig, $formController) {
+            $formController->checkPostForm($twig);
+        });
+
+        //Displays the form with the post values
+        $router->get('/edit/(\d+)', function ($postNum) use ($twig, $formController) {
+            $formController->showPostForm($twig, $postNum);
+        });
+
+        //The edited post has been submitted
+        $router->post('/edit/(\d+)', function ($postNum) use ($twig, $formController) {
+            $formController->checkPostForm($twig);
+        });
+    }
 });
 
 

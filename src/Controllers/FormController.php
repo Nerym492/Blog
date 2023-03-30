@@ -15,6 +15,7 @@ use PHPMailer\PHPMailer\PHPMailer;
  */
 class FormController extends AbstractController
 {
+
     public function showRegisterForm(Twig $twig): void
     {
         echo $twig->render('signIn.twig');
@@ -25,9 +26,26 @@ class FormController extends AbstractController
         echo $twig->render('logIn.twig');
     }
 
-    public function showPostForm(Twig $twig): void
+    public function showPostForm(Twig $twig, ?int $postNum = null): void
     {
-        echo $twig->render('postForm.twig', ['page' => 'New post']);
+        //Editing a post
+        if (!is_null($postNum)){
+            $postManager = new PostManager();
+            $post =  $postManager->getPost($postNum);
+            $formTitle = "Edit a post";
+            $formButtonText = "Edit";
+        } else {
+            $post = null;
+            $formTitle = "Create a new post";
+            $formButtonText = "Create";
+        }
+
+        echo $twig->render('postForm.twig', [
+            'page' => 'New post',
+            'form' => $post,
+            'formTitle' => $formTitle,
+            'formButtonText' => $formButtonText
+        ]);
     }
 
     public function checkCommentForm(int $postId): void
@@ -104,7 +122,7 @@ class FormController extends AbstractController
             $checkForm['isValid'] = false;
         }
 
-        //If the form is valid, we clear the array form_errors
+        //If the form is valid, we clear the array form
         if ($checkForm['isValid']) {
             //mailSent = true or false
             $mailStatus = $this->sendMail($checkForm['form']['mail'], $checkForm['form']['fullName'],
@@ -116,7 +134,7 @@ class FormController extends AbstractController
         //Displays the home page with errors if there are any
         echo $twig->render('home.twig', [
             'page' => "Phrase d'accroche",
-            'form_errors' => $checkForm['form'],
+            'form' => $checkForm['form'],
             'isValid' => $checkForm['isValid'],
             'mailSent' => $mailStatus['mailSent'],
             'message' => $mailStatus['message']
@@ -176,7 +194,7 @@ class FormController extends AbstractController
 
         echo $twig->render('signIn.twig', [
             'page' => "Create an account",
-            'form_errors' => $checkForm['form'],
+            'form' => $checkForm['form'],
             'isValid' => $checkForm['isValid'],
             'message' => $message,
             'messageClass' => $messageClass
@@ -209,7 +227,7 @@ class FormController extends AbstractController
             $twig->addGlobal('session', $_SESSION);
             echo $twig->render('postForm.twig', [
                 'page' => 'New post',
-                'form_errors' => $checkForm['form']
+                'form' => $checkForm['form']
             ]);
         }
 

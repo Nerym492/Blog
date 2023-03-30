@@ -1,8 +1,8 @@
 <div class="row gx-4 gx-lg-5 justify-content-center" id="posts-list">
-    <div class="col-md-10 col-lg-8 col-xl-7">
+    <div class="col-10">
         {% if session.isAdmin %}
             <a class="d-flex align-items-center link-brown justify-content-center my-3"
-               href="/blog/public/posts/create/">
+               href="/blog/public/posts/create/#title-post-form">
                 <i class="fa-regular fa-plus fa-2xl fa-lh-unset me-2"></i>
                 <p class="icon-description">Create a new post</p>
             </a>
@@ -14,7 +14,7 @@
             <div class="d-flex">
                 {% if session.isAdmin %}
                     <div class="d-flex flex-column align-self-center me-4">
-                        <a class="link-brown" ><i class="fa-solid fa-pencil fa-xl"></i></a>
+                        <a class="link-brown" href="/blog/public/posts/edit/{{ post.post.postId }}#title-post-form"><i class="fa-solid fa-pencil fa-xl"></i></a>
                         <a class="link-brown mt-4" data-bs-toggle="modal" href="#modal-confirm"><i class="fa-regular fa-trash-can fa-xl"></i></a>
                     </div>
                 {% endif %}

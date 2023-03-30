@@ -1,0 +1,14 @@
+{% extends 'base.twig' %}
+
+{% block header %}
+    {% include "partials/navbar.twig" %}
+{% endblock %}
+
+{% block content %}
+    <lottie-player class="mx-auto" src="/blog/public/assets/style/animations/error-404.json" background="transparent"
+                   speed="1" style="width: 600px; height: 600px;" loop autoplay></lottie-player>
+    <div class="text-center mb-4">
+        <p class="fw-bold">La page que vous avez demandée n'existe pas.</p>
+        <a class="btn btn-brown" href="\blog\public\home\">Retour à la page d'accueil</a>
+    </div>
+{% endblock %}
