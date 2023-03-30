@@ -69,7 +69,7 @@ $router->mount('/posts', function () use ($router, $twig, $formController) {
     });
     //Posts reload with Ajax
     $router->get('/posts-page-(\d+)', function ($pageNum) use ($twig, $postController) {
-        $postController->showPostsWidget($twig, $pageNum);
+        $postController->reloadPostsList($twig, $pageNum);
     });
 
     //Displays a single post
@@ -107,7 +107,7 @@ $router->mount('/posts', function () use ($router, $twig, $formController) {
 
         //The edited post has been submitted
         $router->post('/edit/(\d+)', function ($postNum) use ($twig, $formController) {
-            $formController->checkPostForm($twig);
+            $formController->checkPostForm($twig, $postNum);
         });
     }
 });

@@ -482,15 +482,16 @@ h1,
     font-weight: bold;
 }
 
-.btn-brown{
-    background:#8C5C4A;
-    color: white;
+.btn-yellow{
+    background:#FFC800;
+    color: #1A2E35;
     font-weight: bold;
 }
 
-.btn-brown:hover{
-    background:#593c2f;
-    color: white;
+.btn-yellow:hover, .btn-yellow:active{
+    background:#CCA000!important;
+    color: #1A2E35!important;
+    border-color: var(--bs-btn-hover-border-color)!important;
 }
 
 .link-brown {

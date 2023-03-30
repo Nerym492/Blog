@@ -6,8 +6,6 @@ use \Twig\Environment as Twig;
 use App\EntityManager\PostManager;
 use App\EntityManager\UserManager;
 use App\EntityManager\CommentManager;
-use Pagination\Pagination;
-use Pagination\StrategySimple;
 
 class PostController extends AbstractController
 {
@@ -27,7 +25,7 @@ class PostController extends AbstractController
         }
     }
 
-    public function showPostsWidget(Twig $twig, int $pageNum): void
+    public function reloadPostsList(Twig $twig, int $pageNum): void
     {
         $postsListData = $this->getPostsListData($twig, $pageNum, 3);
 

@@ -38,7 +38,7 @@ class PostManager
 
     }
 
-    public function getPost(int $postId): Post
+    public function getPost(int $postId): ?Post
     {
         $connexion = new DatabaseConnection();
 
@@ -51,12 +51,13 @@ class PostManager
         $statement->execute([':postId' => $postId]);
         $row = $statement->fetch();
 
-        $post = new Post();
+
         // On vérifie si on récupère bien le post
         if ($row) {
+            $post = new Post();
             $this->setPostWithRow($post, $row);
         } else {
-            echo "Erreur page 404";
+            $post = null;
         }
 
         $statement->closeCursor();
@@ -96,6 +97,30 @@ class PostManager
 
 
         return $isCreated;
+    }
+
+    /**
+     * Update title, excerpt and content field in the database
+     * @param Post $post Post object
+     * @return bool True if updated successfully else false
+     */
+    public function updatePost(Post $post): bool
+    {
+        $connexion = new DatabaseConnection();
+
+        $statement = $connexion->getConnection()->prepare(
+            "UPDATE post
+                   SET title=:title, excerpt=:excerpt, content=:content
+                   WHERE post_id=:post_id"
+        );
+        $statement->execute([
+            ':title' => $post->getTitle(),
+            ':excerpt' => $post->getExcerpt(),
+            ':content' => $post->getContent(),
+            ':post_id' => $post->getPostId()
+        ]);
+
+        return $statement->rowCount() == 1;
     }
 
     /**
