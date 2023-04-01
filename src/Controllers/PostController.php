@@ -9,9 +9,11 @@ use App\EntityManager\CommentManager;
 
 class PostController extends AbstractController
 {
+    const POST_LIMIT = 3;
+    const NB_MAX_PAGE = 5;
     public function showPostsPage(Twig $twig): void
     {
-        $postsListData = $this->getPostsListData($twig, postLimit: 3);
+        $postsListData = $this->getPostsListData($twig);
 
         echo $twig->render('posts.twig', [
             'posts' => $postsListData['posts'],
@@ -27,7 +29,7 @@ class PostController extends AbstractController
 
     public function reloadPostsList(Twig $twig, int $pageNum): void
     {
-        $postsListData = $this->getPostsListData($twig, $pageNum, 3);
+        $postsListData = $this->getPostsListData($twig, $pageNum);
 
         echo $twig->render('partials/postsList.twig', [
             'posts' => $postsListData['posts'],
@@ -35,16 +37,16 @@ class PostController extends AbstractController
         ]);
     }
 
-    private function getPostsListData(Twig $twig, int $pageNum = 1, int $postLimit = 4): array
+    private function getPostsListData(Twig $twig, int $pageNum = 1): array
     {
         //Number of posts per page
         $postManager = new PostManager();
-        $posts = $postManager->getPosts($pageNum, $postLimit);
+        $posts = $postManager->getPosts($pageNum, self::POST_LIMIT);
 
         $twig->addGlobal('session', $_SESSION);
 
         //use pagination class with results, per page and page
-        $paginationMenu = $this->getPagination($posts['nbLines'], $postLimit, $pageNum);
+        $paginationMenu = $this->getPagination($posts['nbLines'], self::POST_LIMIT, $pageNum);
 
         return ['paginationMenu' => $paginationMenu, 'posts' => $posts['data']];
     }

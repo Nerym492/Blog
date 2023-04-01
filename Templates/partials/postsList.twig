@@ -14,8 +14,13 @@
             <div class="d-flex">
                 {% if session.isAdmin %}
                     <div class="d-flex flex-column align-self-center me-4">
-                        <a class="link-brown" href="/blog/public/posts/edit/{{ post.post.postId }}#title-post-form"><i class="fa-solid fa-pencil fa-xl"></i></a>
-                        <a class="link-brown mt-4" data-bs-toggle="modal" href="#modal-confirm"><i class="fa-regular fa-trash-can fa-xl"></i></a>
+                        <a class="link-brown" href="/blog/public/posts/edit/{{ post.post.postId }}#title-post-form">
+                            <i class="fa-solid fa-pencil fa-xl"></i>
+                        </a>
+                        <a class="link-brown mt-4 delete-post-link" data-bs-toggle="modal" href="#modal-confirm">
+                            <span class="d-none">post-{{ post.post.postId }}-page-{{ paginationMenu.activePage }}</span>
+                            <i class="fa-regular fa-trash-can fa-xl"></i>
+                        </a>
                     </div>
                 {% endif %}
                 <div class="post-preview flex-grow-1">
@@ -36,7 +41,7 @@
         <nav aria-label="posts-pagination">
             <ul class="pagination justify-content-center mb-4" id="pagination-navbar">
                 <li class="page-item">
-                    <a class="page-link" tabindex="-1">Previous</a>
+                    <a class="page-link post-link" tabindex="-1">Previous</a>
                     <span id="previousPage" class="d-none">{{ paginationMenu.previousPage }}</span>
                 </li>
                 {% for iterator in paginationMenu.firstPage..paginationMenu.lastPage %}
@@ -45,12 +50,12 @@
                     {% else %}
                         <li class="page-item">
                     {% endif %}
-                    <a class="page-link">{{ iterator }}</a>
+                    <a class="page-link post-link">{{ iterator }}</a>
                     </li>
                 {% endfor %}
 
                 <li class="page-item">
-                    <a class="page-link">Next</a>
+                    <a class="page-link post-link">Next</a>
                     <span id="nextPage" class="d-none">{{ paginationMenu.nextPage }}</span>
                 </li>
             </ul>

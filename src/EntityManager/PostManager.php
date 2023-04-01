@@ -8,6 +8,12 @@ use App\Lib\DatabaseConnection;
 class PostManager
 {
 
+    /**
+     * @param int $pageNum Page currently being read in the pagination
+     * @param int $postLimit Number of rows per page
+     * @return array postData, numberOfPosts before being limited, currentPage
+     * @throws \Exception
+     */
     public function getPosts(int $pageNum, int $postLimit): array
     {
         $postsRowsData = [];
@@ -23,6 +29,13 @@ class PostManager
 
         if ($postsRowsCount > 0) {
             $startToPost = ($postLimit * $pageNum) - $postLimit;
+            /* The pagination will display the previous page with 0 line if the current page is empty
+               Example 4 rows total but 2 pages with 4 rows per page (page 2 empty)
+               So we need one less page and to start at the beginning of this one*/
+            if ($startToPost !== 0 && $startToPost % $postsRowsCount === 0){
+                $pageNum--;
+                $startToPost -= $postLimit;
+            }
             $postsRowsData = $connexion->execQueryWithLimit($postsRowsCount, $postLimit, $startToPost);
         }
 
@@ -34,8 +47,7 @@ class PostManager
             $posts[$post->getPostId()] = ['post' => $post, 'pseudoUser' => $row['pseudo']];
         }
 
-        return ['data' => $posts, 'nbLines' => $postsRowsCount];
-
+        return ['data' => $posts, 'nbLines' => $postsRowsCount, 'currentPage' => $pageNum];
     }
 
     public function getPost(int $postId): ?Post
@@ -118,6 +130,25 @@ class PostManager
             ':excerpt' => $post->getExcerpt(),
             ':content' => $post->getContent(),
             ':post_id' => $post->getPostId()
+        ]);
+
+        return $statement->rowCount() == 1;
+    }
+
+    /**
+     * @param int $postId
+     * @return bool True if deleted else false
+     */
+    public function deletePost(int $postId): bool
+    {
+        $connextion = new DatabaseConnection();
+        $statement = $connextion->getConnection()->prepare(
+            "DELETE FROM post
+                   WHERE post_id=:postId"
+        );
+
+        $statement->execute([
+            ':postId' => $postId
         ]);
 
         return $statement->rowCount() == 1;

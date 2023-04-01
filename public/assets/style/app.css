@@ -160,6 +160,8 @@ header.masthead .post-heading .meta a {
 
 .post-preview > .post-meta > a {
     text-decoration: none;
+    color: #8C5C4A;
+    font-weight: 500;
 }
 
 @media (min-width: 992px) {
@@ -550,4 +552,12 @@ h1,
     align-items: center;
     min-width: 100px;
     min-height: 25px;
+}
+
+.pagination{
+    --bs-pagination-color: #8a4210;
+    --bs-pagination-hover-color: #692806;
+    --bs-pagination-hover-bg: rgba(105, 40, 6, 0.15);
+    --bs-pagination-active-bg: #8C5C4A;
+    --bs-pagination-active-border-color: #8C5C4A;
 }

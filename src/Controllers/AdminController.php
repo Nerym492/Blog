@@ -7,14 +7,16 @@ use App\EntityManager\PostManager;
 
 class AdminController extends AbstractController
 {
+    const POST_LIMIT = 4;
+    const NB_MAX_PAGE = 5;
+
     public function showAdminPanel(Twig $twig): void
     {
         $pageNum = 1;
-        $postLimit = 4;
         $postManager = new PostManager();
-        $posts = $postManager->getPosts($pageNum, $postLimit);
+        $posts = $postManager->getPosts($pageNum, self::POST_LIMIT);
 
-        $paginationMenu = $this->getPagination($posts['nbLines'], $postLimit, $pageNum);
+        $paginationMenu = $this->getPagination($posts['nbLines'], self::POST_LIMIT, $pageNum);
 
         echo $twig->render('adminPanel.twig', [
             'page' => 'Administration',
@@ -25,11 +27,22 @@ class AdminController extends AbstractController
 
     public function reloadPostsList(Twig $twig, int $pageNum)
     {
-        $postLimit = 4;
-
         $postManager = new PostManager();
-        $posts = $postManager->getPosts($pageNum, $postLimit);
-        $paginationMenu = $this->getPagination($posts['nbLines'], $postLimit, $pageNum);
+        $posts = $postManager->getPosts($pageNum, self::POST_LIMIT);
+        $paginationMenu = $this->getPagination($posts['nbLines'], self::POST_LIMIT, $pageNum);
+
+        echo $twig->render('partials/postsList.twig', [
+            'posts' => $posts['data'],
+            'paginationMenu' => $paginationMenu
+        ]);
+    }
+
+    public function deletePost(Twig $twig, int $pageNum, int $postId)
+    {
+        $postManager = new PostManager();
+        $postManager->deletePost($postId);
+        $posts = $postManager->getPosts($pageNum, self::POST_LIMIT);
+        $paginationMenu = $this->getPagination($posts['nbLines'], self::POST_LIMIT, $pageNum);
 
         echo $twig->render('partials/postsList.twig', [
             'posts' => $posts['data'],

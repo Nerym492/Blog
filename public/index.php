@@ -153,6 +153,9 @@ if (isset($_SESSION['isAdmin']) and ($_SESSION['isAdmin'])){
             $adminController->reloadPostsList($twig, $pageNum);
         });
 
+        $router->get('/delete/post-(\d+)-page-(\d+)', function ($postId, $pageNum) use ($twig, $adminController) {
+            $adminController->deletePost($twig, $pageNum, $postId);
+        });
     });
 }
 
