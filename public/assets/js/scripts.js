@@ -38,17 +38,6 @@ const patterns = {
     "content-post": notEmptyRegEx
 };
 
-let swiper = new Swiper(".mySwiper", {
-    direction: "vertical",
-    navigation: {
-        el: ".swiper-pagination",
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-    },
-});
-
-
-
 //These listeners only works for the admin page
 /**
  * These listeners only works for the admin page
@@ -68,7 +57,7 @@ function setDeleteLineListeners(container, listType) {
                 if (spanItemSelected.innerHTML !== "") {
                     let btnConfirmDelete = document.getElementById("btn-confirm-delete");
                     btnConfirmDelete.addEventListener('click',
-                        ()=> deleteItem(spanItemSelected, listType), {once: true});
+                        () => deleteItem(spanItemSelected, listType), {once: true});
                 }
             });
         });
@@ -148,7 +137,10 @@ function setReloadContainerListeners(containerToReload, listType, deleteListener
                 let xmlHttp = new XMLHttpRequest();
                 xmlHttp.onreadystatechange = function () {
                     if (this.readyState === 4 && this.status === 200) {
+                        let oldPage = document.querySelector('.page-item.active').firstElementChild.innerHTML
                         containerToReload.innerHTML = this.responseText;
+                        //Add a slide effect on the new page
+                        addSlideEffect(listType, oldPage, nextPage)
                         setReloadContainerListeners(containerToReload, listType, deleteListeners);
                     }
                 }
@@ -157,6 +149,21 @@ function setReloadContainerListeners(containerToReload, listType, deleteListener
             })
         });
     }
+}
+
+function addSlideEffect(listType, startPage, endPage) {
+
+    if (endPage > startPage) {
+        document.querySelector("." + listType + "s-list").classList.add("slideInRight");
+        document.querySelector("." + listType + "s-list").classList.remove("slideInLeft");
+    } else if (endPage < startPage) {
+        document.querySelector("." + listType + "s-list").classList.remove("slideInRight");
+        document.querySelector("." + listType + "s-list").classList.add("slideInLeft");
+    } else {
+        document.querySelector("." + listType + "s-list").classList.remove("slideInLeft");
+        document.querySelector("." + listType + "s-list").classList.remove("slideInRight");
+    }
+
 }
 
 /* Bootstrap navbar */
@@ -183,8 +190,6 @@ window.addEventListener('DOMContentLoaded', () => {
         scrollPos = currentTop;
     });
 });
-
-
 
 
 //When the user fills in the field, check if the expected pattern matches.

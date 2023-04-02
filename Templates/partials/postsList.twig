@@ -1,43 +1,45 @@
 <div class="row gx-4 gx-lg-5 justify-content-center" id="posts-list">
     <div class="col-10">
         {% if session.isAdmin %}
-            <a class="d-flex align-items-center link-brown justify-content-center my-3"
-               href="/blog/public/posts/create/#title-post-form">
-                <i class="fa-regular fa-plus fa-2xl fa-lh-unset me-2"></i>
-                <p class="icon-description">Create a new post</p>
-            </a>
+        <a class="d-flex align-items-center link-brown justify-content-center my-3"
+           href="/blog/public/posts/create/#title-post-form">
+            <i class="fa-regular fa-plus fa-2xl fa-lh-unset me-2"></i>
+            <p class="icon-description">Create a new post</p>
+        </a>
+        <div class="posts-list">
             <hr class="my-4">
-        {% endif %}
+            {% endif %}
 
-        {% for post in posts %}
-            <!-- Post preview-->
-            <div class="d-flex">
-                {% if session.isAdmin %}
-                    <div class="d-flex flex-column align-self-center me-4">
-                        <a class="link-brown" href="/blog/public/posts/edit/{{ post.post.postId }}#title-post-form">
-                            <i class="fa-solid fa-pencil fa-xl"></i>
+            {% for post in posts %}
+                <!-- Post preview-->
+                <div class="d-flex">
+                    {% if session.isAdmin %}
+                        <div class="d-flex flex-column align-self-center me-4">
+                            <a class="link-brown" href="/blog/public/posts/edit/{{ post.post.postId }}#title-post-form">
+                                <i class="fa-solid fa-pencil fa-xl"></i>
+                            </a>
+                            <a class="link-brown mt-4 delete-post-link" data-bs-toggle="modal" href="#modal-confirm">
+                                <span class="d-none">post-{{ post.post.postId }}-page-{{ paginationMenu.activePage }}</span>
+                                <i class="fa-regular fa-trash-can fa-xl"></i>
+                            </a>
+                        </div>
+                    {% endif %}
+                    <div class="post-preview flex-grow-1">
+                        <a href="/blog/public/posts/{{ post.post.postId }}">
+                            <h2 class="post-title">{{ post.post.title }}</h2>
+                            <h3 class="post-subtitle">{{ post.post.excerpt }}</h3>
                         </a>
-                        <a class="link-brown mt-4 delete-post-link" data-bs-toggle="modal" href="#modal-confirm">
-                            <span class="d-none">post-{{ post.post.postId }}-page-{{ paginationMenu.activePage }}</span>
-                            <i class="fa-regular fa-trash-can fa-xl"></i>
-                        </a>
+                        <p class="post-meta">
+                            Posted by
+                            <a href="#!">{{ post.pseudoUser }}</a>
+                            {{ post.post.creationDate|date("F jS, Y \\a\\t H:i") }}
+                        </p>
                     </div>
-                {% endif %}
-                <div class="post-preview flex-grow-1">
-                    <a href="/blog/public/posts/{{ post.post.postId }}">
-                        <h2 class="post-title">{{ post.post.title }}</h2>
-                        <h3 class="post-subtitle">{{ post.post.excerpt }}</h3>
-                    </a>
-                    <p class="post-meta">
-                        Posted by
-                        <a href="#!">{{ post.pseudoUser }}</a>
-                        {{ post.post.creationDate|date("F jS, Y \\a\\t H:i") }}
-                    </p>
                 </div>
-            </div>
-            <!-- Divider-->
-            <hr class="my-4">
-        {% endfor %}
+                <!-- Divider-->
+                <hr class="my-4">
+            {% endfor %}
+        </div>
         <nav aria-label="posts-pagination">
             <ul class="pagination justify-content-center mb-4" id="pagination-navbar">
                 <li class="page-item">

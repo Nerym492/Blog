@@ -561,3 +561,43 @@ h1,
     --bs-pagination-active-bg: #8C5C4A;
     --bs-pagination-active-border-color: #8C5C4A;
 }
+
+@keyframes slideInLeft {
+    0%{
+        transform: translateX(-50px);
+        opacity: 0;
+    }
+
+    5%{
+        opacity: 0.4;
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    5%{
+        opacity: 0.4;
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.slideInLeft{
+    animation: slideInLeft 400ms cubic-bezier(.83,1.11,.73,.92) forwards;
+}
+
+.slideInRight{
+    animation: slideInRight 400ms cubic-bezier(.83,1.11,.73,.92) forwards;
+}
