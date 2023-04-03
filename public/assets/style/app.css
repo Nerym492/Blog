@@ -627,3 +627,32 @@ h1,
         margin-left: 24px;
     }
 }
+
+.comment-line{
+    justify-content: center;
+}
+
+.badge-comment{
+    flex: 0.3;
+    margin-right: 20px;
+}
+
+.badge-active{
+    flex: 2;
+}
+
+@media (max-width: 570px) {
+    .badge-comment{
+        flex: unset;
+        max-width: 100px;
+        margin-top: 5px;
+        margin-right: unset;
+        margin-bottom: 10px;
+    }
+
+    .badge-active{
+        flex: unset;
+        width: 100%;
+    }
+
+}

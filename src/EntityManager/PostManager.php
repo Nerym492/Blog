@@ -30,7 +30,7 @@ class PostManager
         $postsRowsCount = $statement->fetch()['nbPosts'];
 
         if ($postsRowsCount > 0) {
-            $pageDelimitation = Services::calcPageAndOffset($postLimit, $pageNum, $postsRowsCount);
+            $pageDelimitation = Services::calcPageAndOffset($postLimit, $pageNum, $postsRowsCount, "DESC");
 
             $selectQuery = "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, 
                                    p.creation_date, u.pseudo

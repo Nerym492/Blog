@@ -1,10 +1,7 @@
 <?php
 
 namespace App\Controllers;
-
-use App\EntityManager\CommentManager;
 use \Twig\Environment as Twig;
-use App\EntityManager\PostManager;
 
 class AdminController extends AbstractController
 {
@@ -18,20 +15,14 @@ class AdminController extends AbstractController
         $posts = $this->postManager->getPosts($pageNum, self::POST_LIMIT);
         $postsPaginationMenu = $this->getPagination($posts['nbLines'], self::POST_LIMIT, $pageNum);
 
-        $comments = $this->commentManager->getCommentsListWithLimit($pageNum, self::COMMENT_LIMIT);
-        $commentsPaginationMenu = $this->getPagination($comments['nbLines'], self::COMMENT_LIMIT, $pageNum);
-
-        foreach ($comments['data'] as $commentKey => $commentArray)
-        {
-            $comments['data'][$commentKey]['post'] = $this->postManager->getPost($commentArray['line']->getPostId());
-        }
+        $commentsContainerData = $this->getCommentsContainerData($pageNum);
 
         echo $twig->render('adminPanel.twig', [
             'page' => 'Administration',
             'posts' => $posts['data'],
             'postsPaginationMenu' => $postsPaginationMenu,
-            'comments' => $comments['data'],
-            'commentsPaginationMenu' => $commentsPaginationMenu
+            'comments' => $commentsContainerData['comments']['data'],
+            'commentsPaginationMenu' => $commentsContainerData['paginationMenu']
         ]);
     }
 
@@ -48,17 +39,11 @@ class AdminController extends AbstractController
     }
 
     public function reloadCommentsList(Twig $twig, int $pageNum){
-        $comments = $this->commentManager->getCommentsListWithLimit($pageNum, self::COMMENT_LIMIT);
-        $paginationMenu = $this->getPagination($comments['nbLines'], self::COMMENT_LIMIT, $pageNum);
-
-        foreach ($comments['data'] as $commentKey => $commentArray)
-        {
-            $comments['data'][$commentKey]['post'] = $this->postManager->getPost($commentArray['line']->getPostId());
-        }
+        $commentsContainerData = $this->getCommentsContainerData($pageNum);
 
         echo $twig->render('partials/commentsList.twig', [
-            'comments' => $comments['data'],
-            'paginationMenu' => $paginationMenu
+            'comments' => $commentsContainerData['comments']['data'],
+            'paginationMenu' => $commentsContainerData['paginationMenu']
         ]);
     }
 
@@ -74,5 +59,23 @@ class AdminController extends AbstractController
         ]);
     }
 
+    private function getCommentsContainerData(int $pageNum): array
+    {
+        $comments = $this->commentManager->getCommentsListWithLimit($pageNum, self::COMMENT_LIMIT);
+        $paginationMenu = $this->getPagination($comments['nbLines'], self::COMMENT_LIMIT, $pageNum);
 
+        foreach ($comments['data'] as $commentKey => $commentArray)
+        {
+            $comments['data'][$commentKey]['post'] = $this->postManager->getPost($commentArray['line']->getPostId());
+            if ($comments['data'][$commentKey]['line']->getValid() === 0){
+                $comments['data'][$commentKey]['badgeClass'] = "warning";
+                $comments['data'][$commentKey]['badgeText'] = "En attente";
+            } else {
+                $comments['data'][$commentKey]['badgeClass'] = "success";
+                $comments['data'][$commentKey]['badgeText'] = "Validé";
+            }
+        }
+
+        return ['comments' => $comments, 'paginationMenu' => $paginationMenu];
+    }
 }

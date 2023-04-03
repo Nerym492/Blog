@@ -31,7 +31,7 @@ class DatabaseConnection
      * @param string $orderBySuffix ASC or DESC
      * @return array
      */
-    public function execQueryWithLimit(int $rowLimit, int $offset, string $selectQuery, string $orderBy, string $orderBySuffix): array
+    public function execQueryWithLimit(int $rowLimit, int $offset, string $selectQuery, string $orderBy, string $orderBySuffix = ""): array
     {
         $orderByString = "ORDER BY " . $orderBy;
 

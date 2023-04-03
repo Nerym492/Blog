@@ -47,7 +47,7 @@ class CommentManager
         $commentsRowsCount = $countQueryStatement->fetch()['rowsCount'];
 
         if ($commentsRowsCount > 0) {
-            $pageDelimitation = Services::calcPageAndOffset($commentLimit, $pageNum, $commentsRowsCount);
+            $pageDelimitation = Services::calcPageAndOffset($commentLimit, $pageNum, $commentsRowsCount, "DESC");
             $rows = $connexion->execQueryWithLimit($commentLimit, $pageDelimitation['offset'], $selectQuery,
                 "comment_id", "DESC");
         } else {
