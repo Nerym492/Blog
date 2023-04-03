@@ -2,11 +2,22 @@
 
 namespace App\Controllers;
 
+use App\EntityManager\CommentManager;
+use App\EntityManager\PostManager;
 use Pagination\Pagination;
 use Pagination\StrategySimple;
 
 abstract class AbstractController
 {
+    protected PostManager $postManager;
+    protected CommentManager $commentManager;
+
+    public function __construct()
+    {
+        $this->postManager = new PostManager();
+        $this->commentManager = new CommentManager();
+    }
+
     /**
      * @param int $nbRows Total number of rows given by the query
      * @param int $limitPerPage Number of lines per page

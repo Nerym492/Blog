@@ -156,6 +156,10 @@ if (isset($_SESSION['isAdmin']) and ($_SESSION['isAdmin'])){
         $router->get('/delete/post-(\d+)-page-(\d+)', function ($postId, $pageNum) use ($twig, $adminController) {
             $adminController->deletePost($twig, $pageNum, $postId);
         });
+
+        $router->get('/comments-page-(\d+)', function ($pageNum) use ($twig, $adminController){
+           $adminController->reloadCommentsList($twig, $pageNum);
+        });
     });
 }
 

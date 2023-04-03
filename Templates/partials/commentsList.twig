@@ -1,0 +1,37 @@
+<div class="comments-list col-10 mx-auto">
+    {% for comment in comments %}
+        {% if comment.post %}
+            {% set flexDirection = 'flex-column' %}
+        {% else %}
+            {% set flexDirection = 'flex-start' %}
+        {% endif %}
+        <div class="row mb-4">
+            <div class="d-flex {{ flexDirection }}">
+                {% if paginationMenu.firstPage is empty %}
+                    <i class="fa-solid fa-circle-user fa-avatar me-3"></i>
+                {% endif %}
+                {% if comment.post %}
+                    <h3 class="mb-2">{{ comment.post.title }}</h3>
+                {% endif %}
+                <div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="mb-1">
+                            {{ comment.userPseudo }}
+                            <span class="small">
+                            - {{ comment.line.creationDate |date("M j, Y \\a\\t H:i") }}
+                        </span>
+                        </p>
+                    </div>
+                    <p class="small mb-0">
+                        {{ comment.line.comment }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% if paginationMenu is not empty %}
+    {% include 'partials/paginationNavbar.twig' with {'entityName': "comment"} %}
+{% endif %}
+
+

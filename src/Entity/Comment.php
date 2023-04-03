@@ -78,8 +78,8 @@ class Comment
 	/**
 	 * @param \DateTime $creationDate 
 	 */
-	public function setCreationDate(\DateTime $creationDate) {
-		$this->creationDate = $creationDate;
+	public function setCreationDate(string $creationDate) {
+		$this->creationDate = new \DateTime($creationDate);
 	}
 
 	/**

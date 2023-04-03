@@ -1,15 +1,26 @@
 {% extends 'base.twig' %}
 
 {% block content %}
-    <div id="admin-panel-container" class="d-flex justify-content-center mb-4">
-        <div class="card admin-card">
+    <div id="admin-panel-container" class="d-flex flex-wrap justify-content-center mb-4">
+        <div class="card admin-card" id="posts-card">
             <div class="card-header text-center">
                 <h2>
                     Recent Posts
                 </h2>
             </div>
             <div id="admin-posts-container">
-                {% include 'partials/postsList.twig' %}
+                {% include 'partials/postsList.twig' with {'paginationMenu': postsPaginationMenu} %}
+            </div>
+        </div>
+
+        <div class="card admin-card" id="comments-card">
+            <div class="card-header text-center">
+                <h2>
+                    Recent Comments
+                </h2>
+            </div>
+            <div id="admin-comments-container" class="mt-4">
+                {% include 'partials/commentsList.twig' with {'paginationMenu': commentsPaginationMenu} %}
             </div>
         </div>
     </div>

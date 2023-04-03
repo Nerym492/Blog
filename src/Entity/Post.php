@@ -67,9 +67,9 @@ class Post
         return $this->creationDate;
     }
 
-    public function setCreationDate(\DateTime $creationDate)
+    public function setCreationDate(string $creationDate)
     {
-        $this->creationDate = $creationDate;
+        $this->creationDate = new \DateTime($creationDate);
     }
 
     public function getLastUpdateDate()
@@ -77,9 +77,9 @@ class Post
         return $this->lastUpdateDate;
     }
 
-    public function setLastUpdateDate(\DateTime $lastUpdateDate)
+    public function setLastUpdateDate(string $lastUpdateDate)
     {
-        $this->lastUpdateDate = $lastUpdateDate;
+        $this->lastUpdateDate = new \DateTime($lastUpdateDate);
     }
 
 

@@ -2,6 +2,8 @@ const inputs = document.querySelectorAll('input[type="text"], input[type="checkb
 let containersToReload = document.querySelectorAll('#posts-container, #admin-posts-container')
 let postContainerPostPage = document.getElementById("posts-container");
 let postContainerAdminPage = document.getElementById("admin-posts-container");
+let commentsContainerAdminPage = document.getElementById("admin-comments-container");
+
 
 // Fetch all the forms we want to apply custom Bootstrap validation styles to
 let forms = document.querySelectorAll('.needs-validation');
@@ -137,14 +139,14 @@ function setReloadContainerListeners(containerToReload, listType, deleteListener
                 let xmlHttp = new XMLHttpRequest();
                 xmlHttp.onreadystatechange = function () {
                     if (this.readyState === 4 && this.status === 200) {
-                        let oldPage = document.querySelector('.page-item.active').firstElementChild.innerHTML
+                        let oldPage = document.querySelector('.page-item.'+ listType +'-item.active').firstElementChild.innerHTML
                         containerToReload.innerHTML = this.responseText;
                         //Add a slide effect on the new page
                         addSlideEffect(listType, oldPage, nextPage)
                         setReloadContainerListeners(containerToReload, listType, deleteListeners);
                     }
                 }
-                xmlHttp.open("GET", "posts-page-" + nextPage, true);
+                xmlHttp.open("GET", listType + "s-page-" + nextPage, true);
                 xmlHttp.send();
             })
         });
@@ -337,6 +339,7 @@ Array.prototype.slice.call(forms)
   The function calls itself to reload the events listeners after the elements have been reloaded by Ajax*/
 setReloadContainerListeners(postContainerAdminPage, "post", true);
 setReloadContainerListeners(postContainerPostPage, "post", false);
+setReloadContainerListeners(commentsContainerAdminPage, "comment", false)
 
 
 

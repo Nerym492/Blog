@@ -40,27 +40,6 @@
                 <hr class="my-4">
             {% endfor %}
         </div>
-        <nav aria-label="posts-pagination">
-            <ul class="pagination justify-content-center mb-4" id="pagination-navbar">
-                <li class="page-item">
-                    <a class="page-link post-link" tabindex="-1">Previous</a>
-                    <span id="previousPage" class="d-none">{{ paginationMenu.previousPage }}</span>
-                </li>
-                {% for iterator in paginationMenu.firstPage..paginationMenu.lastPage %}
-                    {% if iterator == paginationMenu.activePage %}
-                        <li class="page-item active">
-                    {% else %}
-                        <li class="page-item">
-                    {% endif %}
-                    <a class="page-link post-link">{{ iterator }}</a>
-                    </li>
-                {% endfor %}
-
-                <li class="page-item">
-                    <a class="page-link post-link">Next</a>
-                    <span id="nextPage" class="d-none">{{ paginationMenu.nextPage }}</span>
-                </li>
-            </ul>
-        </nav>
+        {% include 'partials/paginationNavbar.twig' with {'entityName': "post"} %}
     </div>
 </div>

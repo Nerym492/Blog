@@ -4,10 +4,13 @@ namespace App\EntityManager;
 
 use App\Lib\DatabaseConnection;
 use App\Entity\Comment;
+use App\Lib\Services;
 
 class CommentManager
 {
-    public function getComments(int $postId): ?array
+
+
+    public function getCommentsByPost(int $postId): ?array
     {
         $connexion = new DatabaseConnection();
 
@@ -19,24 +22,42 @@ class CommentManager
         );
 
         $statement->execute([':post_id' => $postId]);
-        $result = $statement->fetchAll();
-        $comments = null;
-
-        foreach ($result as $row) {
-            $comment = new Comment();
-            $comment->setCommentId($row['comment_id']);
-            $comment->setPostId($row['post_id']);
-            $comment->setUserId($row['user_id']);
-            $comment->setComment($row['comment']);
-            $comment->setCreationDate(new \DateTime($row['creation_date']));
-            $comment->setValid($row['valid']);
-            $comments[$comment->getcommentId()] = ['line' => $comment, 'userPseudo' => $row['pseudo']];
-        }
+        $rows = $statement->fetchAll();
+        $comments = $this->createCommentsWithRows($rows);
 
         $statement->closeCursor();
 
         return $comments;
 
+    }
+
+    public function getCommentsListWithLimit(int $pageNum, int $commentLimit, string $filter = ""): ?array
+    {
+        $connexion = new DatabaseConnection();
+
+        $selectQuery = "SELECT c.*, u.pseudo
+                        FROM comment c 
+                        LEFT OUTER JOIN user u ON c.user_id = u.user_id";
+
+        $countQuery = "SELECT COUNT(*) as 'rowsCount'
+                       FROM (" . $selectQuery . ") sq";
+
+        $countQueryStatement = $connexion->getConnection()->prepare($countQuery);
+        $countQueryStatement->execute();
+        $commentsRowsCount = $countQueryStatement->fetch()['rowsCount'];
+
+        if ($commentsRowsCount > 0) {
+            $pageDelimitation = Services::calcPageAndOffset($commentLimit, $pageNum, $commentsRowsCount);
+            $rows = $connexion->execQueryWithLimit($commentLimit, $pageDelimitation['offset'], $selectQuery,
+                "comment_id", "DESC");
+        } else {
+            $pageDelimitation['pageNum'] = $pageNum;
+            $rows = [];
+        }
+
+        $comments = $this->createCommentsWithRows($rows);
+
+        return ['data' => $comments, 'nbLines' => $commentsRowsCount, 'currentPage' => $pageDelimitation['pageNum']];
     }
 
     /**
@@ -64,11 +85,29 @@ class CommentManager
             ':comment' => strip_tags($_POST['comment']),
             ':creation_date' => $dateNow,
             ':valid' => 0
-            ]);
+        ]);
 
         //True if a line has been created otherwise False
         return $statement->rowCount() == 1;
 
+    }
+
+    private function createCommentsWithRows(array $rows): array
+    {
+        $comments = null;
+
+        foreach ($rows as $row) {
+            $comment = new Comment();
+            $comment->setCommentId($row['comment_id']);
+            $comment->setPostId($row['post_id']);
+            $comment->setUserId($row['user_id']);
+            $comment->setComment($row['comment']);
+            $comment->setCreationDate($row['creation_date']);
+            $comment->setValid($row['valid']);
+            $comments[$comment->getcommentId()] = ['line' => $comment, 'userPseudo' => $row['pseudo']];
+        }
+
+        return $comments;
     }
 }
 

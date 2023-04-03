@@ -23,8 +23,21 @@ class DatabaseConnection
         return $this->database;
     }
 
-    public function execQueryWithLimit(int $nbRows, int $rowLimit, int $offset): array
+    /**
+     * @param int $rowLimit Number of lines max returned by the query
+     * @param int $offset OFFSET in the LIMIT clause
+     * @param string $selectQuery Select sub request to execute with the limit
+     * @param string $orderBy Sorted database field
+     * @param string $orderBySuffix ASC or DESC
+     * @return array
+     */
+    public function execQueryWithLimit(int $rowLimit, int $offset, string $selectQuery, string $orderBy, string $orderBySuffix): array
     {
+        $orderByString = "ORDER BY " . $orderBy;
+
+        if (in_array($orderBySuffix, ['ASC', 'DESC'])){
+            $orderByString .= " ". $orderBySuffix;
+        }
 
         $connexion = $this->getConnection();
         $connexion->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
@@ -32,13 +45,10 @@ class DatabaseConnection
         $statement = $connexion->prepare(
             "SELECT *
                        FROM (
-                            SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, 
-                                   p.creation_date, u.pseudo
-                            from blog.post p
-                            LEFT OUTER JOIN blog.user u on p.user_id = u.user_id
+                            " . $selectQuery . "
                             LIMIT :limitParam OFFSET :offsetParam
                         ) p
-                    ORDER BY p.post_id DESC"
+                    " . $orderByString
         );
         $statement->execute([
             ':limitParam' => $rowLimit,

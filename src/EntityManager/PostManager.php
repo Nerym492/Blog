@@ -2,8 +2,10 @@
 
 namespace App\EntityManager;
 
+use App\Entity\Comment;
 use App\Entity\Post;
 use App\Lib\DatabaseConnection;
+use App\Lib\Services;
 
 class PostManager
 {
@@ -28,26 +30,26 @@ class PostManager
         $postsRowsCount = $statement->fetch()['nbPosts'];
 
         if ($postsRowsCount > 0) {
-            $startToPost = ($postLimit * $pageNum) - $postLimit;
-            /* The pagination will display the previous page with 0 line if the current page is empty
-               Example 4 rows total but 2 pages with 4 rows per page (page 2 empty)
-               So we need one less page and to start at the beginning of this one*/
-            if ($startToPost !== 0 && $startToPost % $postsRowsCount === 0){
-                $pageNum--;
-                $startToPost -= $postLimit;
-            }
-            $postsRowsData = $connexion->execQueryWithLimit($postsRowsCount, $postLimit, $startToPost);
+            $pageDelimitation = Services::calcPageAndOffset($postLimit, $pageNum, $postsRowsCount);
+
+            $selectQuery = "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, 
+                                   p.creation_date, u.pseudo
+                            FROM blog.post p
+                            LEFT OUTER JOIN blog.user u on p.user_id = u.user_id";
+            $postsRowsData = $connexion->execQueryWithLimit($postLimit, $pageDelimitation['offset'], $selectQuery,
+                "post_id", "DESC");
+        } else {
+            $pageDelimitation['pageNum'] = $pageNum;
         }
 
         $posts = [];
 
         foreach ($postsRowsData as $row) {
-            $post = new Post();
-            $this->setPostWithRow($post, $row);
+            $post = $this->createPostWithRow($row);
             $posts[$post->getPostId()] = ['post' => $post, 'pseudoUser' => $row['pseudo']];
         }
 
-        return ['data' => $posts, 'nbLines' => $postsRowsCount, 'currentPage' => $pageNum];
+        return ['data' => $posts, 'nbLines' => $postsRowsCount, 'currentPage' => $pageDelimitation['pageNum']];
     }
 
     public function getPost(int $postId): ?Post
@@ -66,8 +68,7 @@ class PostManager
 
         // On vérifie si on récupère bien le post
         if ($row) {
-            $post = new Post();
-            $this->setPostWithRow($post, $row);
+            $post = $this->createPostWithRow($row);
         } else {
             $post = null;
         }
@@ -141,8 +142,8 @@ class PostManager
      */
     public function deletePost(int $postId): bool
     {
-        $connextion = new DatabaseConnection();
-        $statement = $connextion->getConnection()->prepare(
+        $connexion = new DatabaseConnection();
+        $statement = $connexion->getConnection()->prepare(
             "DELETE FROM post
                    WHERE post_id=:postId"
         );
@@ -155,19 +156,21 @@ class PostManager
     }
 
     /**
-     * @param Post $post
-     * @param $row
-     * @return void
-     * @throws \Exception
+     * @param array $row
+     * @return Post|null
      */
-    private function setPostWithRow(Post $post, $row): void
+    private function createPostWithRow(array $row): ?Post
     {
+        $post = new Post();
+
         $post->setUserId($row['user_id']);
         $post->setPostId($row['post_id']);
         $post->setExcerpt($row['excerpt']);
         $post->setTitle($row['title']);
         $post->setContent($row['content']);
-        $post->setLastUpdateDate(new \DateTime($row['last_update_date']));
-        $post->setCreationDate(new \DateTime($row['creation_date']));
+        $post->setLastUpdateDate($row['last_update_date']);
+        $post->setCreationDate($row['creation_date']);
+
+        return $post;
     }
 }

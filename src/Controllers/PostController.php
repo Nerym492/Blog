@@ -58,7 +58,7 @@ class PostController extends AbstractController
         $userManager = new UserManager();
         $userPost = $userManager->getUser(userId: $post->getUserId());
         $commentManager = new CommentManager();
-        $comments = $commentManager->getComments($postId);
+        $comments = $commentManager->getCommentsByPost($postId);
 
         echo $twig->render('post.twig', [
             'post' => $post,
