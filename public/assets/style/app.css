@@ -639,7 +639,7 @@ h1,
     justify-content: center;
 }
 
-#badge-comment-container {
+.badge-comment-container {
     margin-right: 20px;
 }
 

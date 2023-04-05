@@ -170,8 +170,8 @@ if (isset($_SESSION['isAdmin']) and ($_SESSION['isAdmin'])){
         });
 
         //The comment is validated
-        $router->get('/validate/comment-(\d+)-page-(\d+)', function ($pageNum) use ($twig, $adminController){
-            $adminController->reloadCommentsList($twig, $pageNum);
+        $router->get('/validate/comment-(\d+)-page-(\d+)', function ($commentId, $pageNum) use ($twig, $adminController){
+            $adminController->validateComment($twig, $pageNum, $commentId);
         });
     });
 }

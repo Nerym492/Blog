@@ -138,7 +138,7 @@ function setReloadContainerListeners(containerToReload, listType, deleteListener
                 let xmlHttp = new XMLHttpRequest();
                 xmlHttp.onreadystatechange = function () {
                     if (this.readyState === 4 && this.status === 200) {
-                        let oldPage = document.querySelector('.page-item.'+ listType +'-item.active').firstElementChild.innerHTML
+                        let oldPage = document.querySelector('.page-item.' + listType + '-item.active').firstElementChild.innerHTML
                         containerToReload.innerHTML = this.responseText;
                         //Add a slide effect on the new page
                         addSlideEffect(listType, oldPage, nextPage)
@@ -150,6 +150,22 @@ function setReloadContainerListeners(containerToReload, listType, deleteListener
             })
         });
     }
+}
+
+function setValidationListeners(){
+    document.querySelectorAll(".validate-comment-link").forEach((validateLink) => {
+        validateLink.addEventListener('click', (validateEvent) => {
+            let xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (this.readyState === 4 &&  this.status === 200){
+                    commentsContainerAdminPage.innerHTML = this.responseText;
+                    setValidationListeners()
+                }
+            }
+            xmlHttp.open("GET", "validate/" + validateLink.firstElementChild.innerHTML, true);
+            xmlHttp.send();
+        })
+    })
 }
 
 function addSlideEffect(listType, startPage, endPage) {
@@ -339,6 +355,8 @@ Array.prototype.slice.call(forms)
 setReloadContainerListeners(postContainerAdminPage, "post", true);
 setReloadContainerListeners(postContainerPostPage, "post", false);
 setReloadContainerListeners(commentsContainerAdminPage, "comment", true)
+setValidationListeners()
+
 
 
 

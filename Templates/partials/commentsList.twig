@@ -7,11 +7,11 @@
         {% endif %}
         <div class="d-flex mb-4 {{ commentCssClass.commentLine }} flex-wrap-reverse">
             {% if comment.post %}
-                <div id="badge-comment-container" class="d-flex flex-column justify-content-evenly">
+                <div  class="d-flex flex-column justify-content-evenly badge-comment-container">
                     <span class="badge text-bg-{{ comment.badgeClass }} badge-comment">{{ comment.badgeText }}</span>
                     {% if comment.badgeClass == "warning" %}
                         <div class="d-flex justify-content-evenly">
-                            <a class="comment-link-check delete-post-link" tabindex="0" role="button">
+                            <a class="comment-link-check validate-comment-link" tabindex="0" role="button">
                                 <span class="d-none">comment-{{ comment.line.commentId }}-page-{{ paginationMenu.activePage }}</span>
                                 <i class="fa-solid fa-check fa-lg"></i>
                             </a>

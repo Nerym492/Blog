@@ -64,6 +64,20 @@ class AdminController extends AbstractController
         ]);
     }
 
+    public function validateComment(Twig $twig, int $pageNum, int $commentId)
+    {
+        $this->commentManager->validateComment($commentId);
+
+        $commentsContainerData = $this->getCommentsContainerData($pageNum);
+        $commentCssClass = $this->getCommentCssClass();
+
+        echo $twig->render('partials/commentsList.twig', [
+            'comments' => $commentsContainerData['comments']['data'],
+            'paginationMenu' => $commentsContainerData['paginationMenu'],
+            'commentCssClass' => $commentCssClass
+        ]);
+    }
+
     public function deleteComment(Twig $twig, int $pageNum, int $commentId)
     {
         $this->commentManager->deleteComment($commentId);
