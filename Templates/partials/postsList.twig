@@ -1,4 +1,4 @@
-<div class="row gx-4 gx-lg-5 justify-content-center" id="posts-list">
+<div class="row gx-4 gx-lg-5 justify-content-center">
     <div class="col-10">
         {% if session.isAdmin %}
         <a class="d-flex align-items-center link-brown justify-content-center my-3"
@@ -6,10 +6,9 @@
             <i class="fa-regular fa-plus fa-2xl fa-lh-unset me-2"></i>
             <p class="icon-description">Create a new post</p>
         </a>
+            {% endif %}
         <div class="posts-list">
             <hr class="my-4">
-            {% endif %}
-
             {% for post in posts %}
                 <!-- Post preview-->
                 <div class="d-flex">

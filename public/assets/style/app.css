@@ -22,7 +22,7 @@ header.masthead {
       rgb(255 255 255 / 60%),
       rgb(255 255 255 / 60%)
     ),
-  url("../images/conception-web-ligne.jpg");
+    url("../images/conception-web-ligne.jpg");
   background-size: cover;
 }
 
@@ -97,7 +97,7 @@ header.masthead .post-heading .meta a {
   color: #FFF;
 }
 
-@media (width >= 992px) {
+@media (min-width: 992px) {
   header.masthead {
     padding-top: 12.5rem;
     padding-bottom: 12.5rem;
@@ -180,7 +180,7 @@ header.masthead .post-heading .meta a {
 .post-link:focus,
 .post-link:hover {
   text-decoration: none;
-  color: #8C5C4A
+  color: #8C5C4A;
 }
 
 .presentation {
@@ -210,7 +210,8 @@ header.masthead .post-heading .meta a {
   grid-template-columns: minmax(310px, 400px);
 }
 
-#comment-contact, #message-post {
+#comment-contact,
+#message-post {
   height: 150px;
 }
 
@@ -259,7 +260,8 @@ header.masthead .post-heading .meta a {
   justify-content: center;
 }
 
-.fa-check, .fa-times {
+.fa-check,
+.fa-times {
   align-self: center;
 }
 
@@ -287,7 +289,7 @@ header.masthead .post-heading .meta a {
 }
 
 .hidden {
-  animation: fade-out 700ms cubic-bezier(.12, 1, .62, .89) forwards;
+  animation: fade-out 700ms cubic-bezier(0.12, 1, 0.62, 0.89) forwards;
 }
 
 @keyframes fade-in {
@@ -317,14 +319,14 @@ header.masthead .post-heading .meta a {
   }
 }
 
-@media (width <= 767px) {
+@media (max-width: 767px) {
   .presentation {
     margin-left: 10px;
     margin-right: 10px;
   }
 }
 
-@media (width <= 620px) {
+@media (max-width: 620px) {
   .presentation {
     grid-template-columns: minmax(250px, 500px);
   }
@@ -371,7 +373,7 @@ header.masthead .post-heading .meta a {
   transition: all 0.3s ease-in-out;
 }
 
-@media (width <= 992px) {
+@media (max-width: 992px) {
   #login-nav-item {
     align-self: start;
   }
@@ -482,7 +484,7 @@ header.masthead .post-heading .meta a {
 }
 
 .btn-modal {
-  width: 100px
+  width: 100px;
 }
 
 .modal-border-grey {
@@ -491,7 +493,7 @@ header.masthead .post-heading .meta a {
 
 .fa-avatar {
   font-size: 2.5em;
-  vertical-align: -.1875em;
+  vertical-align: -0.1875em;
 }
 
 .fa-lh-unset {
@@ -527,13 +529,9 @@ header.masthead .post-heading .meta a {
   font-size: 1.2rem;
 }
 
-
-
 .link-brown:hover {
   color: #593C2F;
 }
-
-
 
 #form-post {
   display: grid;
@@ -557,12 +555,10 @@ header.masthead .post-heading .meta a {
   min-height: 25px;
 }
 
-.pagination {
-  --bs-pagination-color: #8A4210;
-  --bs-pagination-hover-color: #692806;
-  --bs-pagination-hover-bg: rgb(105 40 6 / 15%);
-  --bs-pagination-active-bg: #8C5C4A;
-  --bs-pagination-active-border-color: #8C5C4A;
+.active>.page-link{
+  color: white;
+  background-color: #8C5C4A;
+  border-color: #8C5C4A;
 }
 
 @keyframes slide-in-left {
@@ -598,11 +594,11 @@ header.masthead .post-heading .meta a {
 }
 
 .slide-in-left {
-  animation: slide-in-left 400ms cubic-bezier(.83, 1.11, .73, .92) forwards;
+  animation: slide-in-left 400ms cubic-bezier(0.83, 1.11, 0.73, 0.92) forwards;
 }
 
 .slide-in-right {
-  animation: slide-in-right 400ms cubic-bezier(.83, 1.11, .73, .92) forwards;
+  animation: slide-in-right 400ms cubic-bezier(0.83, 1.11, 0.73, 0.92) forwards;
 }
 
 .admin-card {
@@ -619,7 +615,7 @@ header.masthead .post-heading .meta a {
   margin-right: 24px;
 }
 
-@media (width <= 1488px) {
+@media (max-width: 1488px) {
   .admin-card {
     width: 1200px;
   }
@@ -651,7 +647,7 @@ header.masthead .post-heading .meta a {
   flex: 2;
 }
 
-@media (width <= 576px) {
+@media (max-width: 576px) {
   #badge-comment-container {
     margin-right: 0;
     height: 60px;
