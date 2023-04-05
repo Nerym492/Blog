@@ -1,8 +1,8 @@
 <nav aria-label="{{ entityName }}s-pagination">
-    <ul class="pagination justify-content-center mb-4" id="pagination-navbar">
+    <ul class="pagination justify-content-center mb-4" id="{{ entityName }}-pagination-navbar">
         <li class="page-item {{ entityName }}-item">
             <a class="page-link {{ entityName }}-link" tabindex="-1">Previous</a>
-            <span id="previousPage" class="d-none">{{ paginationMenu.previousPage }}</span>
+            <span id="{{ entityName }}-previous-page" class="d-none">{{ paginationMenu.previousPage }}</span>
         </li>
         {% for iterator in paginationMenu.firstPage..paginationMenu.lastPage %}
             {% if iterator == paginationMenu.activePage %}
@@ -16,7 +16,7 @@
 
         <li class="page-item {{ entityName }}-item">
             <a class="page-link {{ entityName }}-link">Next</a>
-            <span id="nextPage" class="d-none">{{ paginationMenu.nextPage }}</span>
+            <span id="{{ entityName }}-next-page" class="d-none">{{ paginationMenu.nextPage }}</span>
         </li>
     </ul>
 </nav>
