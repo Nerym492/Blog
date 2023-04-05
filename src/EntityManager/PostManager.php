@@ -5,75 +5,54 @@ namespace App\EntityManager;
 use App\Entity\Post;
 use App\Lib\DatabaseConnection;
 
-class PostManager
+class PostManager extends Manager
 {
 
+    /**
+     * @param int $pageNum Page currently being read in the pagination
+     * @param int $postLimit Number of rows per page
+     * @return array postData, numberOfPosts before being limited, currentPage
+     * @throws \Exception
+     */
     public function getPosts(int $pageNum, int $postLimit): array
     {
         $postsRowsData = [];
-        $postsRowsCount = 0;
         $connexion = new DatabaseConnection();
 
-        try {
-            $connexion = $connexion->getConnection();
+        $statement = $this->connection->getConnection()->prepare(
+            "SELECT COUNT(p.post_id) as 'nbPosts'
+                     FROM blog.post p"
+        );
 
-            $statement = $connexion->prepare(
-                "SELECT COUNT(p.post_id) as 'nbPosts'
-                         FROM blog.post p"
-            );
+        $statement->execute();
+        $postsRowsCount = $statement->fetch()['nbPosts'];
 
-            $statement->execute();
-            $postsRowsCount = $statement->fetch()['nbPosts'];
+        if ($postsRowsCount > 0) {
+            $pageDelimitation = $this->calcPageAndOffset($postLimit, $pageNum, $postsRowsCount, "DESC");
 
-            if ($postsRowsCount > 0) {
-                $startToPost = ($postLimit * $pageNum) - $postLimit;
-                //
-                $connexion->setAttribute(\PDO::ATTR_EMULATE_PREPARES, FALSE);
-
-                $statement = $connexion->prepare(
-                    "SELECT *
-                           FROM (
-                                SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, 
-                                       p.creation_date, u.pseudo
-                                from blog.post p
-                                LEFT OUTER JOIN blog.user u on p.user_id = u.user_id
-                                LIMIT :postLimit OFFSET :startToPost
-                            ) p
-                            ORDER BY p.post_id DESC"
-                );
-                $statement->execute([
-                    ':postLimit' => $postLimit,
-                    ':startToPost' => $startToPost
-                ]);
-
-                $postsRowsData = $statement->fetchAll();
-                $statement->closeCursor();
-            }
-
-        } catch (\Throwable $e) {
-            if (!isset($_SESSION['message'])) {
-                $_SESSION['message'] = "An error occurred while getting Posts";
-                $_SESSION['messageClass'] = "danger";
-            }
+            $selectQuery = "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, 
+                                   p.creation_date, u.pseudo
+                            FROM blog.post p
+                            LEFT OUTER JOIN blog.user u on p.user_id = u.user_id";
+            $postsRowsData = $connexion->execQueryWithLimit($pageDelimitation['rowsLimit'], $pageDelimitation['offset'], $selectQuery,
+                "post_id", "DESC");
+        } else {
+            $pageDelimitation['pageNum'] = $pageNum;
         }
 
         $posts = [];
 
         foreach ($postsRowsData as $row) {
-            $post = new Post();
-            $this->setPostWithRow($post, $row);
+            $post = $this->createPostWithRow($row);
             $posts[$post->getPostId()] = ['post' => $post, 'pseudoUser' => $row['pseudo']];
         }
 
-        return ['data' => $posts, 'nbLines' => $postsRowsCount];
-
+        return ['data' => $posts, 'nbLines' => $postsRowsCount, 'currentPage' => $pageDelimitation['pageNum']];
     }
 
-    public function getPost(int $postId): Post
+    public function getPost(int $postId): ?Post
     {
-        $connexion = new DatabaseConnection();
-
-        $statement = $connexion->getConnection()->prepare(
+        $statement = $this->connection->getConnection()->prepare(
             "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, p.creation_date
             FROM blog.post p
             WHERE p.post_id = :postId"
@@ -82,12 +61,12 @@ class PostManager
         $statement->execute([':postId' => $postId]);
         $row = $statement->fetch();
 
-        $post = new Post();
+
         // On vérifie si on récupère bien le post
         if ($row) {
-            $this->setPostWithRow($post, $row);
+            $post = $this->createPostWithRow($row);
         } else {
-            echo "Erreur page 404";
+            $post = null;
         }
 
         $statement->closeCursor();
@@ -99,10 +78,9 @@ class PostManager
     {
         $dateNow = new \DateTime('now', new \DateTimeZone($_ENV['TIMEZONE']));
         $dateNow = $dateNow->format('Y-m-d H:i:s');
-        $connexion = new DatabaseConnection();
 
         try {
-            $statement = $connexion->getConnection()->prepare(
+            $statement = $this->connection->getConnection()->prepare(
                 "INSERT INTO blog.post
                    (user_id, title, excerpt, content, last_update_date, creation_date)
                    VALUES(:user_id, :title, :excerpt, :content, :last_update_date, :creation_date);"
@@ -130,19 +108,61 @@ class PostManager
     }
 
     /**
-     * @param Post $post
-     * @param $row
-     * @return void
-     * @throws \Exception
+     * Update title, excerpt and content field in the database
+     * @param Post $post Post object
+     * @return bool True if updated successfully else false
      */
-    private function setPostWithRow(Post $post, $row): void
+    public function updatePost(Post $post): bool
     {
+        $statement = $this->connection->getConnection()->prepare(
+            "UPDATE post
+                   SET title=:title, excerpt=:excerpt, content=:content
+                   WHERE post_id=:post_id"
+        );
+        $statement->execute([
+            ':title' => $post->getTitle(),
+            ':excerpt' => $post->getExcerpt(),
+            ':content' => $post->getContent(),
+            ':post_id' => $post->getPostId()
+        ]);
+
+        return $statement->rowCount() == 1;
+    }
+
+    /**
+     * @param int $postId
+     * @return bool True if deleted else false
+     */
+    public function deletePost(int $postId): bool
+    {
+        $statement = $this->connection->getConnection()->prepare(
+            "DELETE FROM post
+                   WHERE post_id=:postId"
+        );
+
+        $statement->execute([
+            ':postId' => $postId
+        ]);
+
+        return $statement->rowCount() == 1;
+    }
+
+    /**
+     * @param array $row
+     * @return Post|null
+     */
+    private function createPostWithRow(array $row): ?Post
+    {
+        $post = new Post();
+
         $post->setUserId($row['user_id']);
         $post->setPostId($row['post_id']);
         $post->setExcerpt($row['excerpt']);
         $post->setTitle($row['title']);
         $post->setContent($row['content']);
-        $post->setLastUpdateDate(new \DateTime($row['last_update_date']));
-        $post->setCreationDate(new \DateTime($row['creation_date']));
+        $post->setLastUpdateDate($row['last_update_date']);
+        $post->setCreationDate($row['creation_date']);
+
+        return $post;
     }
 }

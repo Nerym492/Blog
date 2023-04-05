@@ -1,0 +1,44 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    <div id="admin-panel-container" class="d-flex flex-wrap justify-content-center mb-4">
+        <div class="card admin-card" id="posts-card">
+            <div class="card-header text-center">
+                <h2>
+                    Recent Posts
+                </h2>
+            </div>
+            <div id="admin-posts-container">
+                {% include 'partials/postsList.twig' with {'paginationMenu': postsPaginationMenu} %}
+            </div>
+        </div>
+
+        <div class="card admin-card h-100" id="comments-card">
+            <div class="card-header text-center">
+                <h2>
+                    Recent Comments
+                </h2>
+            </div>
+            <div id="admin-comments-container" class="mt-4">
+                {% include 'partials/commentsList.twig' with {'paginationMenu': commentsPaginationMenu} %}
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-confirm" tabindex="-1" aria-labelledby="modal-confirm" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center fs-5 fw-bold">
+                    Confirm suppression ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button id="btn-confirm-delete" type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                        <span id="span-item-selected" class="d-none"></span>
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

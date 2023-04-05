@@ -2,10 +2,12 @@
 
 require '../vendor/autoload.php';
 
+use App\Controllers\ErrorController;
 use App\Controllers\HomeController;
 use App\Controllers\PostController;
 use App\Controllers\FormController;
 use App\Controllers\UserController;
+use App\Controllers\AdminController;
 use Dotenv\Dotenv;
 
 
@@ -25,12 +27,18 @@ $twig = new \Twig\Environment($loader, [
 
 $twig->addExtension(new \Twig\Extension\DebugExtension());
 $twig->addGlobal('session', $_SESSION);
-//var_dump(get_included_files());
 
 $router = new \Bramus\Router\Router();
 
 $formController = new FormController();
 $userController = new UserController();
+
+$router->set404(function() use ($twig) {
+    header('HTTP/1.1 404 Not Found');
+    $errorController = new ErrorController();
+    $errorController->showPage404($twig);
+});
+
 
 $router->mount('/home', function () use ($router, $twig, $formController, $userController) {
     $homeController = new HomeController();
@@ -56,11 +64,11 @@ $router->mount('/posts', function () use ($router, $twig, $formController) {
 
     //Displays all the posts
     $router->get('/', function () use ($twig, $postController) {
-        $postController->showPosts($twig);
+        $postController->showPostsPage($twig);
     });
     //Posts reload with Ajax
-    $router->get('/page-(\d+)', function ($pageNum) use ($twig, $postController) {
-        $postController->showPosts($twig, $pageNum);
+    $router->get('/posts-page-(\d+)', function ($pageNum) use ($twig, $postController) {
+        $postController->reloadPostsList($twig, $pageNum);
     });
 
     //Displays a single post
@@ -80,15 +88,27 @@ $router->mount('/posts', function () use ($router, $twig, $formController) {
         }
     });
 
-    //Displays the post form
-    $router->get('/create', function () use ($twig, $formController) {
-        $formController->showPostForm($twig);
-    });
+    if (isset($_SESSION['isAdmin']) and ($_SESSION['isAdmin'])) {
+        //Displays the post form
+        $router->get('/create', function () use ($twig, $formController) {
+            $formController->showPostForm($twig);
+        });
 
-    //The post form has been submitted
-    $router->post('/create', function () use ($twig, $formController) {
-        $formController->checkPostForm($twig);
-    });
+        //The post form has been submitted
+        $router->post('/create', function () use ($twig, $formController) {
+            $formController->checkPostForm($twig);
+        });
+
+        //Displays the form with the post values
+        $router->get('/edit/(\d+)', function ($postNum) use ($twig, $formController) {
+            $formController->showPostForm($twig, $postNum);
+        });
+
+        //The edited post has been submitted
+        $router->post('/edit/(\d+)', function ($postNum) use ($twig, $formController) {
+            $formController->checkPostForm($twig, $postNum);
+        });
+    }
 });
 
 
@@ -121,8 +141,39 @@ $router->mount('/logIn', function () use ($router, $twig, $formController, $user
     });
 });
 
-$router->run();
+if (isset($_SESSION['isAdmin']) and ($_SESSION['isAdmin'])){
+    $router->mount('/administration', function () use ($router, $twig) {
+        $adminController = new AdminController();
+        //Loads the entire page
+        $router->get('/', function () use ($twig, $adminController) {
+            $adminController->showAdminPanel($twig);
+        });
 
-//var_dump($_SERVER['REQUEST_METHOD']);
-//var_dump($_POST);
-//var_dump($_SESSION);
+        //The posts list is reloaded
+        $router->get('/posts-page-(\d+)', function ($pageNum) use ($twig, $adminController) {
+            $adminController->reloadPostsList($twig, $pageNum);
+        });
+
+        //A post is deleted
+        $router->get('/delete/post-(\d+)-page-(\d+)', function ($postId, $pageNum) use ($twig, $adminController) {
+            $adminController->deletePost($twig, $pageNum, $postId);
+        });
+
+        //The comment list is reloaded
+        $router->get('/comments-page-(\d+)', function ($pageNum) use ($twig, $adminController){
+           $adminController->reloadCommentsList($twig, $pageNum);
+        });
+
+        //The comment is deleted
+        $router->get('/delete/comment-(\d+)-page-(\d+)', function ($commentId, $pageNum) use ($twig, $adminController){
+            $adminController->deleteComment($twig, $pageNum, $commentId);
+        });
+
+        //The comment is validated
+        $router->get('/validate/comment-(\d+)-page-(\d+)', function ($commentId, $pageNum) use ($twig, $adminController){
+            $adminController->validateComment($twig, $pageNum, $commentId);
+        });
+    });
+}
+
+$router->run();

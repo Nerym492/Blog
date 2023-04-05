@@ -6,62 +6,49 @@ use \Twig\Environment as Twig;
 use App\EntityManager\PostManager;
 use App\EntityManager\UserManager;
 use App\EntityManager\CommentManager;
-use Pagination\Pagination;
-use Pagination\StrategySimple;
 
-class PostController
+class PostController extends AbstractController
 {
-    public function showPosts(Twig $twig, int $pageNum = 0): void
+    const POST_LIMIT = 3;
+    const NB_MAX_PAGE = 5;
+    public function showPostsPage(Twig $twig): void
     {
-        //The user has refreshed the page
-        if ($pageNum == 0){
-            $pageNum = 2;
-            $pageRefreshed = true;
-        } else {
-            //pageNum has been sent with AJAX Get request
-            $pageRefreshed = false;
-        }
+        $postsListData = $this->getPostsListData($twig);
 
-        //Number of posts per page
-        $postLimit = 2;
-        $postManager = new PostManager();
-        $posts = $postManager->getPosts($pageNum, $postLimit);
-
-        $twig->addGlobal('session', $_SESSION);
-
-        //use pagination class with results, per page and page
-        $pagination = new Pagination($posts['nbLines'], $postLimit, $pageNum);
-        //get indexes in page
-        $indexes = $pagination->getIndexes(new StrategySimple(5));
-        $iterator = $indexes->getIterator();
-
-        $paginationMenu = [
-            'firstPage' => $pagination->getFirstPage(),
-            'lastPage' => $pagination->getLastPage(),
-            'previousPage' => $pagination->getPreviousPage(),
-            'nextPage' => $pagination->getNextPage(),
-            'activePage' => $pagination->getPage()
-        ];
-
-        $pageParameters = [
-            'posts' => $posts['data'],
+        echo $twig->render('posts.twig', [
+            'posts' => $postsListData['posts'],
             'page' => 'Blog posts',
-            'iterator' => $iterator,
-            'paginationMenu' => $paginationMenu,
-            'pageRefreshed' => $pageRefreshed
-        ];
-
-        if ($pageRefreshed){
-            echo $twig->render('posts.twig', $pageParameters);
-        } else {
-            unset($pageParameters['page']);
-            echo $twig->render('partials/postsList.twig', $pageParameters);
-        }
+            'paginationMenu' => $postsListData['paginationMenu']
+        ]);
 
         if (isset($_SESSION['message'])) {
             unset($_SESSION['message']);
             unset($_SESSION['messageClass']);
         }
+    }
+
+    public function reloadPostsList(Twig $twig, int $pageNum): void
+    {
+        $postsListData = $this->getPostsListData($twig, $pageNum);
+
+        echo $twig->render('partials/postsList.twig', [
+            'posts' => $postsListData['posts'],
+            'paginationMenu' => $postsListData['paginationMenu'],
+        ]);
+    }
+
+    private function getPostsListData(Twig $twig, int $pageNum = 1): array
+    {
+        //Number of posts per page
+        $postManager = new PostManager();
+        $posts = $postManager->getPosts($pageNum, self::POST_LIMIT);
+
+        $twig->addGlobal('session', $_SESSION);
+
+        //use pagination class with results, per page and page
+        $paginationMenu = $this->getPagination($posts['nbLines'], self::POST_LIMIT, $pageNum);
+
+        return ['paginationMenu' => $paginationMenu, 'posts' => $posts['data']];
     }
 
     public function showPost(Twig $twig, int $postId): void
@@ -71,7 +58,7 @@ class PostController
         $userManager = new UserManager();
         $userPost = $userManager->getUser(userId: $post->getUserId());
         $commentManager = new CommentManager();
-        $comments = $commentManager->getComments($postId);
+        $comments = $commentManager->getCommentsByPost($postId);
 
         echo $twig->render('post.twig', [
             'post' => $post,

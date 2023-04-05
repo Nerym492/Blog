@@ -12,59 +12,75 @@ class Post
     private \DateTime $lastUpdateDate;
     private \DateTime $creationDate;
 
-    public function getPostId(){
+    public function getPostId()
+    {
         return $this->postId;
     }
 
-    public function setPostId(int $postId){
+    public function setPostId(int $postId)
+    {
         $this->postId = $postId;
     }
 
-    public function getUserId(){
+    public function getUserId()
+    {
         return $this->userId;
     }
 
-    public function setUserId(int $userId){
+    public function setUserId(int $userId)
+    {
         $this->userId = $userId;
     }
 
-    public function getTitle(){
+    public function getTitle()
+    {
         return $this->title;
     }
 
-    public function setTitle(string $title){
+    public function setTitle(string $title)
+    {
         $this->title = $title;
     }
 
-    public function getExcerpt(){
+    public function getExcerpt()
+    {
         return $this->excerpt;
     }
 
-    public function setExcerpt(string $excerpt){
+    public function setExcerpt(string $excerpt)
+    {
         $this->excerpt = $excerpt;
     }
 
-    public function getContent(){
+    public function getContent()
+    {
         return $this->content;
     }
 
-    public function setContent(string $content){
+    public function setContent(string $content)
+    {
         $this->content = $content;
     }
 
-    public function getLastUpdateDate(){
-        return $this->lastUpdateDate;
-    }
-
-    public function setLastUpdateDate(\DateTime $lastUpdateDate){
-        $this->lastUpdateDate = $lastUpdateDate;
-    }
-
-    public function getCreationDate(){
+    public function getCreationDate()
+    {
         return $this->creationDate;
     }
 
-    public function setCreationDate(\DateTime $creationDate){
-        $this->creationDate = $creationDate;
+    public function setCreationDate(string $creationDate)
+    {
+        $this->creationDate = new \DateTime($creationDate);
     }
+
+    public function getLastUpdateDate()
+    {
+        return $this->lastUpdateDate;
+    }
+
+    public function setLastUpdateDate(string $lastUpdateDate)
+    {
+        $this->lastUpdateDate = new \DateTime($lastUpdateDate);
+    }
+
+
 }

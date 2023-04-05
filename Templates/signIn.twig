@@ -10,7 +10,7 @@
           id="form-register" novalidate>
         <div class="form-floating mb-3" id="group-pseudo-register">
             <input type="text" class="form-control" name="pseudo" id="pseudo-register" placeholder="Pseudo"
-                   value="{{ form_errors.pseudo }}" pattern="[A-z\d]{3,25}" required>
+                   value="{{ form.pseudo }}" pattern="[A-z\d]{3,25}" required>
             <small id="pseudo-register-help" class="form-text">
                 Please enter a valid Pseudo (3-25 characters)
             </small>
@@ -18,7 +18,7 @@
         </div>
         <div class="form-floating mb-3" id="group-full-name-register">
             <input type="text" class="form-control" name="fullName" id="full-name-register" placeholder="Full Name"
-                   value="{{ form_errors.fullName }}" pattern="([A-z]){3,25}\s([A-z]){3,25}" required>
+                   value="{{ form.fullName }}" pattern="([A-z]){3,25}\s([A-z]){3,25}" required>
             <small id="full-name-register-help" class="form-text">
                 Please enter a valid Full name. Example : LastName FirstName (3-25 characters each)
             </small>
@@ -26,7 +26,7 @@
         </div>
         <div class="form-floating mb-3" id="group-mail-register">
             <input type="text" class="form-control" name="mail" id="mail-register" placeholder="name@example.com"
-                   value="{{ form_errors.mail }}" pattern="([A-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?"
+                   value="{{ form.mail }}" pattern="([A-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?"
                    required>
             <small id="mail-register-help" class="form-text">
                 Please enter a valid mail address.

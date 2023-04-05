@@ -2,16 +2,16 @@
 
 namespace App\EntityManager;
 
-use App\Lib\DatabaseConnection;
 use App\Entity\Comment;
 
-class CommentManager
+class CommentManager extends Manager
 {
-    public function getComments(int $postId): ?array
-    {
-        $connexion = new DatabaseConnection();
 
-        $statement = $connexion->getConnection()->prepare(
+
+    public function getCommentsByPost(int $postId): ?array
+    {
+
+        $statement = $this->connection->getConnection()->prepare(
             "SELECT c.*, u.pseudo
              FROM comment c 
              LEFT OUTER JOIN user u ON c.user_id = u.user_id
@@ -19,24 +19,42 @@ class CommentManager
         );
 
         $statement->execute([':post_id' => $postId]);
-        $result = $statement->fetchAll();
-        $comments = null;
-
-        foreach ($result as $row) {
-            $comment = new Comment();
-            $comment->setCommentId($row['comment_id']);
-            $comment->setPostId($row['post_id']);
-            $comment->setUserId($row['user_id']);
-            $comment->setComment($row['comment']);
-            $comment->setCreationDate(new \DateTime($row['creation_date']));
-            $comment->setValid($row['valid']);
-            $comments[$comment->getcommentId()] = ['line' => $comment, 'userPseudo' => $row['pseudo']];
-        }
+        $rows = $statement->fetchAll();
+        $comments = $this->createCommentsWithRows($rows);
 
         $statement->closeCursor();
 
         return $comments;
 
+    }
+
+    public function getCommentsListWithLimit(int $pageNum, int $commentLimit, string $filter = ""): ?array
+    {
+        $selectQuery = "SELECT c.*, u.pseudo
+                        FROM comment c 
+                        LEFT OUTER JOIN user u ON c.user_id = u.user_id";
+
+        $countQuery = "SELECT COUNT(*) as 'rowsCount'
+                       FROM (" . $selectQuery . ") sq";
+
+        $countQueryStatement = $this->connection->getConnection()->prepare($countQuery);
+        $countQueryStatement->execute();
+        $commentsRowsCount = $countQueryStatement->fetch()['rowsCount'];
+
+        if ($commentsRowsCount > 0) {
+            //Recalculate offset and limit parameters
+            $pageDelimitation = $this->calcPageAndOffset($commentLimit, $pageNum, $commentsRowsCount, "DESC");
+            $rows = $this->connection->execQueryWithLimit($pageDelimitation['rowsLimit'], $pageDelimitation['offset'], $selectQuery,
+                "comment_id", "DESC");
+        } else {
+            $pageDelimitation['pageNum'] = $pageNum;
+            $rows = [];
+        }
+
+        //Creating a new comment object to store the data
+        $comments = $this->createCommentsWithRows($rows);
+
+        return ['data' => $comments, 'nbLines' => $commentsRowsCount, 'currentPage' => $pageDelimitation['pageNum']];
     }
 
     /**
@@ -46,9 +64,7 @@ class CommentManager
      */
     public function createComment(int $postId): bool
     {
-        $connexion = new DatabaseConnection();
-
-        $statement = $connexion->getConnection()->prepare(
+        $statement = $this->connection->getConnection()->prepare(
             "INSERT INTO blog.comment
                    (post_id, user_id, comment, creation_date, valid)
                    VALUES(:post_id, :user_id, :comment, :creation_date, :valid);"
@@ -64,11 +80,54 @@ class CommentManager
             ':comment' => strip_tags($_POST['comment']),
             ':creation_date' => $dateNow,
             ':valid' => 0
-            ]);
+        ]);
 
         //True if a line has been created otherwise False
         return $statement->rowCount() == 1;
 
+    }
+
+    public function deleteComment(int $commentId): bool
+    {
+        $statement = $this->connection->getConnection()->prepare(
+            "DELETE FROM blog.comment 
+                   WHERE comment_id=:commentId"
+        );
+
+        $statement->execute([':commentId' => $commentId]);
+
+        return $statement->rowCount() == 1;
+    }
+
+    public function validateComment(int $commentId): bool
+    {
+        $statement = $this->connection->getConnection()->prepare(
+            "UPDATE blog.comment
+                   SET valid = 1 
+                   WHERE comment_id=:commentId"
+        );
+
+        $statement->execute([':commentId' => $commentId]);
+
+        return $statement->rowCount() == 1;
+    }
+
+    private function createCommentsWithRows(array $rows): array
+    {
+        $comments = [];
+
+        foreach ($rows as $row) {
+            $comment = new Comment();
+            $comment->setCommentId($row['comment_id']);
+            $comment->setPostId($row['post_id']);
+            $comment->setUserId($row['user_id']);
+            $comment->setComment($row['comment']);
+            $comment->setCreationDate($row['creation_date']);
+            $comment->setValid($row['valid']);
+            $comments[$comment->getcommentId()] = ['line' => $comment, 'userPseudo' => $row['pseudo']];
+        }
+
+        return $comments;
     }
 }
 

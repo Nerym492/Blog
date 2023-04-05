@@ -1,5 +1,8 @@
 const inputs = document.querySelectorAll('input[type="text"], input[type="checkbox"], textarea, #password-log-in');
-let paginationItems = document.querySelectorAll(".page-link");
+let postContainerPostPage = document.getElementById("posts-container");
+let postContainerAdminPage = document.getElementById("admin-posts-container");
+let commentsContainerAdminPage = document.getElementById("admin-comments-container");
+
 
 // Fetch all the forms we want to apply custom Bootstrap validation styles to
 let forms = document.querySelectorAll('.needs-validation');
@@ -36,6 +39,53 @@ const patterns = {
     "content-post": notEmptyRegEx
 };
 
+//These listeners only works for the admin page
+/**
+ * These listeners only works for the admin page
+ * @param {HTMLElement} container Example : div that contains the posts list
+ * @param {string} listType "post", "comment", ...
+ */
+function setDeleteLineListeners(container, listType) {
+    if (container !== null && listType !== "") {
+        let containerId = container.id
+        let linkClass = '.delete-' + listType + '-link';
+        let spanItemSelected = document.getElementById("span-item-selected");
+        //Example "#admin-posts-container .delete-post-link"
+        document.querySelectorAll('#' + containerId + " " + linkClass).forEach((link) => {
+            link.addEventListener('click', () => {
+                //Setting the hidden span in the confirm button in the modal #modal-confirm
+                spanItemSelected.innerHTML = link.firstElementChild.innerHTML
+                if (spanItemSelected.innerHTML !== "") {
+                    let btnConfirmDelete = document.getElementById("btn-confirm-delete");
+                    btnConfirmDelete.addEventListener('click',
+                        () => deleteItem(spanItemSelected, listType), {once: true});
+                }
+            });
+        });
+    }
+}
+
+/**
+ * Deleting the post in the database with an XMLHttpRequest
+ * @param {HTMLElement} spanBtnConfirm Confirmation button in the modal when we click on the trash can icon
+ * @param {string} listType Type of the object we want to delete(example : post, comment)
+ */
+function deleteItem(spanBtnConfirm, listType) {
+    let xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            //Setting the "listType"(post, comment) list container with the new content
+            let containerToReload = document.getElementById('admin-' + listType + 's-container')
+            containerToReload.innerHTML = this.responseText
+            setReloadContainerListeners(containerToReload, listType, true);
+        }
+    }
+    //Send a request to delete the post
+    xmlHttp.open("GET", "delete/" + spanBtnConfirm.innerHTML + "", true);
+    xmlHttp.send();
+}
+
+
 //Check if the confirmation password match with the password
 function checkPasswordConfirm(password, passwordConfirm) {
     if (passwordConfirm.value === password.value && passwordConfirm.value !== "") {
@@ -66,24 +116,71 @@ function validate(field, regex, afterSubmit = false) {
     }
 }
 
-function reloadPosts(){
-    document.querySelectorAll(".page-link").forEach((pageLink) => {
-        pageLink.addEventListener('click', (event) => {
-            let nextPage = event.target.innerHTML
-            if (event.target.innerHTML === "Previous" || event.target.innerHTML === "Next") {
-                nextPage = event.target.nextElementSibling.innerHTML
-            }
+/**
+ * Reload the container entered in parameter with an XMLHttpRequest.
+ * This function is usable in any page.
+ * @param {HTMLElement} containerToReload
+ * @param {string} listType "post" or "comment"
+ * @param {boolean} deleteListeners True if there are buttons to delete in lines in the containers
+ */
+function setReloadContainerListeners(containerToReload, listType, deleteListeners) {
+    if (containerToReload !== null) {
+        //selector example ".page-link.post-link"
+        if (deleteListeners) {
+            setDeleteLineListeners(containerToReload, listType)
+        }
+        document.querySelectorAll(".page-link" + "." + listType + "-link").forEach((pageLink) => {
+            pageLink.addEventListener('click', (event) => {
+                let nextPage = event.target.innerHTML
+                if (event.target.innerHTML === "Previous" || event.target.innerHTML === "Next") {
+                    nextPage = event.target.nextElementSibling.innerHTML
+                }
+                let xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+                        let oldPage = document.querySelector('.page-item.' + listType + '-item.active').firstElementChild.innerHTML
+                        containerToReload.innerHTML = this.responseText;
+                        //Add a slide effect on the new page
+                        addSlideEffect(listType, oldPage, nextPage)
+                        setReloadContainerListeners(containerToReload, listType, deleteListeners);
+                    }
+                }
+                xmlHttp.open("GET", listType + "s-page-" + nextPage, true);
+                xmlHttp.send();
+            })
+        });
+    }
+}
+
+function setValidationListeners(){
+    document.querySelectorAll(".validate-comment-link").forEach((validateLink) => {
+        validateLink.addEventListener('click', (validateEvent) => {
             let xmlHttp = new XMLHttpRequest();
             xmlHttp.onreadystatechange = function () {
-                if (this.readyState === 4 && this.status === 200) {
-                    document.getElementById("posts-container").innerHTML = this.responseText;
-                    reloadPosts();
+                if (this.readyState === 4 &&  this.status === 200){
+                    commentsContainerAdminPage.innerHTML = this.responseText;
+                    setValidationListeners()
                 }
             }
-            xmlHttp.open("GET", "page-" + nextPage, true);
+            xmlHttp.open("GET", "validate/" + validateLink.firstElementChild.innerHTML, true);
             xmlHttp.send();
         })
-    });
+    })
+}
+
+function addSlideEffect(listType, startPage, endPage) {
+
+    if (endPage > startPage) {
+        document.querySelector("." + listType + "s-list").classList.add("slideInRight");
+        document.querySelector("." + listType + "s-list").classList.remove("slideInLeft");
+    } else if (endPage < startPage) {
+        document.querySelector("." + listType + "s-list").classList.remove("slideInRight");
+        document.querySelector("." + listType + "s-list").classList.add("slideInLeft");
+    } else {
+        document.querySelector("." + listType + "s-list").classList.remove("slideInLeft");
+        document.querySelector("." + listType + "s-list").classList.remove("slideInRight");
+    }
+
 }
 
 /* Bootstrap navbar */
@@ -253,9 +350,14 @@ Array.prototype.slice.call(forms)
         }
     });
 
-//Adding events listener on pagination items to only reload the posts with Ajax
-//The function calls itself to reload the events listeners after the elements have been reloaded by Ajax
-reloadPosts()
+/*Adding events listeners on pagination items to only reload the posts with Ajax
+  The function calls itself to reload the events listeners after the elements have been reloaded by Ajax*/
+setReloadContainerListeners(postContainerAdminPage, "post", true);
+setReloadContainerListeners(postContainerPostPage, "post", false);
+setReloadContainerListeners(commentsContainerAdminPage, "comment", true)
+setValidationListeners()
+
+
 
 
 

@@ -3,10 +3,9 @@
 namespace App\EntityManager;
 
 use App\Entity\User;
-use App\Lib\DatabaseConnection;
-use \Twig\Environment as Twig;
+use Twig\Environment as Twig;
 
-class UserManager
+class UserManager extends Manager
 {
     /**
      * Return the confirmation mail link
@@ -15,8 +14,6 @@ class UserManager
      */
     public function createUser(array $formRegister): string
     {
-        $connexion = new DatabaseConnection();
-
         $fullName = explode(" ", $formRegister['fullName']);
         $lastName = $fullName[0];
         $firstName = $fullName[1];
@@ -27,7 +24,7 @@ class UserManager
         //Generates a code that will be used in the confirmation link sent by email
         $verificationCode = bin2hex(openssl_random_pseudo_bytes(20));
 
-        $statement = $connexion->getConnection()->prepare(
+        $statement = $this->connection->getConnection()->prepare(
             "INSERT INTO blog.`user`
                 (mail, pseudo, last_name, first_name, password, verification_code, confirmed_mail, user_type_id)
                 VALUES(:mail, :pseudo, :last_name, :first_name, :password, 
@@ -58,9 +55,7 @@ class UserManager
      */
     public function confirmMail(string $mail, string $verificationCode): array
     {
-        $connexion = new DatabaseConnection();
-
-        $statement = $connexion->getConnection()->prepare(
+        $statement = $this->connection->getConnection()->prepare(
             "UPDATE blog.`user`
                    SET confirmed_mail=:confirmed_mail, verification_code=:reset_verification_code
                    WHERE mail=:mail AND verification_code=:verification_code
@@ -92,9 +87,7 @@ class UserManager
      */
     public function getUser(int $userId = 0, string $mail = ""): ?User
     {
-        $connexion = new DatabaseConnection();
-
-        $statement = $connexion->getConnection()->prepare(
+        $statement = $this->connection->getConnection()->prepare(
             "SELECT user_id, mail, pseudo, last_name, first_name, password, user_type_id
              FROM user
              WHERE user_id = :user_id
@@ -130,9 +123,7 @@ class UserManager
      */
     public function checkDataAlreadyExists(string $field, string $data): bool
     {
-        $connexion = new DatabaseConnection();
-
-        $statement = $connexion->getConnection()->prepare(
+        $statement = $this->connection->getConnection()->prepare(
             "SELECT count(user_id) as 'nbLines'
                    FROM user
                    WHERE " . $field . "=:data"
@@ -146,9 +137,7 @@ class UserManager
 
     public function checkLogin(string $mail , string $password): bool
     {
-        $connexion = new DatabaseConnection();
-
-        $statement = $connexion->getConnection()->prepare(
+        $statement = $this->connection->getConnection()->prepare(
             "SELECT password as 'password_hash'
                    FROM user
                    WHERE mail=:mail"

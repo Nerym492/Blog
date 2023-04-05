@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Entity\User;
 use \Twig\Environment as Twig;
 use App\EntityManager\UserManager;
 

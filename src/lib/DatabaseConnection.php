@@ -20,7 +20,47 @@ class DatabaseConnection
                 $_SESSION['messageClass'] = "danger";
             }
         }
-
         return $this->database;
     }
+
+    /**
+     * @param int $rowLimit Number of lines max returned by the query
+     * @param int $offset OFFSET in the LIMIT clause
+     * @param string $selectQuery Select sub request to execute with the limit
+     * @param string $orderBy Sorted database field
+     * @param string $orderBySuffix ASC or DESC
+     * @return array
+     */
+    public function execQueryWithLimit(int $rowLimit, int $offset, string $selectQuery, string $orderBy, string $orderBySuffix = ""): array
+    {
+        $orderByString = "ORDER BY " . $orderBy;
+
+        if (in_array($orderBySuffix, ['ASC', 'DESC'])){
+            $orderByString .= " ". $orderBySuffix;
+        }
+
+        $connexion = $this->getConnection();
+        /*Set this attribute, so we can use integer parameter in PDO execute function
+          For offset and limit parameters*/
+        $connexion->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
+
+        $statement = $connexion->prepare(
+            "SELECT *
+                       FROM (
+                            " . $selectQuery . "
+                            LIMIT :limitParam OFFSET :offsetParam
+                        ) p
+                    " . $orderByString
+        );
+        $statement->execute([
+            ':limitParam' => $rowLimit,
+            ':offsetParam' => $offset
+        ]);
+
+        $result = $statement->fetchAll();
+        $statement->closeCursor();
+
+        return $result;
+    }
+
 }

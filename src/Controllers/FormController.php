@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Entity\Post;
 use App\EntityManager\PostManager;
 use App\EntityManager\UserManager;
 use App\EntityManager\CommentManager;
@@ -13,8 +14,9 @@ use PHPMailer\PHPMailer\PHPMailer;
  * Summary of FormController
  * Forms management
  */
-class FormController
+class FormController extends AbstractController
 {
+
     public function showRegisterForm(Twig $twig): void
     {
         echo $twig->render('signIn.twig');
@@ -25,9 +27,26 @@ class FormController
         echo $twig->render('logIn.twig');
     }
 
-    public function showPostForm(Twig $twig): void
+    public function showPostForm(Twig $twig, ?int $postNum = null): void
     {
-        echo $twig->render('postForm.twig', ['page' => 'New post']);
+        //Editing a post
+        if (!is_null($postNum)) {
+            $postManager = new PostManager();
+            $post = $postManager->getPost($postNum);
+            $formTitle = "Edit a post";
+            $formButtonText = "Edit";
+        } else {
+            $post = null;
+            $formTitle = "Create a new post";
+            $formButtonText = "Create";
+        }
+
+        echo $twig->render('postForm.twig', [
+            'page' => 'New post',
+            'form' => $post,
+            'formTitle' => $formTitle,
+            'formButtonText' => $formButtonText
+        ]);
     }
 
     public function checkCommentForm(int $postId): void
@@ -71,7 +90,7 @@ class FormController
             //Connect the user
             $userManager->connectUser($twig, $mail);
             //Displays home page and "Log in" is replaced by "Log out" in the navbar
-            echo $twig->render('home.twig');
+            header("Location: /blog/public/home/", true ,303);
         }
     }
 
@@ -104,7 +123,7 @@ class FormController
             $checkForm['isValid'] = false;
         }
 
-        //If the form is valid, we clear the array form_errors
+        //If the form is valid, we clear the array form
         if ($checkForm['isValid']) {
             //mailSent = true or false
             $mailStatus = $this->sendMail($checkForm['form']['mail'], $checkForm['form']['fullName'],
@@ -116,7 +135,7 @@ class FormController
         //Displays the home page with errors if there are any
         echo $twig->render('home.twig', [
             'page' => "Phrase d'accroche",
-            'form_errors' => $checkForm['form'],
+            'form' => $checkForm['form'],
             'isValid' => $checkForm['isValid'],
             'mailSent' => $mailStatus['mailSent'],
             'message' => $mailStatus['message']
@@ -176,14 +195,14 @@ class FormController
 
         echo $twig->render('signIn.twig', [
             'page' => "Create an account",
-            'form_errors' => $checkForm['form'],
+            'form' => $checkForm['form'],
             'isValid' => $checkForm['isValid'],
             'message' => $message,
             'messageClass' => $messageClass
         ]);
     }
 
-    public function checkPostForm(Twig $twig): void
+    public function checkPostForm(Twig $twig, ?int $postId = null): void
     {
         $checkForm['isValid'] = true;
 
@@ -197,24 +216,59 @@ class FormController
 
         if ($checkForm['isValid']) {
             $postManager = new PostManager();
-            if ($postManager->createPost($checkForm['form'])) {
-                $_SESSION['message'] = 'The post has been successfully added !';
-                $_SESSION['messageClass'] = 'success';
-                header('Location: /blog/public/posts/#site-heading', true, 303);
+            if (!is_null($postId)){
+                //Post before edit
+                $post = $postManager->getPost($postId);
+                //Post after edit
+                $editedPost = new Post();
+                $editedPost->setPostId($postId);
+                $editedPost->setTitle($checkForm['form']['title']);
+                $editedPost->setExcerpt($checkForm['form']['excerpt']);
+                $editedPost->setContent($checkForm['form']['content']);
+                $editedPost->setLastUpdateDate($post->getLastUpdateDate());
+                //Comparing edited post with old post
+                if ($editedPost->getTitle() != $post->getTitle() ||
+                    $editedPost->getExcerpt() != $post->getExcerpt() ||
+                    $editedPost->getContent() != $post->getContent()){
+
+                    if($postManager->updatePost($editedPost)){
+                        $_SESSION['message'] = 'The post has been successfully modified !';
+                        $_SESSION['messageClass'] = 'success';
+                    }
+                } else {
+                    $_SESSION['message'] = 'Nothing to update !';
+                    $_SESSION['messageClass'] = 'warning';
+                }
+
+                $twig->addGlobal('session', $_SESSION);
+
+                echo $twig->render('postForm.twig', [
+                    'page' => 'Edit post',
+                    'form' => $checkForm['form'],
+                    'formTitle' => 'Edit a post',
+                    'formButtonText' => 'Edit'
+                ]);
+
+                unset($_SESSION['message']);
+                unset($_SESSION['messageClass']);
+            } else {
+                if ($postManager->createPost($checkForm['form'])) {
+                    $_SESSION['message'] = 'The post has been successfully added !';
+                    $_SESSION['messageClass'] = 'success';
+                    header('Location: /blog/public/posts/#site-heading', true, 303);
+                }
             }
         }
 
-
-        if(isset($_SESSION['messageClass']) and $_SESSION['messageClass'] == "danger"){
-            $twig->addGlobal('session', $_SESSION);
+        // If something goes wrong in the database, we get here
+        if (isset($_SESSION['messageClass']) and $_SESSION['messageClass'] == "danger") {
             echo $twig->render('postForm.twig', [
                 'page' => 'New post',
-                'form_errors' => $checkForm['form']
+                'form' => $checkForm['form']
             ]);
         }
-
-
     }
+
     /**
      * This function can only be used after the validation of the form.
      * Used in checkContactForm
