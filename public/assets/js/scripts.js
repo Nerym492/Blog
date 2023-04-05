@@ -171,14 +171,14 @@ function setValidationListeners(){
 function addSlideEffect(listType, startPage, endPage) {
 
     if (endPage > startPage) {
-        document.querySelector("." + listType + "s-list").classList.add("slideInRight");
-        document.querySelector("." + listType + "s-list").classList.remove("slideInLeft");
+        document.querySelector("." + listType + "s-list").classList.add("slide-in-right");
+        document.querySelector("." + listType + "s-list").classList.remove("slide-in-left");
     } else if (endPage < startPage) {
-        document.querySelector("." + listType + "s-list").classList.remove("slideInRight");
-        document.querySelector("." + listType + "s-list").classList.add("slideInLeft");
+        document.querySelector("." + listType + "s-list").classList.remove("slide-in-right");
+        document.querySelector("." + listType + "s-list").classList.add("slide-in-left");
     } else {
-        document.querySelector("." + listType + "s-list").classList.remove("slideInLeft");
-        document.querySelector("." + listType + "s-list").classList.remove("slideInRight");
+        document.querySelector("." + listType + "s-list").classList.remove("slide-in-left");
+        document.querySelector("." + listType + "s-list").classList.remove("slide-in-right");
     }
 
 }
