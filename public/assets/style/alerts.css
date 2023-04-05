@@ -9,7 +9,7 @@
   box-shadow: 0 0 15px 5px #ccc;
 }
 
-@media (width <= 550px) {
+@media (max-width: 550px) {
   .alert-box {
     margin-right: 0.5rem;
     margin-left: 0.5rem;
