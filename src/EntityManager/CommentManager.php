@@ -2,19 +2,16 @@
 
 namespace App\EntityManager;
 
-use App\Lib\DatabaseConnection;
 use App\Entity\Comment;
-use App\Lib\Services;
 
-class CommentManager
+class CommentManager extends Manager
 {
 
 
     public function getCommentsByPost(int $postId): ?array
     {
-        $connexion = new DatabaseConnection();
 
-        $statement = $connexion->getConnection()->prepare(
+        $statement = $this->connection->getConnection()->prepare(
             "SELECT c.*, u.pseudo
              FROM comment c 
              LEFT OUTER JOIN user u ON c.user_id = u.user_id
@@ -33,8 +30,6 @@ class CommentManager
 
     public function getCommentsListWithLimit(int $pageNum, int $commentLimit, string $filter = ""): ?array
     {
-        $connexion = new DatabaseConnection();
-
         $selectQuery = "SELECT c.*, u.pseudo
                         FROM comment c 
                         LEFT OUTER JOIN user u ON c.user_id = u.user_id";
@@ -42,19 +37,21 @@ class CommentManager
         $countQuery = "SELECT COUNT(*) as 'rowsCount'
                        FROM (" . $selectQuery . ") sq";
 
-        $countQueryStatement = $connexion->getConnection()->prepare($countQuery);
+        $countQueryStatement = $this->connection->getConnection()->prepare($countQuery);
         $countQueryStatement->execute();
         $commentsRowsCount = $countQueryStatement->fetch()['rowsCount'];
 
         if ($commentsRowsCount > 0) {
-            $pageDelimitation = Services::calcPageAndOffset($commentLimit, $pageNum, $commentsRowsCount, "DESC");
-            $rows = $connexion->execQueryWithLimit($commentLimit, $pageDelimitation['offset'], $selectQuery,
+            //Recalculate offset and limit parameters
+            $pageDelimitation = $this->calcPageAndOffset($commentLimit, $pageNum, $commentsRowsCount, "DESC");
+            $rows = $this->connection->execQueryWithLimit($pageDelimitation['rowsLimit'], $pageDelimitation['offset'], $selectQuery,
                 "comment_id", "DESC");
         } else {
             $pageDelimitation['pageNum'] = $pageNum;
             $rows = [];
         }
 
+        //Creating a new comment object to store the data
         $comments = $this->createCommentsWithRows($rows);
 
         return ['data' => $comments, 'nbLines' => $commentsRowsCount, 'currentPage' => $pageDelimitation['pageNum']];
@@ -67,9 +64,7 @@ class CommentManager
      */
     public function createComment(int $postId): bool
     {
-        $connexion = new DatabaseConnection();
-
-        $statement = $connexion->getConnection()->prepare(
+        $statement = $this->connection->getConnection()->prepare(
             "INSERT INTO blog.comment
                    (post_id, user_id, comment, creation_date, valid)
                    VALUES(:post_id, :user_id, :comment, :creation_date, :valid);"
@@ -92,9 +87,34 @@ class CommentManager
 
     }
 
+    public function deleteComment(int $commentId): bool
+    {
+        $statement = $this->connection->getConnection()->prepare(
+            "DELETE FROM blog.comment 
+                   WHERE comment_id=:commentId"
+        );
+
+        $statement->execute([':commentId' => $commentId]);
+
+        return $statement->rowCount() == 1;
+    }
+
+    public function validateComment(int $commentId): bool
+    {
+        $statement = $this->connection->getConnection()->prepare(
+            "UPDATE blog.comment
+                   SET valid = 1 
+                   WHERE comment_id=:commentId"
+        );
+
+        $statement->execute([':commentId' => $commentId]);
+
+        return $statement->rowCount() == 1;
+    }
+
     private function createCommentsWithRows(array $rows): array
     {
-        $comments = null;
+        $comments = [];
 
         foreach ($rows as $row) {
             $comment = new Comment();

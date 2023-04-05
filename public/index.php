@@ -32,7 +32,6 @@ $router = new \Bramus\Router\Router();
 
 $formController = new FormController();
 $userController = new UserController();
-$adminController = new AdminController();
 
 $router->set404(function() use ($twig) {
     header('HTTP/1.1 404 Not Found');
@@ -143,28 +142,38 @@ $router->mount('/logIn', function () use ($router, $twig, $formController, $user
 });
 
 if (isset($_SESSION['isAdmin']) and ($_SESSION['isAdmin'])){
-    $router->mount('/administration', function () use ($router, $twig, $adminController) {
-
+    $router->mount('/administration', function () use ($router, $twig) {
+        $adminController = new AdminController();
+        //Loads the entire page
         $router->get('/', function () use ($twig, $adminController) {
             $adminController->showAdminPanel($twig);
         });
 
+        //The posts list is reloaded
         $router->get('/posts-page-(\d+)', function ($pageNum) use ($twig, $adminController) {
             $adminController->reloadPostsList($twig, $pageNum);
         });
 
+        //A post is deleted
         $router->get('/delete/post-(\d+)-page-(\d+)', function ($postId, $pageNum) use ($twig, $adminController) {
             $adminController->deletePost($twig, $pageNum, $postId);
         });
 
+        //The comment list is reloaded
         $router->get('/comments-page-(\d+)', function ($pageNum) use ($twig, $adminController){
            $adminController->reloadCommentsList($twig, $pageNum);
+        });
+
+        //The comment is deleted
+        $router->get('/delete/comment-(\d+)-page-(\d+)', function ($commentId, $pageNum) use ($twig, $adminController){
+            $adminController->deleteComment($twig, $pageNum, $commentId);
+        });
+
+        //The comment is validated
+        $router->get('/validate/comment-(\d+)-page-(\d+)', function ($pageNum) use ($twig, $adminController){
+            $adminController->reloadCommentsList($twig, $pageNum);
         });
     });
 }
 
 $router->run();
-
-//var_dump($_SERVER['REQUEST_METHOD']);
-//var_dump($_POST);
-//var_dump($_SESSION);

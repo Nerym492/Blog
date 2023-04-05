@@ -1,15 +1,30 @@
-<div class="comments-list col-10 mx-auto">
+<div class="comments-list col-10 {{ commentCssClass.commentListMargin }}">
     {% for comment in comments %}
         {% if comment.post %}
             {% set flexDirection = 'flex-column badge-active' %}
         {% else %}
             {% set flexDirection = 'flex-start' %}
         {% endif %}
-        <div class="d-flex mb-4 comment-line flex-wrap-reverse">
+        <div class="d-flex mb-4 {{ commentCssClass.commentLine }} flex-wrap-reverse">
             {% if comment.post %}
-                <span class="badge text-bg-{{ comment.badgeClass }} badge-comment">{{ comment.badgeText }}</span>
+                <div id="badge-comment-container" class="d-flex flex-column justify-content-evenly">
+                    <span class="badge text-bg-{{ comment.badgeClass }} badge-comment">{{ comment.badgeText }}</span>
+                    {% if comment.badgeClass == "warning" %}
+                        <div class="d-flex justify-content-evenly">
+                            <a class="comment-link-check delete-post-link" tabindex="0" role="button">
+                                <span class="d-none">comment-{{ comment.line.commentId }}-page-{{ paginationMenu.activePage }}</span>
+                                <i class="fa-solid fa-check fa-lg"></i>
+                            </a>
+                            <a class="comment-link-xmark delete-comment-link" data-bs-toggle="modal"
+                               href="#modal-confirm">
+                                <span class="d-none">comment-{{ comment.line.commentId }}-page-{{ paginationMenu.activePage }}</span>
+                                <i class="fa-solid fa-xmark fa-lg"></i>
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
             {% endif %}
-            <div class="d-flex {{ flexDirection }}">
+            <div class="d-flex {{ commentCssClass.flexDirection }}">
                 {% if comment.post %}
                     <h3 class="mb-2">{{ comment.post.title }}</h3>
                 {% else %}

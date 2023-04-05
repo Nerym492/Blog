@@ -2,12 +2,10 @@
 
 namespace App\EntityManager;
 
-use App\Entity\Comment;
 use App\Entity\Post;
 use App\Lib\DatabaseConnection;
-use App\Lib\Services;
 
-class PostManager
+class PostManager extends Manager
 {
 
     /**
@@ -21,7 +19,7 @@ class PostManager
         $postsRowsData = [];
         $connexion = new DatabaseConnection();
 
-        $statement = $connexion->getConnection()->prepare(
+        $statement = $this->connection->getConnection()->prepare(
             "SELECT COUNT(p.post_id) as 'nbPosts'
                      FROM blog.post p"
         );
@@ -30,13 +28,13 @@ class PostManager
         $postsRowsCount = $statement->fetch()['nbPosts'];
 
         if ($postsRowsCount > 0) {
-            $pageDelimitation = Services::calcPageAndOffset($postLimit, $pageNum, $postsRowsCount, "DESC");
+            $pageDelimitation = $this->calcPageAndOffset($postLimit, $pageNum, $postsRowsCount, "DESC");
 
             $selectQuery = "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, 
                                    p.creation_date, u.pseudo
                             FROM blog.post p
                             LEFT OUTER JOIN blog.user u on p.user_id = u.user_id";
-            $postsRowsData = $connexion->execQueryWithLimit($postLimit, $pageDelimitation['offset'], $selectQuery,
+            $postsRowsData = $connexion->execQueryWithLimit($pageDelimitation['rowsLimit'], $pageDelimitation['offset'], $selectQuery,
                 "post_id", "DESC");
         } else {
             $pageDelimitation['pageNum'] = $pageNum;
@@ -54,9 +52,7 @@ class PostManager
 
     public function getPost(int $postId): ?Post
     {
-        $connexion = new DatabaseConnection();
-
-        $statement = $connexion->getConnection()->prepare(
+        $statement = $this->connection->getConnection()->prepare(
             "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, p.creation_date
             FROM blog.post p
             WHERE p.post_id = :postId"
@@ -82,10 +78,9 @@ class PostManager
     {
         $dateNow = new \DateTime('now', new \DateTimeZone($_ENV['TIMEZONE']));
         $dateNow = $dateNow->format('Y-m-d H:i:s');
-        $connexion = new DatabaseConnection();
 
         try {
-            $statement = $connexion->getConnection()->prepare(
+            $statement = $this->connection->getConnection()->prepare(
                 "INSERT INTO blog.post
                    (user_id, title, excerpt, content, last_update_date, creation_date)
                    VALUES(:user_id, :title, :excerpt, :content, :last_update_date, :creation_date);"
@@ -119,9 +114,7 @@ class PostManager
      */
     public function updatePost(Post $post): bool
     {
-        $connexion = new DatabaseConnection();
-
-        $statement = $connexion->getConnection()->prepare(
+        $statement = $this->connection->getConnection()->prepare(
             "UPDATE post
                    SET title=:title, excerpt=:excerpt, content=:content
                    WHERE post_id=:post_id"
@@ -142,8 +135,7 @@ class PostManager
      */
     public function deletePost(int $postId): bool
     {
-        $connexion = new DatabaseConnection();
-        $statement = $connexion->getConnection()->prepare(
+        $statement = $this->connection->getConnection()->prepare(
             "DELETE FROM post
                    WHERE post_id=:postId"
         );

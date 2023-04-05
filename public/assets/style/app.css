@@ -414,11 +414,11 @@ h1,
     transition: opacity 0.4s ease-out;
 }
 
-.form-check-input:invalid {
+.form-check-input.invalid:invalid {
     border-color: var(--bs-danger);
 }
 
-.form-check-input:invalid:focus {
+.form-check-input.invalid:invalid:focus {
     box-shadow: 0 0 0 0.25rem rgba(var(--bs-danger-rgb), 0.25)
 }
 
@@ -430,7 +430,7 @@ h1,
     box-shadow: 0 0 0 0.25rem rgba(var(--bs-success-rgb), 0.25)
 }
 
-.form-check-input:invalid + small {
+.form-check-input.invalid:invalid + small {
     border-color: var(--bs-danger);
     color: var(--bs-danger);
     opacity: 1;
@@ -445,6 +445,13 @@ h1,
     height: 0;
     transition: opacity 0.4s ease-out;
 }
+
+.form-check-input + small {
+    height: 0;
+    opacity: 0;
+}
+
+
 
 #group-gdpr-checkbox {
     grid-row: 4;
@@ -485,16 +492,16 @@ h1,
     font-weight: bold;
 }
 
-.btn-yellow{
-    background:#FFC800;
+.btn-yellow {
+    background: #FFC800;
     color: #1A2E35;
     font-weight: bold;
 }
 
-.btn-yellow:hover, .btn-yellow:active{
-    background:#CCA000!important;
-    color: #1A2E35!important;
-    border-color: var(--bs-btn-hover-border-color)!important;
+.btn-yellow:hover, .btn-yellow:active {
+    background: #CCA000 !important;
+    color: #1A2E35 !important;
+    border-color: var(--bs-btn-hover-border-color) !important;
 }
 
 .link-brown {
@@ -509,7 +516,7 @@ h1,
 }
 
 .link-brown a {
-    color:#8C5C4A;
+    color: #8C5C4A;
     text-decoration: none;
 }
 
@@ -529,20 +536,20 @@ h1,
     scale: 1.1;
 }
 
-#form-post{
+#form-post {
     display: grid;
     grid-template-columns: minmax(320px, 700px);
 }
 
-#content-post{
+#content-post {
     height: 400px;
 }
 
-.page-link{
+.page-link {
     cursor: pointer;
 }
 
-.badge{
+.badge {
     display: inline-flex;
     align-self: center;
     justify-content: center;
@@ -551,7 +558,7 @@ h1,
     min-height: 25px;
 }
 
-.pagination{
+.pagination {
     --bs-pagination-color: #8a4210;
     --bs-pagination-hover-color: #692806;
     --bs-pagination-hover-bg: rgba(105, 40, 6, 0.15);
@@ -560,12 +567,12 @@ h1,
 }
 
 @keyframes slideInLeft {
-    0%{
+    0% {
         transform: translateX(-10%);
         opacity: 0;
     }
 
-    5%{
+    5% {
         opacity: 0.4;
     }
 
@@ -581,7 +588,7 @@ h1,
         transform: translateX(10%);
     }
 
-    5%{
+    5% {
         opacity: 0.4;
     }
 
@@ -591,58 +598,67 @@ h1,
     }
 }
 
-.slideInLeft{
-    animation: slideInLeft 400ms cubic-bezier(.83,1.11,.73,.92) forwards;
+.slideInLeft {
+    animation: slideInLeft 400ms cubic-bezier(.83, 1.11, .73, .92) forwards;
 }
 
-.slideInRight{
-    animation: slideInRight 400ms cubic-bezier(.83,1.11,.73,.92) forwards;
+.slideInRight {
+    animation: slideInRight 400ms cubic-bezier(.83, 1.11, .73, .92) forwards;
 }
 
-.admin-card{
+.admin-card {
     width: 700px;
 }
 
-#comments-card{
+#comments-card {
     margin-left: 12px;
     margin-right: 24px;
 }
 
-#posts-card{
+#posts-card {
     margin-left: 12px;
     margin-right: 24px;
 }
 
 @media (max-width: 1488px) {
-    .admin-card{
+    .admin-card {
         width: 1200px;
     }
 
-    #comments-card{
+    #comments-card {
         margin-top: 40px;
         margin-left: 24px;
     }
 
-    #posts-card{
+    #posts-card {
         margin-left: 24px;
     }
 }
 
-.comment-line{
+.comment-line-admin {
     justify-content: center;
 }
 
-.badge-comment{
-    flex: 0.3;
+#badge-comment-container {
     margin-right: 20px;
 }
 
-.badge-active{
+.badge-comment {
+    flex: 0.3;
+    max-height: 25px;
+}
+
+.badge-active {
     flex: 2;
 }
 
-@media (max-width: 570px) {
-    .badge-comment{
+@media (max-width: 576px) {
+    #badge-comment-container {
+        margin-right: 0;
+        height: 60px;
+    }
+
+    .badge-comment {
         flex: unset;
         max-width: 100px;
         margin-top: 5px;
@@ -650,9 +666,29 @@ h1,
         margin-bottom: 10px;
     }
 
-    .badge-active{
+    .badge-active {
         flex: unset;
         width: 100%;
     }
 
+}
+
+.comment-link-xmark,
+.comment-link-check {
+    cursor: pointer;
+    color: black;
+    transition: all 200ms ease-in-out;
+}
+
+.comment-link-check:hover {
+    color: darkgreen;
+}
+
+.comment-link-xmark:hover {
+    color: darkred;
+}
+
+.comment-link-xmark:hover,
+.comment-link-check:hover {
+    scale: 1.2;
 }

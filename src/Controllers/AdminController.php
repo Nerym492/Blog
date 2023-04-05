@@ -7,7 +7,6 @@ class AdminController extends AbstractController
 {
     const POST_LIMIT = 3;
     const COMMENT_LIMIT = 4;
-    const NB_MAX_PAGE = 5;
 
     public function showAdminPanel(Twig $twig): void
     {
@@ -17,12 +16,15 @@ class AdminController extends AbstractController
 
         $commentsContainerData = $this->getCommentsContainerData($pageNum);
 
+        $commentCssClass = $this->getCommentCssClass();
+
         echo $twig->render('adminPanel.twig', [
             'page' => 'Administration',
             'posts' => $posts['data'],
             'postsPaginationMenu' => $postsPaginationMenu,
             'comments' => $commentsContainerData['comments']['data'],
-            'commentsPaginationMenu' => $commentsContainerData['paginationMenu']
+            'commentsPaginationMenu' => $commentsContainerData['paginationMenu'],
+            'commentCssClass' => $commentCssClass
         ]);
     }
 
@@ -41,9 +43,12 @@ class AdminController extends AbstractController
     public function reloadCommentsList(Twig $twig, int $pageNum){
         $commentsContainerData = $this->getCommentsContainerData($pageNum);
 
+        $commentCssClass = $this->getCommentCssClass();
+
         echo $twig->render('partials/commentsList.twig', [
             'comments' => $commentsContainerData['comments']['data'],
-            'paginationMenu' => $commentsContainerData['paginationMenu']
+            'paginationMenu' => $commentsContainerData['paginationMenu'],
+            'commentCssClass' => $commentCssClass
         ]);
     }
 
@@ -57,6 +62,21 @@ class AdminController extends AbstractController
             'posts' => $posts['data'],
             'paginationMenu' => $paginationMenu
         ]);
+    }
+
+    public function deleteComment(Twig $twig, int $pageNum, int $commentId)
+    {
+        $this->commentManager->deleteComment($commentId);
+
+        $commentsContainerData = $this->getCommentsContainerData($pageNum);
+        $commentCssClass = $this->getCommentCssClass();
+
+        echo $twig->render('partials/commentsList.twig', [
+            'comments' => $commentsContainerData['comments']['data'],
+            'paginationMenu' => $commentsContainerData['paginationMenu'],
+            'commentCssClass' => $commentCssClass
+        ]);
+
     }
 
     private function getCommentsContainerData(int $pageNum): array
@@ -77,5 +97,14 @@ class AdminController extends AbstractController
         }
 
         return ['comments' => $comments, 'paginationMenu' => $paginationMenu];
+    }
+
+    private function getCommentCssClass(): array
+    {
+        $commentCssClass['commentLine'] = "comment-line-admin";
+        $commentCssClass['flexDirection'] = "flex-column badge-active";
+        $commentCssClass['commentListMargin'] = "mx-auto";
+
+        return $commentCssClass;
     }
 }

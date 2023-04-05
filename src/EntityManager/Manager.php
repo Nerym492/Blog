@@ -1,14 +1,28 @@
 <?php
 
-namespace App\Lib;
+namespace App\EntityManager;
 
-abstract class Services
+use App\Lib\DatabaseConnection;
+
+abstract class Manager
 {
+    protected DatabaseConnection $connection;
+
+    public function __construct()
+    {
+        $this->connection = new DatabaseConnection();
+    }
+
     public static function calcPageAndOffset(int $rowsLimit, int $pageNum, int $rowsCount, string $sortOrder = ""): array
     {
         if ($sortOrder === "DESC") {
             $offset = $rowsCount - ($rowsLimit * $pageNum);
             if ($offset < 0) {
+                if ($offset + $rowsLimit === 0){
+                    $pageNum--;
+                } else {
+                    $rowsLimit = $offset + $rowsLimit;
+                }
                 $offset = 0;
             }
         } else {
@@ -23,6 +37,6 @@ abstract class Services
             $offset -= $rowsLimit;
         }
 
-        return ['offset' => $offset, 'pageNum' => $pageNum];
+        return ['offset' => $offset, 'pageNum' => $pageNum, 'rowsLimit' => $rowsLimit];
     }
 }

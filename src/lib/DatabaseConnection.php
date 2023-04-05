@@ -40,6 +40,8 @@ class DatabaseConnection
         }
 
         $connexion = $this->getConnection();
+        /*Set this attribute, so we can use integer parameter in PDO execute function
+          For offset and limit parameters*/
         $connexion->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
 
         $statement = $connexion->prepare(

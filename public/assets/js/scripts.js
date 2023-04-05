@@ -1,5 +1,4 @@
 const inputs = document.querySelectorAll('input[type="text"], input[type="checkbox"], textarea, #password-log-in');
-let containersToReload = document.querySelectorAll('#posts-container, #admin-posts-container')
 let postContainerPostPage = document.getElementById("posts-container");
 let postContainerAdminPage = document.getElementById("admin-posts-container");
 let commentsContainerAdminPage = document.getElementById("admin-comments-container");
@@ -339,7 +338,7 @@ Array.prototype.slice.call(forms)
   The function calls itself to reload the events listeners after the elements have been reloaded by Ajax*/
 setReloadContainerListeners(postContainerAdminPage, "post", true);
 setReloadContainerListeners(postContainerPostPage, "post", false);
-setReloadContainerListeners(commentsContainerAdminPage, "comment", false)
+setReloadContainerListeners(commentsContainerAdminPage, "comment", true)
 
 
 

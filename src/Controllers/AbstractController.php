@@ -28,18 +28,31 @@ abstract class AbstractController
     protected function getPagination(int $nbRows, int $limitPerPage, int $activePage): array
     {
         //use pagination class with results, per page and page
-        $pagination = new Pagination($nbRows, $limitPerPage, $activePage);
-        //get indexes in page
-        //StrategySimple(param = number of pages visible in the pagination)
-        $indexes = $pagination->getIndexes(new StrategySimple(5));
+        if ($nbRows > 0) {
+            $pagination = new Pagination($nbRows, $limitPerPage, $activePage);
+            //get indexes in page
+            //StrategySimple(param = number of pages visible in the pagination)
+            $indexes = $pagination->getIndexes(new StrategySimple(5));
+            $pagesNumbers = [
+                'firstPage' => $pagination->getFirstPage(),
+                'lastPage' => $pagination->getLastPage(),
+                'previousPage' => $pagination->getPreviousPage(),
+                'nextPage' => $pagination->getNextPage(),
+                'activePage' => $pagination->getPage(),
+                'iterator' => $indexes->getIterator()
+            ];
+        } else {
+            $pagesNumbers = [
+                'firstPage' => 1,
+                'lastPage' => 1,
+                'previousPage' => 1,
+                'nextPage' => 1,
+                'activePage' => 1,
+                'iterator' => 1
+            ];
+        }
 
-        return [
-            'firstPage' => $pagination->getFirstPage(),
-            'lastPage' => $pagination->getLastPage(),
-            'previousPage' => $pagination->getPreviousPage(),
-            'nextPage' => $pagination->getNextPage(),
-            'activePage' => $pagination->getPage(),
-            'iterator' => $indexes->getIterator()
-        ];
+
+        return $pagesNumbers;
     }
 }
