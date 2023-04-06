@@ -555,7 +555,7 @@ header.masthead .post-heading .meta a {
   min-height: 25px;
 }
 
-.active>.page-link{
+.active >.page-link {
   color: white;
   background-color: #8C5C4A;
   border-color: #8C5C4A;

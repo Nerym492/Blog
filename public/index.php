@@ -8,10 +8,11 @@ use App\Controllers\PostController;
 use App\Controllers\FormController;
 use App\Controllers\UserController;
 use App\Controllers\AdminController;
+use App\Lib\Session;
 use Dotenv\Dotenv;
 
 
-session_start();
+//$session = new Session();
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
@@ -26,7 +27,7 @@ $twig = new \Twig\Environment($loader, [
 ]);
 
 $twig->addExtension(new \Twig\Extension\DebugExtension());
-$twig->addGlobal('session', $_SESSION);
+//$twig->addGlobal('session', $session);
 
 $router = new \Bramus\Router\Router();
 

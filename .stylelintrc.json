@@ -7,6 +7,8 @@
     "declaration-block-trailing-semicolon": "always",
     "selector-list-comma-newline-after": "always",
     "number-leading-zero": "always",
-    "max-empty-lines": 2
+    "max-empty-lines": 2,
+    "block-opening-brace-space-before": "always",
+    "selector-combinator-space-before": "always"
   }
 }

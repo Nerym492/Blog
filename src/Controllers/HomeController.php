@@ -8,6 +8,6 @@ class HomeController extends AbstractController
 {
 
     public function showHome(Twig $twig): void{
-        echo $twig->render('home.twig',['page' => "Phrase d'accroche"]);
+        print_r($this->renderView('home.twig',['page' => "Phrase d'accroche"]));
     }
 }
