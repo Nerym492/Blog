@@ -2,28 +2,52 @@
 
 namespace App\Controllers;
 
-use \Twig\Environment as Twig;
+use Twig\Environment as Twig;
 use App\EntityManager\UserManager;
 
-class UserController
+/**
+ * User Controller, used when the user log in and log out
+ */
+class UserController extends AbstractController
 {
-    public function confirmMailAddress(Twig $twig, string $mail, string $verificationCode): void
+
+
+    /**
+     * Confirm mail when the user click on the link he received on his mail address
+     *
+     * @param string $mail             Mail to confirm.
+     * @param string $verificationCode Verification code.
+     *
+     * @return void
+     */
+    public function confirmMailAddress(string $mail, string $verificationCode): void
     {
-        $userManager = new UserManager();
+        $userManager      = new UserManager();
         $mailConfirmation = $userManager->confirmMail($mail, $verificationCode);
 
-        echo $twig->render('logIn.twig',[
-            'message' => $mailConfirmation['message'],
-            'messageClass' => $mailConfirmation['messageClass']
-        ]);
-    }
+        $this->renderView(
+            'logIn.twig',
+            [
+                'message'      => $mailConfirmation['message'],
+                'messageClass' => $mailConfirmation['messageClass'],
+            ]
+        );
 
-    public function logOut(Twig $twig): void
+    }//end confirmMailAddress()
+
+
+    /**
+     * Disconnect the user by clearing the session variable
+     *
+     * @return void
+     */
+    public function logOut(): void
     {
         $userManager = new UserManager();
         $userManager->disconnectUser();
-        echo $twig->render('home.twig',['session' => '']);
-    }
+        $this->renderView('home.twig', ['session' => '']);
+
+    }//end logOut()
 
 
-}
+}//end class

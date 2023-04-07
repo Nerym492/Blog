@@ -34,8 +34,13 @@ class PostManager extends Manager
                                    p.creation_date, u.pseudo
                             FROM blog.post p
                             LEFT OUTER JOIN blog.user u on p.user_id = u.user_id";
-            $postsRowsData = $connexion->execQueryWithLimit($pageDelimitation['rowsLimit'], $pageDelimitation['offset'], $selectQuery,
-                "post_id", "DESC");
+            $postsRowsData = $connexion->execQueryWithLimit(
+                $pageDelimitation['rowsLimit'],
+                $pageDelimitation['offset'],
+                $selectQuery,
+                "post_id",
+                "DESC"
+            );
         } else {
             $pageDelimitation['pageNum'] = $pageNum;
         }

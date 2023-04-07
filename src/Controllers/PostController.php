@@ -2,73 +2,121 @@
 
 namespace App\Controllers;
 
-use \Twig\Environment as Twig;
+use Twig\Environment as Twig;
 use App\EntityManager\PostManager;
 use App\EntityManager\UserManager;
 use App\EntityManager\CommentManager;
 
+/**
+ * Post Controller, used only when the url contains 'posts/'
+ */
 class PostController extends AbstractController
 {
-    const POST_LIMIT = 3;
-    const NB_MAX_PAGE = 5;
-    public function showPostsPage(Twig $twig): void
+    private const POST_LIMIT = 3;
+
+
+    /**
+     * Display the posts page.
+     *
+     * @return void
+     * @throws \Exception Database error.
+     */
+    public function showPostsPage(): void
     {
-        $postsListData = $this->getPostsListData($twig);
+        $postsListData = $this->getPostsListData();
 
-        echo $twig->render('posts.twig', [
-            'posts' => $postsListData['posts'],
-            'page' => 'Blog posts',
-            'paginationMenu' => $postsListData['paginationMenu']
-        ]);
+        $this->renderView(
+            'posts.twig',
+            [
+                'posts'          => $postsListData['posts'],
+                'page'           => 'Blog posts',
+                'paginationMenu' => $postsListData['paginationMenu'],
+            ]
+        );
 
-        if (isset($_SESSION['message'])) {
-            unset($_SESSION['message']);
-            unset($_SESSION['messageClass']);
-        }
-    }
+        $this->session->clearKeys(['message', 'messageClass']);
 
-    public function reloadPostsList(Twig $twig, int $pageNum): void
+    }//end showPostsPage()
+
+
+    /**
+     * Only reload the posts container
+     *
+     * @param integer $pageNum Number of the page in the post list pagination.
+     *
+     * @return void
+     * @throws \Exception Database error.
+     */
+    public function reloadPostsList(int $pageNum): void
     {
-        $postsListData = $this->getPostsListData($twig, $pageNum);
+        $postsListData = $this->getPostsListData($pageNum);
 
-        echo $twig->render('partials/postsList.twig', [
-            'posts' => $postsListData['posts'],
-            'paginationMenu' => $postsListData['paginationMenu'],
-        ]);
-    }
+        $this->renderView(
+            'partials/postsList.twig',
+            [
+                'posts'          => $postsListData['posts'],
+                'paginationMenu' => $postsListData['paginationMenu'],
+            ]
+        );
 
-    private function getPostsListData(Twig $twig, int $pageNum = 1): array
+    }//end reloadPostsList()
+
+
+    /**
+     * Returns a limited number of posts in a specific order
+     *
+     * @param integer $pageNum Number of the page in the post list pagination.
+     *
+     * @return array
+     * @throws \Exception Database error.
+     */
+    private function getPostsListData(int $pageNum=1): array
     {
-        //Number of posts per page
+        // Number of posts per page.
         $postManager = new PostManager();
-        $posts = $postManager->getPosts($pageNum, self::POST_LIMIT);
+        $posts       = $postManager->getPosts($pageNum, self::POST_LIMIT);
 
-        $twig->addGlobal('session', $_SESSION);
+        $this->setTwigSessionGlobals();
 
-        //use pagination class with results, per page and page
+        // Use pagination class with results, per page and page.
         $paginationMenu = $this->getPagination($posts['nbLines'], self::POST_LIMIT, $pageNum);
 
-        return ['paginationMenu' => $paginationMenu, 'posts' => $posts['data']];
-    }
+        return [
+            'paginationMenu' => $paginationMenu,
+            'posts'          => $posts['data'],
+        ];
 
-    public function showPost(Twig $twig, int $postId): void
+    }//end getPostsListData()
+
+
+    /**
+     * Display a post
+     *
+     * @param integer $postId Id of the post being read.
+     *
+     * @return void
+     */
+    public function showPost(int $postId): void
     {
-        $postManager = new PostManager();
-        $post = $postManager->getPost($postId);
-        $userManager = new UserManager();
-        $userPost = $userManager->getUser(userId: $post->getUserId());
+        $postManager    = new PostManager();
+        $post           = $postManager->getPost($postId);
+        $userManager    = new UserManager();
+        $userPost       = $userManager->getUser(userId: $post->getUserId());
         $commentManager = new CommentManager();
-        $comments = $commentManager->getCommentsByPost($postId);
+        $comments       = $commentManager->getCommentsByPost($postId);
 
-        echo $twig->render('post.twig', [
-            'post' => $post,
-            'userPost' => $userPost,
-            'comments' => $comments
-        ]);
+        $this->renderView(
+            'post.twig',
+            [
+                'post'     => $post,
+                'userPost' => $userPost,
+                'comments' => $comments,
+            ]
+        );
 
-        if (isset($_SESSION['message'])) {
-            unset($_SESSION['message']);
-            unset($_SESSION['messageClass']);
-        }
-    }
+        $this->session->clearKeys(['message', 'messageClass']);
+
+    }//end showPost()
+
+
 }

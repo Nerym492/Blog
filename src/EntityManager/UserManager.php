@@ -152,7 +152,7 @@ class UserManager extends Manager
         return ($row && password_verify($password, $row['password_hash']));
     }
 
-    public function connectUser(Twig $twig, string $mail): void
+    public function connectUser(string $mail): void
     {
         $user = $this->getUser(mail: $mail);
 
@@ -163,7 +163,6 @@ class UserManager extends Manager
             $_SESSION['last_name'] = $user->getLastName();
             $_SESSION['pseudo'] = $user->getPseudo();
             $_SESSION['isAdmin'] = $user->getIsAdmin();
-            $twig->addGlobal('session', $_SESSION);
         }
     }
 

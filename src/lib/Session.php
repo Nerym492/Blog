@@ -2,25 +2,92 @@
 
 namespace App\Lib;
 
+/**
+ * Management of the session variable
+ */
 class Session
 {
+
+
+    /**
+     * Start a new session if none exist
+     */
     public function __construct()
     {
-        if (session_status() !== 2){
+        if (session_status() !== 2) {
             session_start();
         }
-    }
 
+    }//end __construct()
+
+
+    /**
+     * Cleans and destroys the session variable
+     *
+     * @return void
+     */
     public function destroy(): void
     {
-        session_unset();
+        $_SESSION = [];
         session_destroy();
-    }
 
-    public function setAttribute(string $name, string $value): void
+    }//end destroy()
+
+
+    /**
+     * Clears the session key variable
+     *
+     * @param array $keys Keys to clear in the session array.
+     *
+     * @return void
+     */
+    public function clearKeys(array $keys): void
     {
-        $name = htmlspecialchars($name);
+        foreach ($keys as $key) {
+            if (isset($_SESSION[$key]) === true) {
+                unset($_SESSION[$key]);
+            }
+        }
+
+    }//end clearKeys()
+
+
+    /**
+     * Get the session value for the key passed in parameter
+     *
+     * @param string $key Key of the session variable.
+     *
+     * @return mixed|null
+     */
+    public function get(string $key): mixed
+    {
+        if (isset($_SESSION[$key]) === true) {
+            $sessionValue = $_SESSION[$key];
+        } else {
+            $sessionValue = null;
+        }
+
+        return $sessionValue;
+
+    }//end get()
+
+
+    /**
+     * Create a new attribute and assign it with the value passed in parameter
+     *
+     * @param string $key   Session variable key.
+     * @param string $value Session value associated with the name.
+     *
+     * @return void
+     */
+    public function set(string $key, string $value): void
+    {
+        $key   = htmlspecialchars($key);
         $value = htmlspecialchars($value);
-        $_SESSION[$name] = $value;
-    }
-}
+
+        $_SESSION[$key] = $value;
+
+    }//end set()
+
+
+}//end class
