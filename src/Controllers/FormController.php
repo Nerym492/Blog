@@ -67,10 +67,10 @@ class FormController extends AbstractController
         $this->renderView(
             'postForm.twig',
             [
-                'page'           => 'New post',
-                'form'           => $post,
-                'formTitle'      => $formTitle,
-                'formButtonText' => $formButtonText,
+             'page'           => 'New post',
+             'form'           => $post,
+             'formTitle'      => $formTitle,
+             'formButtonText' => $formButtonText,
             ]
         );
 
@@ -129,8 +129,8 @@ class FormController extends AbstractController
             $this->renderView(
                 'logIn.twig',
                 [
-                    'message'      => $message,
-                    'messageClass' => $messageClass,
+                 'message'      => $message,
+                 'messageClass' => $messageClass,
                 ]
             );
         } else {
@@ -157,9 +157,9 @@ class FormController extends AbstractController
 
         // Example : 'htmlName' => 'regexPattern'.
         $patterns = [
-            'fullName' => '/^([A-z]){3,25}\s{1}([A-z]){3,25}$/',
-            'mail'     => '/^([A-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/',
-        ];
+                     'fullName' => '/^([A-z]){3,25}\s{1}([A-z]){3,25}$/',
+                     'mail'     => '/^([A-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/',
+                    ];
 
         // Check form data with patterns above.
         $checkForm = $this->checkFormPatterns($patterns);
@@ -189,11 +189,11 @@ class FormController extends AbstractController
         $this->renderView(
             'home.twig',
             [
-                'page'     => "Phrase d'accroche",
-                'form'     => $checkForm['form'],
-                'isValid'  => $checkForm['isValid'],
-                'mailSent' => $mailStatus['mailSent'],
-                'message'  => $mailStatus['message'],
+             'page'     => "Phrase d'accroche",
+             'form'     => $checkForm['form'],
+             'isValid'  => $checkForm['isValid'],
+             'mailSent' => $mailStatus['mailSent'],
+             'message'  => $mailStatus['message'],
             ]
         );
 
@@ -212,11 +212,11 @@ class FormController extends AbstractController
         $messageClass = '';
 
         $patterns = [
-            'pseudo'   => '/^[A-z\d]{3,25}$/',
-            'fullName' => '/^([A-z]){3,25}\s([A-z]){3,25}$/',
-            'mail'     => '/^([A-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/',
-            'password' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
-        ];
+                     'pseudo'   => '/^[A-z\d]{3,25}$/',
+                     'fullName' => '/^([A-z]){3,25}\s([A-z]){3,25}$/',
+                     'mail'     => '/^([A-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/',
+                     'password' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
+                    ];
 
         $checkForm = $this->checkFormPatterns($patterns);
 
@@ -272,11 +272,11 @@ class FormController extends AbstractController
         $this->renderView(
             'signIn.twig',
             [
-                'page'         => 'Create an account',
-                'form'         => $checkForm['form'],
-                'isValid'      => $checkForm['isValid'],
-                'message'      => $message,
-                'messageClass' => $messageClass,
+             'page'         => 'Create an account',
+             'form'         => $checkForm['form'],
+             'isValid'      => $checkForm['isValid'],
+             'message'      => $message,
+             'messageClass' => $messageClass,
             ]
         );
 
@@ -335,10 +335,10 @@ class FormController extends AbstractController
                 $this->renderView(
                     'postForm.twig',
                     [
-                        'page'           => 'Edit post',
-                        'form'           => $checkForm['form'],
-                        'formTitle'      => 'Edit a post',
-                        'formButtonText' => 'Edit',
+                     'page'           => 'Edit post',
+                     'form'           => $checkForm['form'],
+                     'formTitle'      => 'Edit a post',
+                     'formButtonText' => 'Edit',
                     ]
                 );
 
@@ -358,8 +358,8 @@ class FormController extends AbstractController
             $this->renderView(
                 'postForm.twig',
                 [
-                    'page' => 'New post',
-                    'form' => $checkForm['form'],
+                 'page' => 'New post',
+                 'form' => $checkForm['form'],
                 ]
             );
         }
@@ -396,17 +396,17 @@ class FormController extends AbstractController
             // Set the SMTP server to send through.
             $mail->Host = $_ENV['SMTP_HOST'];
             // Enable SMTP authentication.
-            $mail->SMTPAuth   = true;
+            $mail->SMTPAuth = true;
             $mail->SMTPSecure = 'tls';
             // SMTP username.
             $mail->Username = $_ENV['SMTP_USERNAME'];
             // SMTP password.
             $mail->Password = $_ENV['SMTP_PASSWORD'];
-            $mail->Port     = $_ENV['SMTP_PORT'];
+            $mail->Port = $_ENV['SMTP_PORT'];
             // Sender's address.
             $mail->setFrom('florianpohu49@gmail.com', 'Florian Pohu');
             // Recipient's address.
-            $mail->addAddress($sendersMail, $recipientsFirstName.' '.$recipientsLastName);
+            $mail->addAddress($sendersMail, $recipientsFirstName . ' ' . $recipientsLastName);
             // Set email format to HTML.
             $mail->isHTML(true);
             // We can format the mail using html.
@@ -421,9 +421,9 @@ class FormController extends AbstractController
         }//end try
 
         return [
-            'mailSent' => $mailSent,
-            'message'  => $message,
-        ];
+                'mailSent' => $mailSent,
+                'message'  => $message,
+               ];
 
     }//end sendMail()
 
@@ -450,9 +450,9 @@ class FormController extends AbstractController
         }
 
         return [
-            'form'    => $formErrors,
-            'isValid' => $isValid,
-        ];
+                'form'    => $formErrors,
+                'isValid' => $isValid,
+               ];
 
     }//end checkFormPatterns()
 

@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use Twig\Environment as Twig;
 use App\EntityManager\UserManager;
 
 /**
@@ -28,8 +27,8 @@ class UserController extends AbstractController
         $this->renderView(
             'logIn.twig',
             [
-                'message'      => $mailConfirmation['message'],
-                'messageClass' => $mailConfirmation['messageClass'],
+             'message'      => $mailConfirmation['message'],
+             'messageClass' => $mailConfirmation['messageClass'],
             ]
         );
 

@@ -29,12 +29,12 @@ class AdminController extends AbstractController
         $this->renderView(
             'adminPanel.twig',
             [
-                'page'                   => 'Administration',
-                'posts'                  => $posts['data'],
-                'postsPaginationMenu'    => $postsPaginationMenu,
-                'comments'               => $commentsContainerData['comments']['data'],
-                'commentsPaginationMenu' => $commentsContainerData['paginationMenu'],
-                'commentCssClass'        => $commentCssClass,
+             'page'                   => 'Administration',
+             'posts'                  => $posts['data'],
+             'postsPaginationMenu'    => $postsPaginationMenu,
+             'comments'               => $commentsContainerData['comments']['data'],
+             'commentsPaginationMenu' => $commentsContainerData['paginationMenu'],
+             'commentCssClass'        => $commentCssClass,
             ]
         );
 
@@ -57,8 +57,8 @@ class AdminController extends AbstractController
         $this->renderView(
             'partials/postsList.twig',
             [
-                'posts'          => $posts['data'],
-                'paginationMenu' => $paginationMenu,
+             'posts'          => $posts['data'],
+             'paginationMenu' => $paginationMenu,
             ]
         );
 
@@ -81,9 +81,9 @@ class AdminController extends AbstractController
         $this->renderView(
             'partials/commentsList.twig',
             [
-                'comments'        => $commentsContainerData['comments']['data'],
-                'paginationMenu'  => $commentsContainerData['paginationMenu'],
-                'commentCssClass' => $commentCssClass,
+             'comments'        => $commentsContainerData['comments']['data'],
+             'paginationMenu'  => $commentsContainerData['paginationMenu'],
+             'commentCssClass' => $commentCssClass,
             ]
         );
 
@@ -109,8 +109,8 @@ class AdminController extends AbstractController
         $this->renderView(
             'partials/postsList.twig',
             [
-                'posts'          => $posts['data'],
-                'paginationMenu' => $paginationMenu,
+             'posts'          => $posts['data'],
+             'paginationMenu' => $paginationMenu,
             ]
         );
 
@@ -135,9 +135,9 @@ class AdminController extends AbstractController
         $this->renderView(
             'partials/commentsList.twig',
             [
-                'comments'        => $commentsContainerData['comments']['data'],
-                'paginationMenu'  => $commentsContainerData['paginationMenu'],
-                'commentCssClass' => $commentCssClass,
+             'comments'        => $commentsContainerData['comments']['data'],
+             'paginationMenu'  => $commentsContainerData['paginationMenu'],
+             'commentCssClass' => $commentCssClass,
             ]
         );
 
@@ -162,9 +162,9 @@ class AdminController extends AbstractController
         $this->renderView(
             'partials/commentsList.twig',
             [
-                'comments'        => $commentsContainerData['comments']['data'],
-                'paginationMenu'  => $commentsContainerData['paginationMenu'],
-                'commentCssClass' => $commentCssClass,
+             'comments'        => $commentsContainerData['comments']['data'],
+             'paginationMenu'  => $commentsContainerData['paginationMenu'],
+             'commentCssClass' => $commentCssClass,
             ]
         );
 
@@ -195,9 +195,9 @@ class AdminController extends AbstractController
         }
 
         return [
-            'comments'       => $comments,
-            'paginationMenu' => $paginationMenu,
-        ];
+                'comments'       => $comments,
+                'paginationMenu' => $paginationMenu,
+               ];
 
     }//end getCommentsContainer()
 

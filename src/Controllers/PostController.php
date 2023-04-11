@@ -28,9 +28,9 @@ class PostController extends AbstractController
         $this->renderView(
             'posts.twig',
             [
-                'posts'          => $postsListData['posts'],
-                'page'           => 'Blog posts',
-                'paginationMenu' => $postsListData['paginationMenu'],
+             'posts'          => $postsListData['posts'],
+             'page'           => 'Blog posts',
+             'paginationMenu' => $postsListData['paginationMenu'],
             ]
         );
 
@@ -54,8 +54,8 @@ class PostController extends AbstractController
         $this->renderView(
             'partials/postsList.twig',
             [
-                'posts'          => $postsListData['posts'],
-                'paginationMenu' => $postsListData['paginationMenu'],
+             'posts'          => $postsListData['posts'],
+             'paginationMenu' => $postsListData['paginationMenu'],
             ]
         );
 
@@ -82,9 +82,9 @@ class PostController extends AbstractController
         $paginationMenu = $this->getPagination($posts['nbLines'], self::POST_LIMIT, $pageNum);
 
         return [
-            'paginationMenu' => $paginationMenu,
-            'posts'          => $posts['data'],
-        ];
+                'paginationMenu' => $paginationMenu,
+                'posts'          => $posts['data'],
+               ];
 
     }//end getPostsListData()
 
@@ -108,9 +108,9 @@ class PostController extends AbstractController
         $this->renderView(
             'post.twig',
             [
-                'post'     => $post,
-                'userPost' => $userPost,
-                'comments' => $comments,
+             'post'     => $post,
+             'userPost' => $userPost,
+             'comments' => $comments,
             ]
         );
 
@@ -119,4 +119,5 @@ class PostController extends AbstractController
     }//end showPost()
 
 
-}
+}//end class
+

@@ -65,8 +65,8 @@ abstract class AbstractController
         $this->twig = new Twig(
             $this->twigLoader,
             [
-                'debug' => true,
-                'cache' => '../tmp',
+             'debug' => true,
+             'cache' => '../tmp',
             ]
         );
 
@@ -129,22 +129,22 @@ abstract class AbstractController
             $numberOfPages = new StrategySimple(5);
             $indexes       = $pagination->getIndexes($numberOfPages);
             $pagesNumbers  = [
-                'firstPage'    => $pagination->getFirstPage(),
-                'lastPage'     => $pagination->getLastPage(),
-                'previousPage' => $pagination->getPreviousPage(),
-                'nextPage'     => $pagination->getNextPage(),
-                'activePage'   => $pagination->getPage(),
-                'iterator'     => $indexes->getIterator(),
-            ];
+                              'firstPage'    => $pagination->getFirstPage(),
+                              'lastPage'     => $pagination->getLastPage(),
+                              'previousPage' => $pagination->getPreviousPage(),
+                              'nextPage'     => $pagination->getNextPage(),
+                              'activePage'   => $pagination->getPage(),
+                              'iterator'     => $indexes->getIterator(),
+                             ];
         } else {
             $pagesNumbers = [
-                'firstPage'    => 1,
-                'lastPage'     => 1,
-                'previousPage' => 1,
-                'nextPage'     => 1,
-                'activePage'   => 1,
-                'iterator'     => 1,
-            ];
+                             'firstPage'    => 1,
+                             'lastPage'     => 1,
+                             'previousPage' => 1,
+                             'nextPage'     => 1,
+                             'activePage'   => 1,
+                             'iterator'     => 1,
+                            ];
         }//end if
 
         return $pagesNumbers;
