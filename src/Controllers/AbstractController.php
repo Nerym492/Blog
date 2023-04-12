@@ -4,7 +4,9 @@ namespace App\Controllers;
 
 use App\EntityManager\CommentManager;
 use App\EntityManager\PostManager;
+use App\Lib\Environment;
 use App\Lib\Session;
+use Dotenv\Dotenv;
 use Pagination\Pagination;
 use Pagination\StrategySimple;
 use Twig\Environment as Twig;
@@ -51,6 +53,13 @@ abstract class AbstractController
      */
     private FilesystemLoader $twigLoader;
 
+    /**
+     * Environment variables
+     *
+     * @var Environment
+     */
+    protected Environment $env;
+
 
     /**
      * Instantiation of the objects
@@ -69,6 +78,7 @@ abstract class AbstractController
              'cache' => '../tmp',
             ]
         );
+        $this->env = new Environment();
 
     }//end __construct()
 
@@ -95,6 +105,18 @@ abstract class AbstractController
         echo $render;
 
     }//end renderView()
+
+
+    /**
+     * Check if the required environment vars are defined
+     *
+     * @return void
+     */
+    private function checkEnv(): void
+    {
+        $this->env->checkRequiredEmpty(['DB_HOST', 'DB_NAME', 'DB_USER'], true);
+        $this->env->checkRequiredEmpty(['DB_PASS'], false);
+    }//end checkEnv()
 
 
     /**

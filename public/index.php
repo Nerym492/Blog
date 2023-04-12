@@ -8,11 +8,10 @@ use App\Controllers\PostController;
 use App\Controllers\FormController;
 use App\Controllers\UserController;
 use App\Controllers\AdminController;
-use App\Lib\Session;
 use Dotenv\Dotenv;
 
 
-//$session = new Session();
+// $session = new Session();
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
@@ -24,14 +23,13 @@ $loader = new \Twig\Loader\FilesystemLoader('../Templates');
 $twig   = new \Twig\Environment(
     $loader,
     [
-        'debug' => true,
-        'cache' => '../tmp',
+     'debug' => true,
+     'cache' => '../tmp',
     ]
 );
 
 $twig->addExtension(new \Twig\Extension\DebugExtension());
-//$twig->addGlobal('session', $session);
-
+// $twig->addGlobal('session', $session);
 $router = new \Bramus\Router\Router();
 
 $formController = new FormController();
@@ -78,7 +76,7 @@ $router->mount(
 
 $router->mount(
     '/posts',
-    function () use ($router, $twig, $formController) {
+    function () use ($router, $formController) {
         $postController = new PostController();
 
         // Displays all the posts.
@@ -107,19 +105,8 @@ $router->mount(
         // The comment form has been submitted.
         $router->post(
             '/(\d+)',
-            function ($postId) use ($twig, $formController) {
-                if (empty(filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_SPECIAL_CHARS)) === false) {
-                    $formController->checkCommentForm($postId);
-
-                    /*
-                        After processing the data, we redirect the browser to the same page with the HTTP status code303
-                        The old header is replaced with a new one that does not contain $_POST data
-                        Post/Redirect/Get
-                        Prevent the form from being submitted multiple times by refreshing the page
-                    */
-
-                    header('Location: /blog/public/posts/'.$postId.'#comments-box-post', true, 303);
-                }
+            function ($postId) use ($formController) {
+                $formController->checkCommentForm($postId);
             }
         );
 
@@ -136,7 +123,7 @@ $router->mount(
             // The post form has been submitted.
             $router->post(
                 '/create',
-                function () use ($twig, $formController) {
+                function () use ($formController) {
                     $formController->checkPostForm();
                 }
             );

@@ -7,7 +7,6 @@ use App\EntityManager\PostManager;
 use App\EntityManager\UserManager;
 use App\EntityManager\CommentManager;
 use Exception;
-use Twig\Environment as Twig;
 use PHPMailer\PHPMailer\PHPMailer;
 
 /**
@@ -52,16 +51,16 @@ class FormController extends AbstractController
      */
     public function showPostForm(?int $postNum=null): void
     {
+        $post           = null;
+        $formTitle      = 'Create a new post';
+        $formButtonText = 'Create';
+
         // Editing a post.
         if (isset($postNum) === true) {
             $postManager    = new PostManager();
             $post           = $postManager->getPost($postNum);
             $formTitle      = 'Edit a post';
             $formButtonText = 'Edit';
-        } else {
-            $post           = null;
-            $formTitle      = 'Create a new post';
-            $formButtonText = 'Create';
         }
 
         $this->renderView(
@@ -88,22 +87,30 @@ class FormController extends AbstractController
      */
     public function checkCommentForm(int $postId): void
     {
-        $messageClass   = 'danger';
-        $commentManager = new CommentManager();
+        $commentContent = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_SPECIAL_CHARS);
+        $commentCreated = false;
 
-        if ($_SESSION['user_id'] === true) {
-            if ($commentManager->createComment($postId) === true) {
-                $message      = 'Your comment has been added !';
-                $messageClass = 'success';
-            } else {
-                $message = "An error occurred while adding the comment.\nPlease try again later.";
+        if (empty($commentContent) === false) {
+            $commentManager = new CommentManager();
+            $this->session->set('message', 'You must be logged to write a comment.');
+            $this->session->set('messageClass', 'danger');
+
+            if ($this->session->get('user_id') === true) {
+                $commentCreated = $commentManager->createComment($postId, $this->session);
             }
-        } else {
-            $message = 'You must be logged to write a comment.';
-        }
 
-        $_SESSION['message']      = $message;
-        $_SESSION['messageClass'] = $messageClass;
+            if ($commentCreated === true) {
+                /*
+                    After processing the data, we redirect the browser to the same page with the HTTP status code303
+                    The old header is replaced with a new one that does not contain $_POST data
+                    Post/Redirect/Get
+                    Prevent the form from being submitted multiple times by refreshing the page
+                */
+
+                header('Location: /blog/public/posts/'.$postId.'#comments-box-post', true, 303);
+            }
+
+        }//end if
 
     }//end checkCommentForm()
 
@@ -121,25 +128,29 @@ class FormController extends AbstractController
 
         $userManager = new UserManager();
 
-        if ($userManager->checkLogin($mail, $password) === false) {
-            $message      = 'Your email or password is not valid !';
-            $messageClass = 'danger';
+        $loginIsValid = $userManager->checkLogin($mail, $password);
+        switch ($loginIsValid) {
+            case false :
+                $message      = 'Your email or password is not valid !';
+                $messageClass = 'danger';
 
-            // Displays a red alert box on the login page.
-            $this->renderView(
-                'logIn.twig',
-                [
-                 'message'      => $message,
-                 'messageClass' => $messageClass,
-                ]
-            );
-        } else {
-            // Connect the user.
-            $userManager->connectUser($mail);
-            $this->twig->addGlobal('session', $_SESSION);
-            // Displays home page and "Log in" is replaced by "Log out" in the navbar.
-            header('Location: /blog/public/home/', true, 303);
-        }
+                // Displays a red alert box on the login page.
+                $this->renderView(
+                    'logIn.twig',
+                    [
+                     'message'      => $message,
+                     'messageClass' => $messageClass,
+                    ]
+                );
+                break;
+            default:
+                // Connect the user.
+                $userManager->connectUser($mail);
+                $this->setTwigSessionGlobals();
+                // Displays home page and "Log in" is replaced by "Log out" in the navbar.
+                header('Location: /blog/public/home/', true, 303);
+
+        }//end switch
 
     }//end checkLogInForm()
 
@@ -234,35 +245,34 @@ class FormController extends AbstractController
         } else if ($checkForm['isValid'] === true) {
             $userManager = new UserManager();
 
-            if ($userManager->checkDataAlreadyExists('mail', $checkForm['form']['mail']) === false) {
-                /*
-                    This mail is not used, so we can create a new account
-                    confirmation mail is sent to the user's email address
-                */
+            $dataAlreadyExists = $userManager->checkDataAlreadyExists('mail', $checkForm['form']['mail']);
+            switch ($dataAlreadyExists) {
+                case false:
+                    try {
+                        $mailConfirmationLink = $userManager->createUser($checkForm['form']);
+                        $this->sendMail(
+                            $checkForm['form']['mail'],
+                            $checkForm['form']['fullName'],
+                            'Confirm your email',
+                            $mailConfirmationLink
+                        );
+                        $message      = 'Your account has been successfully created !\n';
+                        $message     .= 'Please confirm your email address by clicking on the link that was sent to you.';
+                        $messageClass = 'success';
 
-                try {
-                    $mailConfirmationLink = $userManager->createUser($checkForm['form']);
-                    $this->sendMail(
-                        $checkForm['form']['mail'],
-                        $checkForm['form']['fullName'],
-                        'Confirm your email',
-                        $mailConfirmationLink
-                    );
-                    $message      = 'Your account has been successfully created !\n';
-                    $message     .= 'Please confirm your email address by clicking on the link that was sent to you.';
-                    $messageClass = 'success';
+                        $checkForm['form'] = [];
+                    } catch (Exception) {
+                        $message      = 'An error occurred while creating your account.\nPlease try again later.';
+                        $messageClass = 'danger';
+                    }
+                    break;
+                default:
+                    $message                   = 'This mail is already used !';
+                    $messageClass              = 'danger';
+                    $checkForm['form']['mail'] = '';
+                    $checkForm['isValid']      = false;
+            }//end switch
 
-                    $checkForm['form'] = [];
-                } catch (Exception) {
-                    $message      = 'An error occurred while creating your account.\nPlease try again later.';
-                    $messageClass = 'danger';
-                }
-            } else {
-                $message                   = 'This mail is already used !';
-                $messageClass              = 'danger';
-                $checkForm['form']['mail'] = '';
-                $checkForm['isValid']      = false;
-            }//end if
         }//end if
 
         // Passwords are not returned for security reasons (even if it's encrypted).
@@ -293,7 +303,7 @@ class FormController extends AbstractController
      */
     public function checkPostForm(?int $postId=null): void
     {
-        $checkForm['isValid'] = true;
+        $checkForm = ['isValid' => true];
 
         foreach (filter_input_array(INPUT_POST, FILTER_SANITIZE_SPECIAL_CHARS) as $inputName => $inputValue) {
             if ($inputValue === '' && $checkForm['isValid'] === true) {
@@ -306,55 +316,54 @@ class FormController extends AbstractController
         if ($checkForm['isValid'] === true) {
             $postManager = new PostManager();
             // Check if the user is editing or creating a post.
-            if (isset($postId) === false) {
-                // Post before edit.
-                $post = $postManager->getPost($postId);
-                // Post after edit.
-                $editedPost = new Post();
-                $editedPost->setPostId($postId);
-                $editedPost->setTitle($checkForm['form']['title']);
-                $editedPost->setExcerpt($checkForm['form']['excerpt']);
-                $editedPost->setContent($checkForm['form']['content']);
-                $editedPost->setLastUpdateDate(date_format($post->getLastUpdateDate(), 'Y-m-d H:i:s'));
-                // Comparing edited post with old post.
-                if ($editedPost->getTitle() !== $post->getTitle()
-                    || $editedPost->getExcerpt() !== $post->getExcerpt()
-                    || $editedPost->getContent() !== $post->getContent()
-                ) {
-                    if ($postManager->updatePost($editedPost) === true) {
-                        $_SESSION['message']      = 'The post has been successfully modified !';
-                        $_SESSION['messageClass'] = 'success';
+            switch (isset($postId)) {
+                case false:
+                    // Post before edit.
+                    $post = $postManager->getPost($postId);
+                    // Post after edit.
+                    $editedPost = new Post();
+                    $editedPost->setPostId($postId);
+                    $editedPost->setTitle($checkForm['form']['title']);
+                    $editedPost->setExcerpt($checkForm['form']['excerpt']);
+                    $editedPost->setContent($checkForm['form']['content']);
+                    $dateNow = date_format($post->getLastUpdateDate(), 'Y-m-d H:i:s');
+                    $editedPost->setLastUpdateDate($dateNow);
+                    // Comparing edited post with old post.
+                    $postsAreIdentical = $this->postManager->checkIdenticalPost($post, $editedPost);
+                    switch ($postsAreIdentical) {
+                        case true:
+                            $postManager->updatePost($editedPost, $this->session);
+                            break;
+                        default:
+                            $this->session->set('message', 'Nothing to update !');
+                            $this->session->set('messageClass', 'warning');
                     }
-                } else {
-                    $_SESSION['message']      = 'Nothing to update !';
-                    $_SESSION['messageClass'] = 'warning';
-                }
 
-                $this->twig->addGlobal('session', $_SESSION);
+                    $this->setTwigSessionGlobals();
 
-                $this->renderView(
-                    'postForm.twig',
-                    [
-                     'page'           => 'Edit post',
-                     'form'           => $checkForm['form'],
-                     'formTitle'      => 'Edit a post',
-                     'formButtonText' => 'Edit',
-                    ]
-                );
+                    $this->renderView(
+                        'postForm.twig',
+                        [
+                         'page'           => 'Edit post',
+                         'form'           => $checkForm['form'],
+                         'formTitle'      => 'Edit a post',
+                         'formButtonText' => 'Edit',
+                        ]
+                    );
+                    $this->session->clearKeys(['message', 'messageClass']);
+                    break;
+                default:
+                    if ($postManager->createPost($checkForm['form']) === true) {
+                        $this->session->set('message', 'The post has been successfully added !');
+                        $this->session->set('messageClass', 'success');
+                        header('Location: /blog/public/posts/#site-heading', true, 303);
+                    }
 
-                unset($_SESSION['message']);
-                unset($_SESSION['messageClass']);
-            } else {
-                if ($postManager->createPost($checkForm['form']) === true) {
-                    $_SESSION['message']      = 'The post has been successfully added !';
-                    $_SESSION['messageClass'] = 'success';
-                    header('Location: /blog/public/posts/#site-heading', true, 303);
-                }
-            }//end if
+            }//end switch
         }//end if
 
         // If something goes wrong in the database, we get here.
-        if (isset($_SESSION['messageClass']) === true && $_SESSION['messageClass'] === 'danger') {
+        if ($this->session->get('messageClass') === 'danger') {
             $this->renderView(
                 'postForm.twig',
                 [
@@ -394,21 +403,21 @@ class FormController extends AbstractController
             // Send using SMTP.
             $mail->isSMTP();
             // Set the SMTP server to send through.
-            $mail->Host = $_ENV['SMTP_HOST'];
+            $mail->Host = $this->env->getVar('SMTP_HOST');
             // Enable SMTP authentication.
             $mail->SMTPAuth = true;
             $mail->SMTPSecure = 'tls';
             // SMTP username.
-            $mail->Username = $_ENV['SMTP_USERNAME'];
+            $mail->Username = $this->env->getVar('SMTP_USERNAME');
             // SMTP password.
-            $mail->Password = $_ENV['SMTP_PASSWORD'];
-            $mail->Port = $_ENV['SMTP_PORT'];
+            $mail->Password = $this->env->getVar('SMTP_PASSWORD');
+            $mail->Port = $this->env->getVar('SMTP_PORT');
             // Sender's address.
             $mail->setFrom('florianpohu49@gmail.com', 'Florian Pohu');
             // Recipient's address.
             $mail->addAddress($sendersMail, $recipientsFirstName . ' ' . $recipientsLastName);
             // Set email format to HTML.
-            $mail->isHTML(true);
+            $mail->isHTML();
             // We can format the mail using html.
             $mail->Subject = $subject;
             $mail->Body    = $content;

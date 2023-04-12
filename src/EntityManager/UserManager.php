@@ -18,10 +18,10 @@ class UserManager extends Manager
         $lastName = $fullName[0];
         $firstName = $fullName[1];
 
-        //Creating a hash for the password
+        // Creating a hash for the password
         $formRegister['password'] = password_hash($formRegister['password'], PASSWORD_DEFAULT);
 
-        //Generates a code that will be used in the confirmation link sent by email
+        // Generates a code that will be used in the confirmation link sent by email
         $verificationCode = bin2hex(openssl_random_pseudo_bytes(20));
 
         $statement = $this->connection->getConnection()->prepare(
@@ -31,23 +31,26 @@ class UserManager extends Manager
                        :verification_code, :confirmed_mail, :user_type_id);"
         );
 
-        $statement->execute([
-            ':mail' => $formRegister['mail'],
-            ':pseudo' => $formRegister['pseudo'],
-            ':last_name' => $lastName,
-            ':first_name' => $firstName,
-            ':password' => $formRegister['password'],
-            ':verification_code' => $verificationCode,
-            ':confirmed_mail' => 0,
-            ':user_type_id' => 3
-        ]);
+        $statement->execute(
+            [
+             ':mail'              => $formRegister['mail'],
+             ':pseudo'            => $formRegister['pseudo'],
+             ':last_name'         => $lastName,
+             ':first_name'        => $firstName,
+             ':password'          => $formRegister['password'],
+             ':verification_code' => $verificationCode,
+             ':confirmed_mail'    => 0,
+             ':user_type_id'      => 3,
+            ]
+        );
 
         return "http://localhost/blog/public/register/" . $formRegister['mail'] . "/" . $verificationCode;
-    }
+    }//end createUser()
+
 
     /**
      * Confirm the user's Mail
-     * @param string $mail Mail which needs to be verified
+     * @param string $mail             Mail which needs to be verified
      * @param string $verificationCode Code associated with the mail to confirm it
      * @return array
      * $array['message'] -> status of the mail confirmation,
@@ -59,15 +62,18 @@ class UserManager extends Manager
             "UPDATE blog.`user`
                    SET confirmed_mail=:confirmed_mail, verification_code=:reset_verification_code
                    WHERE mail=:mail AND verification_code=:verification_code
-            ");
+            "
+        );
 
-        //Verification code reset --> mail can only be confirmed once
-        $statement->execute([
-            ':confirmed_mail' => 1,
-            ':verification_code' => $verificationCode,
-            ':reset_verification_code' => '',
-            'mail' => $mail
-        ]);
+        // Verification code reset --> mail can only be confirmed once
+        $statement->execute(
+            [
+             ':confirmed_mail'          => 1,
+             ':verification_code'       => $verificationCode,
+             ':reset_verification_code' => '',
+             'mail'                     => $mail,
+            ]
+        );
 
         if (($statement->rowCount() == 1)) {
             $message = "Your mail has been successfully confirmed !";
@@ -77,11 +83,15 @@ class UserManager extends Manager
             $messageClass = "danger";
         }
 
-        return ['message' => $message, 'messageClass' => $messageClass];
-    }
+        return [
+                'message'      => $message,
+                'messageClass' => $messageClass,
+               ];
+    }//end confirmMail()
+
 
     /**
-     * @param int $userId
+     * @param int    $userId
      * @param string $mail
      * @return User|null
      */
@@ -98,7 +108,7 @@ class UserManager extends Manager
         $row = $statement->fetch();
 
         if ($row) {
-            //A user has been found
+            // A user has been found
             $user = new User();
             $user->setUserId($row['user_id']);
             $user->setMail($row['mail']);
@@ -107,18 +117,19 @@ class UserManager extends Manager
             $user->setFirstName($row['first_name']);
             $user->setUserTypeId($row['user_type_id']);
         } else {
-            //No users were found
+            // No users were found
             $user = null;
         }
 
         return $user;
 
-    }
+    }//end getUser()
+
 
     /**
      * Check if data is already used by another user
      * @param string $field Name of the field in the database
-     * @param string $data Data we want to check
+     * @param string $data  Data we want to check
      * @return bool
      */
     public function checkDataAlreadyExists(string $field, string $data): bool
@@ -133,7 +144,8 @@ class UserManager extends Manager
         $result = $statement->fetch();
 
         return (int)$result['nbLines'] !== 0;
-    }
+    }//end checkDataAlreadyExists()
+
 
     public function checkLogin(string $mail , string $password): bool
     {
@@ -147,16 +159,18 @@ class UserManager extends Manager
 
         $row = $statement->fetch();
 
-         /* check if row is empty
+         /*
+             check if row is empty
          and check the password hash (True or false)*/
         return ($row && password_verify($password, $row['password_hash']));
-    }
+    }//end checkLogin()
+
 
     public function connectUser(string $mail): void
     {
         $user = $this->getUser(mail: $mail);
 
-        if ($user){
+        if ($user) {
             $_SESSION['user_id'] = $user->getUserId();
             $_SESSION['mail'] = $mail;
             $_SESSION['first_name'] = $user->getFirstName();
@@ -164,11 +178,14 @@ class UserManager extends Manager
             $_SESSION['pseudo'] = $user->getPseudo();
             $_SESSION['isAdmin'] = $user->getIsAdmin();
         }
-    }
+    }//end connectUser()
+
 
     public function disconnectUser(): void
     {
         session_unset();
         session_destroy();
-    }
-}
+    }//end disconnectUser()
+
+}//end class
+

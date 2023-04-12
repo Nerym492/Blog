@@ -3,6 +3,7 @@
 namespace App\EntityManager;
 
 use App\Entity\Comment;
+use App\Lib\Session;
 
 class CommentManager extends Manager
 {
@@ -26,7 +27,8 @@ class CommentManager extends Manager
 
         return $comments;
 
-    }
+    }//end getCommentsByPost()
+
 
     public function getCommentsListWithLimit(int $pageNum, int $commentLimit, string $filter = ""): ?array
     {
@@ -42,27 +44,34 @@ class CommentManager extends Manager
         $commentsRowsCount = $countQueryStatement->fetch()['rowsCount'];
 
         if ($commentsRowsCount > 0) {
-            //Recalculate offset and limit parameters
+            // Recalculate offset and limit parameters.
             $pageDelimitation = $this->calcPageAndOffset($commentLimit, $pageNum, $commentsRowsCount, "DESC");
-            $rows = $this->connection->execQueryWithLimit($pageDelimitation['rowsLimit'], $pageDelimitation['offset'], $selectQuery,
-                "comment_id", "DESC");
+            $rows = $this->connection->execQueryWithLimit(
+                $pageDelimitation['rowsLimit'], $pageDelimitation['offset'], $selectQuery,
+                "comment_id", "DESC"
+            );
         } else {
             $pageDelimitation['pageNum'] = $pageNum;
             $rows = [];
         }
 
-        //Creating a new comment object to store the data
+        // Creating a new comment object to store the data.
         $comments = $this->createCommentsWithRows($rows);
 
-        return ['data' => $comments, 'nbLines' => $commentsRowsCount, 'currentPage' => $pageDelimitation['pageNum']];
-    }
+        return [
+                'data'        => $comments,
+                'nbLines'     => $commentsRowsCount,
+                'currentPage' => $pageDelimitation['pageNum'],
+               ];
+    }//end getCommentsListWithLimit()
+
 
     /**
      * Create a new comment
      * @param int $postId Id of the Post that is currently been read
-     * @return bool Return true if a comment has been created otherwise False
+     * @return void
      */
-    public function createComment(int $postId): bool
+    public function createComment(int $postId , Session $session): bool
     {
         $statement = $this->connection->getConnection()->prepare(
             "INSERT INTO blog.comment
@@ -70,22 +79,32 @@ class CommentManager extends Manager
                    VALUES(:post_id, :user_id, :comment, :creation_date, :valid);"
         );
 
-
         $dateNow = new \DateTime('now', new \DateTimeZone($_ENV['TIMEZONE']));
         $dateNow = $dateNow->format('Y-m-d H:i:s');
 
-        $statement->execute([
-            ':post_id' => $postId,
-            ':user_id' => $_SESSION['user_id'],
-            ':comment' => strip_tags($_POST['comment']),
-            ':creation_date' => $dateNow,
-            ':valid' => 0
-        ]);
+        $statement->execute(
+            [
+             ':post_id'       => $postId,
+             ':user_id'       => $_SESSION['user_id'],
+             ':comment'       => strip_tags($_POST['comment']),
+             ':creation_date' => $dateNow,
+             ':valid'         => 0,
+            ]
+        );
 
-        //True if a line has been created otherwise False
-        return $statement->rowCount() == 1;
+        if ($statement->rowCount() === 1) {
+            $commentCreated = true;
+            $session->set('message', 'Your comment has been added !');
+            $session->set('messageClass', 'success');
+        } else {
+            $commentCreated = false;
+            $session->set('message', 'An error occurred while adding the comment.\nPlease try again later.');
+            $session->set('messageClass', 'danger');
+        }
+        return $commentCreated;
 
-    }
+    }//end createComment()
+
 
     public function deleteComment(int $commentId): bool
     {
@@ -97,7 +116,8 @@ class CommentManager extends Manager
         $statement->execute([':commentId' => $commentId]);
 
         return $statement->rowCount() == 1;
-    }
+    }//end deleteComment()
+
 
     public function validateComment(int $commentId): bool
     {
@@ -110,7 +130,8 @@ class CommentManager extends Manager
         $statement->execute([':commentId' => $commentId]);
 
         return $statement->rowCount() == 1;
-    }
+    }//end validateComment()
+
 
     private function createCommentsWithRows(array $rows): array
     {
@@ -124,11 +145,14 @@ class CommentManager extends Manager
             $comment->setComment($row['comment']);
             $comment->setCreationDate($row['creation_date']);
             $comment->setValid($row['valid']);
-            $comments[$comment->getcommentId()] = ['line' => $comment, 'userPseudo' => $row['pseudo']];
+            $comments[$comment->getcommentId()] = [
+                                                   'line'       => $comment,
+                                                   'userPseudo' => $row['pseudo'],
+                                                  ];
         }
 
         return $comments;
-    }
-}
+    }//end createCommentsWithRows()
 
-//var_dump($_POST);
+}//end class
+
