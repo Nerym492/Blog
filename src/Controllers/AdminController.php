@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use Exception;
 use Twig\Environment as Twig;
 
 
@@ -15,7 +16,7 @@ class AdminController extends AbstractController
      * Displays the Admin panel with the posts and comments list
      *
      * @return void
-     * @throws \Exception Error from database.
+     * @throws Exception Error from database.
      */
     public function showAdminPanel(): void
     {
@@ -23,7 +24,7 @@ class AdminController extends AbstractController
         $posts               = $this->postManager->getPosts($pageNum, self::POST_LIMIT);
         $postsPaginationMenu = $this->getPagination($posts['nbLines'], self::POST_LIMIT, $pageNum);
 
-        $commentsContainerData = $this->getCommentsContainer($pageNum);
+        $commentsContainer = $this->getCommentsContainer($pageNum);
         $commentCssClass       = $this->getCommentCssClass();
 
         $this->renderView(
@@ -32,8 +33,8 @@ class AdminController extends AbstractController
              'page'                   => 'Administration',
              'posts'                  => $posts['data'],
              'postsPaginationMenu'    => $postsPaginationMenu,
-             'comments'               => $commentsContainerData['comments']['data'],
-             'commentsPaginationMenu' => $commentsContainerData['paginationMenu'],
+             'comments'               => $commentsContainer['comments']['data'],
+             'commentsPaginationMenu' => $commentsContainer['paginationMenu'],
              'commentCssClass'        => $commentCssClass,
             ]
         );
@@ -47,7 +48,7 @@ class AdminController extends AbstractController
      * @param integer $pageNum Number of the page in the post list pagination.
      *
      * @return void
-     * @throws \Exception An error from the database.
+     * @throws Exception An error from the database.
      */
     public function reloadPostsList(int $pageNum): void
     {
@@ -74,15 +75,15 @@ class AdminController extends AbstractController
      */
     public function reloadCommentsList(int $pageNum): void
     {
-        $commentsContainerData = $this->getCommentsContainer($pageNum);
+        $commentsContainer = $this->getCommentsContainer($pageNum);
 
         $commentCssClass = $this->getCommentCssClass();
 
         $this->renderView(
             'partials/commentsList.twig',
             [
-             'comments'        => $commentsContainerData['comments']['data'],
-             'paginationMenu'  => $commentsContainerData['paginationMenu'],
+             'comments'        => $commentsContainer['comments']['data'],
+             'paginationMenu'  => $commentsContainer['paginationMenu'],
              'commentCssClass' => $commentCssClass,
             ]
         );
@@ -98,7 +99,7 @@ class AdminController extends AbstractController
      * @param integer $postId  Post that the user wants to delete.
      *
      * @return void
-     * @throws \Exception Database error.
+     * @throws Exception Database error.
      */
     public function deletePost(int $pageNum, int $postId): void
     {
@@ -129,14 +130,14 @@ class AdminController extends AbstractController
     {
         $this->commentManager->validateComment($commentId);
 
-        $commentsContainerData = $this->getCommentsContainer($pageNum);
+        $commentsContainer = $this->getCommentsContainer($pageNum);
         $commentCssClass       = $this->getCommentCssClass();
 
         $this->renderView(
             'partials/commentsList.twig',
             [
-             'comments'        => $commentsContainerData['comments']['data'],
-             'paginationMenu'  => $commentsContainerData['paginationMenu'],
+             'comments'        => $commentsContainer['comments']['data'],
+             'paginationMenu'  => $commentsContainer['paginationMenu'],
              'commentCssClass' => $commentCssClass,
             ]
         );
@@ -156,14 +157,14 @@ class AdminController extends AbstractController
     {
         $this->commentManager->deleteComment($commentId);
 
-        $commentsContainerData = $this->getCommentsContainer($pageNum);
+        $commentsContainer = $this->getCommentsContainer($pageNum);
         $commentCssClass       = $this->getCommentCssClass();
 
         $this->renderView(
             'partials/commentsList.twig',
             [
-             'comments'        => $commentsContainerData['comments']['data'],
-             'paginationMenu'  => $commentsContainerData['paginationMenu'],
+             'comments'        => $commentsContainer['comments']['data'],
+             'paginationMenu'  => $commentsContainer['paginationMenu'],
              'commentCssClass' => $commentCssClass,
             ]
         );
@@ -185,10 +186,12 @@ class AdminController extends AbstractController
 
         foreach ($comments['data'] as $commentKey => $commentArray) {
             $comments['data'][$commentKey]['post'] = $this->postManager->getPost($commentArray['line']->getPostId());
-            if ($comments['data'][$commentKey]['line']->getValid() === 0) {
+
+            $commentIsValid = $comments['data'][$commentKey]['line']->getValid();
+            if ($commentIsValid === 0) {
                 $comments['data'][$commentKey]['badgeClass'] = 'warning';
                 $comments['data'][$commentKey]['badgeText']  = 'En attente';
-            } else {
+            } else if ($commentIsValid === 1) {
                 $comments['data'][$commentKey]['badgeClass'] = 'success';
                 $comments['data'][$commentKey]['badgeText']  = 'Validé';
             }
@@ -209,11 +212,11 @@ class AdminController extends AbstractController
      */
     private function getCommentCssClass(): array
     {
-        $commentCssClass['commentLine']       = 'comment-line-admin';
-        $commentCssClass['flexDirection']     = 'flex-column badge-active';
-        $commentCssClass['commentListMargin'] = 'mx-auto';
-
-        return $commentCssClass;
+        return [
+                'commentLine'       => 'comment-line-admin',
+                'flexDirection'     => 'flex-column badge-active',
+                'commentListMargin' => 'mx-auto',
+               ];
 
     }//end getCommentCssClass()
 

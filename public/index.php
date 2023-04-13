@@ -8,16 +8,6 @@ use App\Controllers\PostController;
 use App\Controllers\FormController;
 use App\Controllers\UserController;
 use App\Controllers\AdminController;
-use Dotenv\Dotenv;
-
-
-// $session = new Session();
-$dotenv = Dotenv::createImmutable(__DIR__);
-$dotenv->load();
-
-$dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER'])->notEmpty();
-$dotenv->required('DB_PASS');
-
 
 $loader = new \Twig\Loader\FilesystemLoader('../Templates');
 $twig   = new \Twig\Environment(
@@ -28,7 +18,7 @@ $twig   = new \Twig\Environment(
     ]
 );
 
-$twig->addExtension(new \Twig\Extension\DebugExtension());
+
 // $twig->addGlobal('session', $session);
 $router = new \Bramus\Router\Router();
 
@@ -228,7 +218,7 @@ if (isset($_SESSION['isAdmin']) === true && $_SESSION['isAdmin'] === true) {
             $router->get(
                 '/comments-page-(\d+)',
                 function ($pageNum) use ($twig, $adminController) {
-                    $adminController->reloadCommentsList($twig, $pageNum);
+                    $adminController->reloadCommentsList($pageNum);
                 }
             );
             // The comment is deleted.

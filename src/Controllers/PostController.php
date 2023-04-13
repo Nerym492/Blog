@@ -73,8 +73,7 @@ class PostController extends AbstractController
     private function getPostsListData(int $pageNum=1): array
     {
         // Number of posts per page.
-        $postManager = new PostManager();
-        $posts       = $postManager->getPosts($pageNum, self::POST_LIMIT);
+        $posts       = $this->postManager->getPosts($pageNum, self::POST_LIMIT);
 
         $this->setTwigSessionGlobals();
 
@@ -98,12 +97,9 @@ class PostController extends AbstractController
      */
     public function showPost(int $postId): void
     {
-        $postManager    = new PostManager();
-        $post           = $postManager->getPost($postId);
-        $userManager    = new UserManager();
-        $userPost       = $userManager->getUser(userId: $post->getUserId());
-        $commentManager = new CommentManager();
-        $comments       = $commentManager->getCommentsByPost($postId);
+        $post           = $this->postManager->getPost($postId);
+        $userPost       = $this->userManager->getUser(userId: $post->getUserId());
+        $comments       = $this->commentManager->getCommentsByPost($postId);
 
         $this->renderView(
             'post.twig',

@@ -21,8 +21,7 @@ class UserController extends AbstractController
      */
     public function confirmMailAddress(string $mail, string $verificationCode): void
     {
-        $userManager      = new UserManager();
-        $mailConfirmation = $userManager->confirmMail($mail, $verificationCode);
+        $mailConfirmation = $this->userManager->confirmMail($mail, $verificationCode);
 
         $this->renderView(
             'logIn.twig',
@@ -42,8 +41,7 @@ class UserController extends AbstractController
      */
     public function logOut(): void
     {
-        $userManager = new UserManager();
-        $userManager->disconnectUser();
+        $this->userManager->disconnectUser();
         $this->renderView('home.twig', ['session' => '']);
 
     }//end logOut()

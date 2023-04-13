@@ -2,6 +2,7 @@
 
 namespace App\Lib;
 
+use App\EntityManager\Manager;
 use \PDO;
 
 
@@ -15,26 +16,56 @@ class DatabaseConnection
     private ?PDO $database = null;
 
     /**
+     * @var ?DatabaseConnection Database instance
+     */
+    private static ?DatabaseConnection $instance = null;
+
+    /**
+     * Create a new database connection
+     * @param Session     $session Session variables
+     * @param Environment $env     Environment variables
+     */
+    public function __construct(Session $session, Environment $env)
+    {
+        try {
+            $this->database = new PDO(
+                'mysql:host=' . $env->getVar('DB_HOST') . ';dbname=' . $env->getVar('DB_NAME') .
+                ';charset=utf8', $env->getVar('DB_USER'), $env->getVar('DB_PASS')
+            );
+        } catch (\Exception $e) {
+            $session->set('message', 'An error occurred while connecting to the database.\nPlease try again later.');
+            $session->set('messageClass', 'danger');
+        }
+
+    }//end __construct()
+
+
+    /**
+     * Create an DatabaseConnection instance if it does not exist
+     *
+     * @param Session     $session Session variables
+     * @param Environment $env     Environment variables
+     * @return DatabaseConnection
+     */
+    public static function getInstance(Session $session, Environment $env): DatabaseConnection
+    {
+        if (self::$instance === null) {
+            self::$instance = new DatabaseConnection($session, $env);
+        }
+        return self::$instance;
+
+    }//end getInstance()
+
+
+    /**
      * Create a connection to the database
      *
-     * @param Environment $env     Environments vars
-     * @param Session     $session Session vars
      * @return PDO|null
      */
-    public function getConnection(Environment $env, Session $session): ?PDO
+    public function getConnection(): ?PDO
     {
-        if ($this->database === null) {
-            try {
-                $this->database = new PDO(
-                    'mysql:host=' . $env->getVar('DB_HOST') . ';dbname=' . $env->getVar('DB_NAME') .
-                    ';charset=utf8', $env->getVar('DB_USER'), $env->getVar('DB_PASS')
-                );
-            } catch (\Exception $e) {
-                $session->set('message', 'An error occurred while connecting to the database.\nPlease try again later.');
-                $session->set('messageClass', 'danger');
-            }
-        }
         return $this->database;
+
     }//end getConnection()
 
 
@@ -48,8 +79,13 @@ class DatabaseConnection
      * @param string $orderBySuffix ASC or DESC
      * @return array
      */
-    public function execQueryWithLimit(int $rowLimit, int $offset, string $selectQuery, string $orderBy, string $orderBySuffix = ""): array
-    {
+    public function execQueryWithLimit(
+        int $rowLimit,
+        int $offset,
+        string $selectQuery,
+        string $orderBy,
+        string $orderBySuffix = "",
+): array {
         $orderByString = "ORDER BY " . $orderBy;
 
         if (in_array($orderBySuffix, ['ASC', 'DESC']) === true) {
@@ -80,6 +116,7 @@ class DatabaseConnection
         $statement->closeCursor();
 
         return $result;
+
     }//end execQueryWithLimit()
 
 

@@ -4,12 +4,15 @@ namespace App\Controllers;
 
 use App\EntityManager\CommentManager;
 use App\EntityManager\PostManager;
+use App\EntityManager\UserManager;
 use App\Lib\Environment;
 use App\Lib\Session;
 use Dotenv\Dotenv;
 use Pagination\Pagination;
 use Pagination\StrategySimple;
+use Throwable;
 use Twig\Environment as Twig;
+use Twig\Extension\DebugExtension;
 use Twig\Loader\FilesystemLoader;
 
 /**
@@ -19,18 +22,19 @@ abstract class AbstractController
 {
 
     /**
-     * Model object PostManager that contains all the database queries about the posts.
-     *
-     * @var PostManager
+     * @var PostManager Posts data management.
      */
     protected PostManager $postManager;
 
     /**
-     * Model object CommentManager that contains all the database queries about the comments.
-     *
-     * @var CommentManager
+     * @var CommentManager Comments data management.
      */
     protected CommentManager $commentManager;
+
+    /**
+     * @var UserManager Users data management.
+     */
+    protected UserManager $userManager;
 
     /**
      * Twig Environment object used to render twig templates.
@@ -40,21 +44,21 @@ abstract class AbstractController
     protected Twig $twig;
 
     /**
-     * Session object to avoid direct super global uses
+     * Session object to avoid direct super global uses.
      *
      * @var Session
      */
     protected Session $session;
 
     /**
-     * Twig FilesystemLoader use to manage twig files
+     * Twig FilesystemLoader use to manage twig files.
      *
      * @var FilesystemLoader
      */
     private FilesystemLoader $twigLoader;
 
     /**
-     * Environment variables
+     * Environment variables.
      *
      * @var Environment
      */
@@ -67,8 +71,6 @@ abstract class AbstractController
     public function __construct()
     {
         $this->session        = new Session();
-        $this->postManager    = new PostManager();
-        $this->commentManager = new CommentManager();
         $this->twigLoader     = new FilesystemLoader('../Templates');
 
         $this->twig = new Twig(
@@ -78,7 +80,12 @@ abstract class AbstractController
              'cache' => '../tmp',
             ]
         );
+        $this->twig->addExtension(new DebugExtension());
+        $this->setTwigSessionGlobals();
         $this->env = new Environment();
+        $this->postManager    = new PostManager($this->session, $this->env);
+        $this->commentManager = new CommentManager($this->session, $this->env);
+        $this->userManager = new UserManager($this->session, $this->env);
 
     }//end __construct()
 
@@ -96,7 +103,7 @@ abstract class AbstractController
     {
         try {
             $render = $this->twig->render($twigFile, $params);
-        } catch (\Throwable) {
+        } catch (Throwable) {
             $render = '';
             $this->session->set('message', "Une erreur s'est produite pendant le chargement de la page");
             $this->session->set('messageClass', 'danger');
@@ -108,15 +115,17 @@ abstract class AbstractController
 
 
     /**
-     * Check if the required environment vars are defined
+     * Redirect the page to the specified url
      *
+     * @param string $url Url target
      * @return void
      */
-    private function checkEnv(): void
+    public function redirectTo(string $url): void
     {
-        $this->env->checkRequiredEmpty(['DB_HOST', 'DB_NAME', 'DB_USER'], true);
-        $this->env->checkRequiredEmpty(['DB_PASS'], false);
-    }//end checkEnv()
+        header('Location: '. $url, true, 303);
+
+    }//end redirectTo()
+
 
 
     /**
@@ -126,7 +135,7 @@ abstract class AbstractController
      */
     public function setTwigSessionGlobals(): void
     {
-        $this->twig->addGlobal('session', $this->session);
+        $this->twig->addGlobal('session', $this->session->get());
 
     }//end setTwigSessionGlobals()
 
@@ -143,6 +152,15 @@ abstract class AbstractController
      */
     protected function getPagination(int $nbRows, int $limitPerPage, int $activePage): array
     {
+        $pagesNumbers = [
+                         'firstPage'    => 1,
+                         'lastPage'     => 1,
+                         'previousPage' => 1,
+                         'nextPage'     => 1,
+                         'activePage'   => 1,
+                         'iterator'     => 1,
+                        ];
+
         // Use pagination class with results, per page and page.
         if ($nbRows > 0) {
             $pagination = new Pagination($nbRows, $limitPerPage, $activePage);
@@ -158,15 +176,6 @@ abstract class AbstractController
                               'activePage'   => $pagination->getPage(),
                               'iterator'     => $indexes->getIterator(),
                              ];
-        } else {
-            $pagesNumbers = [
-                             'firstPage'    => 1,
-                             'lastPage'     => 1,
-                             'previousPage' => 1,
-                             'nextPage'     => 1,
-                             'activePage'   => 1,
-                             'iterator'     => 1,
-                            ];
         }//end if
 
         return $pagesNumbers;

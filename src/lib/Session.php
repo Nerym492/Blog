@@ -41,7 +41,7 @@ class Session
      *
      * @return void
      */
-    public function clearKeys(array $keys): void
+    public static function clearKeys(array $keys): void
     {
         foreach ($keys as $key) {
             if (isset($_SESSION[$key]) === true) {
@@ -53,18 +53,21 @@ class Session
 
 
     /**
-     * Get the session value for the key passed in parameter
+     * Get the session value for the key passed in parameter.
+     * If the key not defined, the whole $_SESSION is returned.
      *
      * @param string $key Key of the session variable.
      *
      * @return mixed|null
      */
-    public function get(string $key): mixed
+    public function get(string $key = ""): mixed
     {
-        if (isset($_SESSION[$key]) === true) {
-            $sessionValue = $_SESSION[$key];
-        } else {
-            $sessionValue = null;
+        $sessionValue = null;
+
+        if (isset($_SESSION) === true && $key !== "") {
+            $sessionValue = filter_var($_SESSION[$key], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        } else if (isset($_SESSION) === true && $key === "") {
+            $sessionValue = filter_var_array($_SESSION, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         }
 
         return $sessionValue;
