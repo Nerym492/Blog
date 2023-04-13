@@ -8,6 +8,7 @@ use \PDO;
 
 class DatabaseConnection
 {
+
     /**
      * PDO object or null if the connection fails
      *
@@ -20,6 +21,7 @@ class DatabaseConnection
      */
     private static ?DatabaseConnection $instance = null;
 
+
     /**
      * Create a new database connection
      * @param Session     $session Session variables
@@ -29,8 +31,7 @@ class DatabaseConnection
     {
         try {
             $this->database = new PDO(
-                'mysql:host=' . $env->getVar('DB_HOST') . ';dbname=' . $env->getVar('DB_NAME') .
-                ';charset=utf8', $env->getVar('DB_USER'), $env->getVar('DB_PASS')
+                'mysql:host='.$env->getVar('DB_HOST').';dbname='.$env->getVar('DB_NAME').';charset=utf8', $env->getVar('DB_USER'), $env->getVar('DB_PASS')
             );
         } catch (\Exception $e) {
             $session->set('message', 'An error occurred while connecting to the database.\nPlease try again later.');
@@ -52,6 +53,7 @@ class DatabaseConnection
         if (self::$instance === null) {
             self::$instance = new DatabaseConnection($session, $env);
         }
+
         return self::$instance;
 
     }//end getInstance()
@@ -86,10 +88,10 @@ class DatabaseConnection
         string $orderBy,
         string $orderBySuffix = "",
 ): array {
-        $orderByString = "ORDER BY " . $orderBy;
+        $orderByString = "ORDER BY ".$orderBy;
 
         if (in_array($orderBySuffix, ['ASC', 'DESC']) === true) {
-            $orderByString .= " ". $orderBySuffix;
+            $orderByString .= " ".$orderBySuffix;
         }
 
         $connexion = $this->getConnection();
@@ -100,10 +102,10 @@ class DatabaseConnection
         $statement = $connexion->prepare(
             "SELECT *
                        FROM (
-                            " . $selectQuery . "
+                            ".$selectQuery."
                             LIMIT :limitParam OFFSET :offsetParam
                         ) p
-                    " . $orderByString
+                    ".$orderByString
         );
         $statement->execute(
             [
@@ -121,4 +123,3 @@ class DatabaseConnection
 
 
 }//end class
-
