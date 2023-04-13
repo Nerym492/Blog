@@ -193,7 +193,7 @@ class UserManager extends Manager
             $_SESSION['first_name'] = $user->getFirstName();
             $_SESSION['last_name'] = $user->getLastName();
             $_SESSION['pseudo'] = $user->getPseudo();
-            $_SESSION['isAdmin'] = $user->getIsAdmin();
+            $_SESSION['isAdmin'] = $user->isAdmin();
         }
 
     }//end connectUser()
