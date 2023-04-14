@@ -7,26 +7,32 @@ use Exception;
 
 class Comment
 {
+
     /**
      * @var integer $commentId
      */
     private int $commentId;
+
     /**
      * @var integer $postId
      */
     private int $postId;
+
     /**
      * @var integer $userId
      */
     private int $userId;
+
     /**
      * @var string $comment
      */
     private string $comment;
+
     /**
      * @var DateTime $creationDate
      */
     private DateTime $creationDate;
+
     /**
      * @var integer $valid
      */
@@ -159,5 +165,5 @@ class Comment
 
     }//end setValid()
 
-}//end class
 
+}//end class

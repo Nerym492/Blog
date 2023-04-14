@@ -6,46 +6,57 @@ use DateTime;
 
 class User
 {
+
     /**
      * @var integer
      */
     private int $userId;
+
     /**
      * @var string
      */
     private string $mail;
+
     /**
      * @var string
      */
     private string $pseudo;
+
     /**
      * @var string
      */
     private string $lastName;
+
     /**
      * @var string
      */
     private string $firstName;
+
     /**
      * @var string
      */
     private string $password;
+
     /**
      * @var DateTime
      */
     private DateTime $lastUpdateDate;
+
     /**
      * @var DateTime
      */
     private DateTime $creationDate;
+
     /**
      * @var integer
      */
     private int $userTypeId;
+
     /**
      * @var boolean
      */
     private bool $isAdmin;
+
 
     /**
      * @return int
@@ -256,9 +267,10 @@ class User
             $this->isAdmin = true;
             return;
         }
+
         $this->isAdmin = false;
 
     }//end setIsAdmin()
 
-}//end class
 
+}//end class

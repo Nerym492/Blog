@@ -7,34 +7,42 @@ use Exception;
 
 class Post
 {
+
     /**
      * @var integer
      */
     private int $postId;
+
     /**
      * @var integer
      */
     private int $userId;
+
     /**
      * @var string
      */
     private string $title;
+
     /**
      * @var string
      */
     private string $excerpt;
+
     /**
      * @var string
      */
     private string $content;
+
     /**
      * @var DateTime
      */
     private DateTime $lastUpdateDate;
+
     /**
      * @var DateTime
      */
     private DateTime $creationDate;
+
 
     /**
      * @return int
@@ -185,6 +193,4 @@ class Post
     }//end setLastUpdateDate()
 
 
-
 }//end class
-
