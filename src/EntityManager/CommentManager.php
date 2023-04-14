@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Lib\DatabaseConnection;
 use App\Lib\Session;
 use DateTime;
+use DateTimeZone;
 
 class CommentManager extends Manager
 {
@@ -47,12 +48,15 @@ class CommentManager extends Manager
      */
     public function getCommentsListWithLimit(int $pageNum, int $commentLimit): ?array
     {
+        $pageDelimitation['pageNum'] = $pageNum;
+        $rows = [];
+
         $selectQuery = "SELECT c.*, u.pseudo
                         FROM comment c 
                         LEFT OUTER JOIN user u ON c.user_id = u.user_id";
 
         $countQuery = "SELECT COUNT(*) as 'rowsCount'
-                       FROM (" . $selectQuery . ") sq";
+                       FROM (".$selectQuery.") sq";
 
         $countQueryStatement = $this->database->prepare($countQuery);
         $countQueryStatement->execute();
@@ -65,9 +69,6 @@ class CommentManager extends Manager
                 $pageDelimitation['rowsLimit'], $pageDelimitation['offset'], $selectQuery,
                 "comment_id", "DESC"
             );
-        } else {
-            $pageDelimitation['pageNum'] = $pageNum;
-            $rows = [];
         }
 
         // Creating a new comment object to store the data.
@@ -97,7 +98,7 @@ class CommentManager extends Manager
                    VALUES(:post_id, :user_id, :comment, :creation_date, :valid);"
         );
 
-        $dateNow = new DateTime('now', new \DateTimeZone($this->env->getVar('TIMEZONE')));
+        $dateNow = new DateTime('now', new DateTimeZone($this->env->getVar('TIMEZONE')));
         $dateNow = $dateNow->format('Y-m-d H:i:s');
 
         $statement->execute(
@@ -193,5 +194,5 @@ class CommentManager extends Manager
 
     }//end createCommentsWithRows()
 
-}//end class
 
+}//end class

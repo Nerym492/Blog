@@ -9,6 +9,7 @@ use PDO;
 
 abstract class Manager
 {
+
     /**
      * @var PDO|null PDO object
      */
@@ -23,6 +24,7 @@ abstract class Manager
      * @var Environment Environment variables
      */
     protected Environment $env;
+
 
     /**
      * Create a connection to the database
@@ -39,31 +41,42 @@ abstract class Manager
     }//end __construct()
 
 
-    public static function calcPageAndOffset(int $rowsLimit, int $pageNum, int $rowsCount, string $sortOrder = ""): array
+    /**
+     * @param int    $rowsLimit Number of rows per page.
+     * @param int    $pageNum   Page currently being read
+     * @param int    $rowsCount Total number of lines available in the pagination
+     * @param string $orderBy   Ascending or descending order
+     * @return array
+     */
+    public static function calcPageAndOffset(int $rowsLimit, int $pageNum, int $rowsCount, string $orderBy = "ASC"): array
     {
-        if ($sortOrder === "DESC") {
-            $offset = $rowsCount - ($rowsLimit * $pageNum);
-            if ($offset < 0) {
-                if ($offset + $rowsLimit === 0) {
-                    $pageNum--;
-                } else {
-                    $rowsLimit = $offset + $rowsLimit;
-                }
-                $offset = 0;
-            }
-        } else {
+        // Order by ASC.
+        if ($orderBy !== "DESC") {
             $offset = ($rowsLimit * $pageNum) - $rowsLimit;
+
+            // The last remaining article on the page has been deleted.
+            if ($offset !== 0 && $offset % $rowsCount === 0) {
+                $pageNum--;
+                $offset -= $rowsLimit;
+            }
         }
 
-        /*
-            The pagination will display the previous page with 0 line if the current page is empty
-            Example 4 rows total but 2 pages with 4 rows per page (page 2 empty)
-            So we need one less page and to start at the beginning of this one
-        */
+        if ($orderBy === "DESC") {
+            $offset = $rowsCount - ($rowsLimit * $pageNum);
+            if ($offset < 0) {
+                $recalcOffset = $offset + $rowsLimit;
+                // The last remaining article on the page has been deleted.
+                if ($recalcOffset === 0) {
+                    $pageNum--;
+                }
 
-        if ($offset !== 0 && $offset % $rowsCount === 0) {
-            $pageNum--;
-            $offset -= $rowsLimit;
+                // The rowLimit is recalculated because there is not enough lines.
+                if ($recalcOffset < 0 || $recalcOffset > 0) {
+                    $rowsLimit = $offset + $rowsLimit;
+                }
+
+                $offset = 0;
+            }
         }
 
         return [
@@ -74,5 +87,5 @@ abstract class Manager
 
     }//end calcPageAndOffset()
 
-}//end class
 
+}//end class

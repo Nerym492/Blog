@@ -21,15 +21,9 @@ class UserController extends AbstractController
      */
     public function confirmMailAddress(string $mail, string $verificationCode): void
     {
-        $mailConfirmation = $this->userManager->confirmMail($mail, $verificationCode);
+        $this->userManager->confirmMail($mail, $verificationCode);
 
-        $this->renderView(
-            'logIn.twig',
-            [
-             'message'      => $mailConfirmation['message'],
-             'messageClass' => $mailConfirmation['messageClass'],
-            ]
-        );
+        $this->renderView('logIn.twig');
 
     }//end confirmMailAddress()
 

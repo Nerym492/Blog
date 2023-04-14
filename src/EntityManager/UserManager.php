@@ -3,10 +3,11 @@
 namespace App\EntityManager;
 
 use App\Entity\User;
-use Twig\Environment as Twig;
 
 class UserManager extends Manager
 {
+
+
     /**
      * Return the confirmation mail link
      * @param array $formRegister Contains all form data. Example : $formRegister['inputName']
@@ -44,7 +45,7 @@ class UserManager extends Manager
             ]
         );
 
-        return "http://localhost/blog/public/register/" . $formRegister['mail'] . "/" . $verificationCode;
+        return "http://localhost/blog/public/register/".$formRegister['mail']."/".$verificationCode;
 
     }//end createUser()
 
@@ -57,7 +58,7 @@ class UserManager extends Manager
      * $array['message'] -> status of the mail confirmation,
      * $array['messageClass'] CSS class of the message
      */
-    public function confirmMail(string $mail, string $verificationCode): array
+    public function confirmMail(string $mail, string $verificationCode): void
     {
         $statement = $this->database->prepare(
             "UPDATE blog.`user`
@@ -77,17 +78,14 @@ class UserManager extends Manager
         );
 
         if (($statement->rowCount() === 1)) {
-            $message = "Your mail has been successfully confirmed !";
-            $messageClass = "success";
-        } else {
-            $message = "This confirmation link si no longer valid.";
-            $messageClass = "danger";
+            $this->session->set('message', 'Your mail has been successfully confirmed !');
+            $this->session->set('messageClass', 'success');
         }
 
-        return [
-                'message'      => $message,
-                'messageClass' => $messageClass,
-               ];
+        if (($statement->rowCount() !== 1)) {
+            $this->session->set('message', 'This confirmation link si no longer valid.');
+            $this->session->set('messageClass', 'danger');
+        }
 
     }//end confirmMail()
 
@@ -101,6 +99,8 @@ class UserManager extends Manager
      */
     public function getUser(int $userId = 0, string $mail = ""): ?User
     {
+        $user = null;
+
         $statement = $this->database->prepare(
             "SELECT user_id, mail, pseudo, last_name, first_name, password, user_type_id
              FROM user
@@ -120,9 +120,6 @@ class UserManager extends Manager
             $user->setLastName($row['last_name']);
             $user->setFirstName($row['first_name']);
             $user->setUserTypeId($row['user_type_id']);
-        } else {
-            // No users were found.
-            $user = null;
         }
 
         return $user;
@@ -135,21 +132,21 @@ class UserManager extends Manager
      *
      * @param string $field Name of the field in the database
      * @param string $data  Data of the field we want to check
-     * @return array
+     * @return array Keys available -> alreadyExists, formIsValid
      */
-    public function checkDataAlreadyExists(string $field, string $data): bool
+    public function checkDataAlreadyExists(string $field, string $data): array
     {
         $statement = $this->database->prepare(
             "SELECT count(user_id) as 'nbLines'
                    FROM user
-                   WHERE " . $field . "=:data"
+                   WHERE ".$field."=:data"
         );
 
         $statement->execute([':data' => $data]);
         $result = $statement->fetch();
 
         if ($result['nbLines'] === 1) {
-            $this->session->set('message', 'This'. $field .'is already used !');
+            $this->session->set('message', 'This'.$field.'is already used !');
             $this->session->set('messageClass', 'danger');
             return [
                     'alreadyExists' => true,
@@ -165,6 +162,13 @@ class UserManager extends Manager
     }//end checkDataAlreadyExists()
 
 
+    /**
+     * Check the login of the user
+     *
+     * @param string $mail     User's mail
+     * @param string $password User's password
+     * @return bool
+     */
     public function checkLogin(string $mail , string $password): bool
     {
         $statement = $this->database->prepare(
@@ -183,28 +187,38 @@ class UserManager extends Manager
     }//end checkLogin()
 
 
+    /**
+     * Connect a user and assigns his data to the session
+     *
+     * @param string $mail Mail of the user
+     * @return void
+     */
     public function connectUser(string $mail): void
     {
         $user = $this->getUser(mail: $mail);
 
         if ($user !== null) {
-            $_SESSION['user_id'] = $user->getUserId();
-            $_SESSION['mail'] = $mail;
-            $_SESSION['first_name'] = $user->getFirstName();
-            $_SESSION['last_name'] = $user->getLastName();
-            $_SESSION['pseudo'] = $user->getPseudo();
-            $_SESSION['isAdmin'] = $user->isAdmin();
+            $this->session->set('user_id', $user->getUserId());
+            $this->session->set('mail', $mail);
+            $this->session->set('first_name', $user->getFirstName());
+            $this->session->set('last_name', $user->getLastName());
+            $this->session->set('pseudo', $user->getPseudo());
+            $this->session->set('isAdmin', $user->isAdmin());
         }
 
     }//end connectUser()
 
 
+    /**
+     * Disconnect the user
+     *
+     * @return void
+     */
     public function disconnectUser(): void
     {
-        session_unset();
-        session_destroy();
+        $this->session->destroy();
 
     }//end disconnectUser()
 
-}//end class
 
+}//end class
