@@ -60,7 +60,7 @@ class Session
      *
      * @return mixed|null
      */
-    public function get(string $key = ""): mixed
+    public function get(string $key=""): mixed
     {
         $sessionValue = null;
 

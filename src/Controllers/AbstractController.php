@@ -122,10 +122,9 @@ abstract class AbstractController
      */
     public function redirectTo(string $url): void
     {
-        header('Location: '. $url, true, 303);
+        header('Location: '.$url, true, 303);
 
     }//end redirectTo()
-
 
 
     /**

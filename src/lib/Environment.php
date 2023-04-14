@@ -40,9 +40,10 @@ class Environment
     {
         if ($isEmpty === true) {
             $this->env->required($requiredVars)->notEmpty();
-        } else {
-            $this->env->required($requiredVars);
+            return;
         }
+
+        $this->env->required($requiredVars);
 
     }//end checkRequiredEmpty()
 

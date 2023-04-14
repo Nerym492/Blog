@@ -48,23 +48,23 @@ abstract class Manager
      * @param string $orderBy   Ascending or descending order
      * @return array
      */
-    public static function calcPageAndOffset(int $rowsLimit, int $pageNum, int $rowsCount, string $orderBy = "ASC"): array
+    public static function calcPageAndOffset(int $rowsLimit, int $pageNum, int $rowsCount, string $orderBy="ASC"): array
     {
         // Order by ASC.
         if ($orderBy !== "DESC") {
-            $offset = ($rowsLimit * $pageNum) - $rowsLimit;
+            $offset = (($rowsLimit * $pageNum) - $rowsLimit);
 
             // The last remaining article on the page has been deleted.
-            if ($offset !== 0 && $offset % $rowsCount === 0) {
+            if ($offset !== 0 && ($offset % $rowsCount) === 0) {
                 $pageNum--;
                 $offset -= $rowsLimit;
             }
         }
 
         if ($orderBy === "DESC") {
-            $offset = $rowsCount - ($rowsLimit * $pageNum);
+            $offset = ($rowsCount - ($rowsLimit * $pageNum));
             if ($offset < 0) {
-                $recalcOffset = $offset + $rowsLimit;
+                $recalcOffset = ($offset + $rowsLimit);
                 // The last remaining article on the page has been deleted.
                 if ($recalcOffset === 0) {
                     $pageNum--;
@@ -72,7 +72,7 @@ abstract class Manager
 
                 // The rowLimit is recalculated because there is not enough lines.
                 if ($recalcOffset < 0 || $recalcOffset > 0) {
-                    $rowsLimit = $offset + $rowsLimit;
+                    $rowsLimit = ($offset + $rowsLimit);
                 }
 
                 $offset = 0;

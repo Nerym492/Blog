@@ -4,22 +4,26 @@ namespace App\EntityManager;
 
 use App\Entity\Post;
 use App\Lib\DatabaseConnection;
-use App\Lib\Session;
 use DateTime;
 use DateTimeZone;
+use Exception;
+use Throwable;
 
 class PostManager extends Manager
 {
+
 
     /**
      * @param int $pageNum   Page currently being read in the pagination
      * @param int $postLimit Number of rows per page
      * @return array postData, numberOfPosts before being limited, currentPage
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPosts(int $pageNum, int $postLimit): array
     {
+        $pageDelimitation['pageNum'] = $pageNum;
         $postsRowsData = [];
+        $posts = [];
 
         $statement = $this->database->prepare(
             "SELECT COUNT(p.post_id) as 'nbPosts'
@@ -43,11 +47,7 @@ class PostManager extends Manager
                 "post_id",
                 "DESC"
             );
-        } else {
-            $pageDelimitation['pageNum'] = $pageNum;
         }
-
-        $posts = [];
 
         foreach ($postsRowsData as $row) {
             $post = $this->createPostWithRow($row);
@@ -71,9 +71,12 @@ class PostManager extends Manager
      *
      * @param int $postId Post id being read
      * @return Post|null
+     * @throws Exception
      */
     public function getPost(int $postId): ?Post
     {
+        $post = null;
+
         $statement = $this->database->prepare(
             "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, p.creation_date
             FROM blog.post p
@@ -86,8 +89,6 @@ class PostManager extends Manager
         // Checking if the line is not empty.
         if ($row !== false) {
             $post = $this->createPostWithRow($row);
-        } else {
-            $post = null;
         }
 
         $statement->closeCursor();
@@ -102,7 +103,7 @@ class PostManager extends Manager
      *
      * @param array $form Form data
      * @return bool True when the post has been created else false
-     * @throws \Exception
+     * @throws Exception
      */
     public function createPost(array $form): bool
     {
@@ -129,7 +130,7 @@ class PostManager extends Manager
             $isCreated = $statement->rowCount() == 1;
             $this->session->set('message', 'The post has been successfully added !');
             $this->session->set('messageClass', 'success');
-        } catch (\Throwable $e) {
+        } catch (Throwable) {
             $this->session->set('message', 'An error occurred while creating the post');
             $this->session->set('messageClass', 'danger');
             $isCreated = false;
@@ -211,6 +212,7 @@ class PostManager extends Manager
      *
      * @param array $row Row from the post table in the Database
      * @return Post|null
+     * @throws Exception
      */
     private function createPostWithRow(array $row): ?Post
     {
@@ -227,6 +229,7 @@ class PostManager extends Manager
         return $post;
 
     }//end createPostWithRow()
+
 
     /**
      * Compare two post and tells if they are identical
@@ -252,4 +255,3 @@ class PostManager extends Manager
 
 
 }//end class
-
