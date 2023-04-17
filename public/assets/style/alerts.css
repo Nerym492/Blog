@@ -1,70 +1,72 @@
-
-
 .alert-box {
-    display: flex;
-    align-items: center;
-    max-width: 500px;
-    min-width: 250px;
-    padding: 1.5em;
-    margin: 0 auto 1rem auto;
-    border-radius: 5px;
-    box-shadow: 0 0 15px 5px #ccc;
+  display: flex;
+  align-items: center;
+  max-width: 500px;
+  min-width: 250px;
+  padding: 1.5em;
+  margin: 0 auto 1rem;
+  border-radius: 5px;
+  box-shadow: 0 0 15px 5px #CCC;
 }
 
-@media (max-width: 550px){
-    .alert-box{
-        margin-right: 0.5rem;
-        margin-left: 0.5rem;
-    }
+@media (max-width: 550px) {
+  .alert-box {
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+  }
 }
 
 .close {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    opacity: 0.5;
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 50%;
-    right: 15px;
-    top: 25px;
-    text-align: center;
-    font-size: 1.6em;
-    cursor: pointer;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  opacity: 0.5;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 50%;
+  right: 15px;
+  top: 25px;
+  text-align: center;
+  font-size: 1.6em;
+  cursor: pointer;
 }
 
 .simple-alert {
-    background-color: #ebebeb;
-    border-left: 5px solid #6c6c6c;
+  background-color: #EBEBEB;
+  border-left: 5px solid #6C6C6C;
 }
+
 .simple-alert .close {
-    border-color: #6c6c6c;
-    color: #6c6c6c;
+  border-color: #6C6C6C;
+  color: #6C6C6C;
 }
 
 .success-alert {
-    background-color: #a8f0c6;
-    border-left: 5px solid #178344;
+  background-color: #A8F0C6;
+  border-left: 5px solid #178344;
 }
+
 .success-alert .close {
-    border-color: #178344;
-    color: #178344;
+  border-color: #178344;
+  color: #178344;
 }
 
 .danger-alert {
-    background-color: #f7a7a3;
-    border-left: 5px solid #8f130c;
+  background-color: #F7A7A3;
+  border-left: 5px solid #8F130C;
 }
+
 .danger-alert .close {
-    border-color: #8f130c;
-    color: #8f130c;
+  border-color: #8F130C;
+  color: #8F130C;
 }
 
 .warning-alert {
-    background-color: #ffd48a;
-    border-left: 5px solid #8a5700;
+  background-color: #FFD48A;
+  border-left: 5px solid #8A5700;
 }
+
 .warning-alert .close {
-    border-color: #8a5700;
-    color: #8a5700;
+  border-color: #8A5700;
+  color: #8A5700;
 }

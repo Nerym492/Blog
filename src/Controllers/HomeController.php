@@ -2,12 +2,20 @@
 
 namespace App\Controllers;
 
-use \Twig\Environment as Twig;
-
 class HomeController extends AbstractController
 {
 
-    public function showHome(Twig $twig): void{
-        echo $twig->render('home.twig',['page' => "Phrase d'accroche"]);
-    }
-}
+
+    /**
+     * Display the home page
+     *
+     * @return void
+     */
+    public function showHome(): void
+    {
+        $this->renderView('home.twig', ['page' => "Phrase d'accroche"]);
+
+    }//end showHome()
+
+
+}//end class

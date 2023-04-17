@@ -2,10 +2,20 @@
 
 namespace App\Controllers;
 
-class ErrorController
+class ErrorController extends AbstractController
 {
-    public function showPage404($twig)
+
+
+    /**
+     * Display page 404
+     *
+     * @return void
+     */
+    public function showPage404(): void
     {
-        echo $twig->render('404.twig');
-    }
-}
+        $this->renderView('404.twig');
+
+    }//end showPage404()
+
+
+}//end class

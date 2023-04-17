@@ -8,172 +8,228 @@ use App\Controllers\PostController;
 use App\Controllers\FormController;
 use App\Controllers\UserController;
 use App\Controllers\AdminController;
-use Dotenv\Dotenv;
+use Bramus\Router\Router;
 
-
-session_start();
-$dotenv = Dotenv::createImmutable(__DIR__);
-$dotenv->load();
-
-$dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER'])->notEmpty();
-$dotenv->required('DB_PASS');
-
-
-$loader = new \Twig\Loader\FilesystemLoader('../Templates');
-$twig = new \Twig\Environment($loader, [
-    'debug' => true,
-    'cache' => '../tmp',
-]);
-
-$twig->addExtension(new \Twig\Extension\DebugExtension());
-$twig->addGlobal('session', $_SESSION);
-
-$router = new \Bramus\Router\Router();
+$router = new Router();
 
 $formController = new FormController();
 $userController = new UserController();
+$adminController = new AdminController();
 
-$router->set404(function() use ($twig) {
-    header('HTTP/1.1 404 Not Found');
-    $errorController = new ErrorController();
-    $errorController->showPage404($twig);
-});
-
-
-$router->mount('/home', function () use ($router, $twig, $formController, $userController) {
-    $homeController = new HomeController();
-
-    //The page is displayed without sending the form
-    $router->get('/', function () use ($twig, $homeController) {
-        $homeController->showHome($twig);
-    });
-
-    //The visitor has sent the form
-    $router->post('/', function () use ($twig, $formController) {
-        $formController->checkContactForm($twig);
-    });
-
-    $router->get('/loggedOut', function () use ($twig, $userController) {
-        $userController->logOut($twig);
-    });
-
-});
-
-$router->mount('/posts', function () use ($router, $twig, $formController) {
-    $postController = new PostController();
-
-    //Displays all the posts
-    $router->get('/', function () use ($twig, $postController) {
-        $postController->showPostsPage($twig);
-    });
-    //Posts reload with Ajax
-    $router->get('/posts-page-(\d+)', function ($pageNum) use ($twig, $postController) {
-        $postController->reloadPostsList($twig, $pageNum);
-    });
-
-    //Displays a single post
-    $router->get('/(\d+)', function ($postId) use ($twig, $postController) {
-        $postController->showPost($twig, $postId);
-    });
-
-    //The comment form has been submitted
-    $router->post('/(\d+)', function ($postId) use ($twig, $formController) {
-        if (!empty($_POST['comment'])) {
-            $formController->checkCommentForm($postId);
-            header('Location: /blog/public/posts/' . $postId . '#comments-box-post', true, 303);
-            /*After processing the data, we redirect the browser to the same page with the HTTP status code 303
-            The old header is replaced with a new one that does not contain $_POST data
-            Post/Redirect/Get
-            Prevent the form from being submitted multiple times by refreshing the page*/
-        }
-    });
-
-    if (isset($_SESSION['isAdmin']) and ($_SESSION['isAdmin'])) {
-        //Displays the post form
-        $router->get('/create', function () use ($twig, $formController) {
-            $formController->showPostForm($twig);
-        });
-
-        //The post form has been submitted
-        $router->post('/create', function () use ($twig, $formController) {
-            $formController->checkPostForm($twig);
-        });
-
-        //Displays the form with the post values
-        $router->get('/edit/(\d+)', function ($postNum) use ($twig, $formController) {
-            $formController->showPostForm($twig, $postNum);
-        });
-
-        //The edited post has been submitted
-        $router->post('/edit/(\d+)', function ($postNum) use ($twig, $formController) {
-            $formController->checkPostForm($twig, $postNum);
-        });
+$router->set404(
+    function () {
+        header('HTTP/1.1 404 Not Found');
+        $errorController = new ErrorController();
+        $errorController->showPage404();
     }
-});
+);
 
 
-$router->mount('/register', function () use ($router, $twig, $formController) {
-    //Displays the register form
-    $router->get('/', function () use ($twig, $formController) {
-        $formController->showRegisterForm($twig);
-    });
+$router->mount(
+    '/home',
+    function () use ($router, $formController, $userController) {
+        $homeController = new HomeController();
 
-    //The visitor has sent the register form
-    $router->post('/', function () use ($twig, $formController) {
-        $formController->checkRegisterForm($twig);
-    });
-});
+        // The page is displayed without sending the form.
+        $router->get(
+            '/',
+            function () use ($homeController) {
+                $homeController->showHome();
+            }
+        );
 
-$router->mount('/logIn', function () use ($router, $twig, $formController, $userController) {
-    //Displays the login form
-    $router->get('/', function () use ($twig, $formController) {
-        $formController->showLogInForm($twig);
-    });
+        // The visitor has sent the form.
+        $router->post(
+            '/',
+            function () use ($formController) {
+                $formController->checkContactForm();
+            }
+        );
 
-    //The user clicked on the link he received by mail
-    $router->get('/mail/([^/<>]+)/verificationCode/(\w+)', function ($mail, $verificationCode) use ($twig, $userController) {
-        $userController->confirmMailAddress($twig, $mail, $verificationCode);
-    });
+        $router->get(
+            '/loggedOut',
+            function () use ($userController) {
+                $userController->logOut();
+            }
+        );
+    }
+);
 
-    //The user has submitted the login form
-    $router->post('/', function () use ($twig, $formController) {
-        $formController->checkLogInForm($twig);
-    });
-});
+$router->mount(
+    '/posts',
+    function () use ($router, $formController) {
+        $postController = new PostController();
 
-if (isset($_SESSION['isAdmin']) and ($_SESSION['isAdmin'])){
-    $router->mount('/administration', function () use ($router, $twig) {
-        $adminController = new AdminController();
-        //Loads the entire page
-        $router->get('/', function () use ($twig, $adminController) {
-            $adminController->showAdminPanel($twig);
-        });
+        // Displays all the posts.
+        $router->get(
+            '/',
+            function () use ($postController) {
+                $postController->showPostsPage();
+            }
+        );
+        // Posts reload with Ajax.
+        $router->get(
+            '/posts-page-(\d+)',
+            function ($pageNum) use ($postController) {
+                $postController->reloadPostsList($pageNum);
+            }
+        );
 
-        //The posts list is reloaded
-        $router->get('/posts-page-(\d+)', function ($pageNum) use ($twig, $adminController) {
-            $adminController->reloadPostsList($twig, $pageNum);
-        });
+        // Displays a single post.
+        $router->get(
+            '/(\d+)',
+            function ($postId) use ($postController) {
+                $postController->showPost($postId);
+            }
+        );
 
-        //A post is deleted
-        $router->get('/delete/post-(\d+)-page-(\d+)', function ($postId, $pageNum) use ($twig, $adminController) {
-            $adminController->deletePost($twig, $pageNum, $postId);
-        });
+        // The comment form has been submitted.
+        $router->post(
+            '/(\d+)',
+            function ($postId) use ($formController) {
+                $formController->checkCommentForm($postId);
+            }
+        );
 
-        //The comment list is reloaded
-        $router->get('/comments-page-(\d+)', function ($pageNum) use ($twig, $adminController){
-           $adminController->reloadCommentsList($twig, $pageNum);
-        });
+        // Enable post form if the user is an admin.
+        if ($formController->getSession()->get('isAdmin') === "1") {
+            // Displays the post form.
+            $router->get(
+                '/create',
+                function () use ($formController) {
+                    $formController->showPostForm();
+                }
+            );
 
-        //The comment is deleted
-        $router->get('/delete/comment-(\d+)-page-(\d+)', function ($commentId, $pageNum) use ($twig, $adminController){
-            $adminController->deleteComment($twig, $pageNum, $commentId);
-        });
+            // The post form has been submitted.
+            $router->post(
+                '/create',
+                function () use ($formController) {
+                    $formController->checkPostForm();
+                }
+            );
 
-        //The comment is validated
-        $router->get('/validate/comment-(\d+)-page-(\d+)', function ($commentId, $pageNum) use ($twig, $adminController){
-            $adminController->validateComment($twig, $pageNum, $commentId);
-        });
-    });
-}
+            // Displays the form with the post values.
+            $router->get(
+                '/edit/(\d+)',
+                function ($postNum) use ($formController) {
+                    $formController->showPostForm($postNum);
+                }
+            );
+
+            // The edited post has been submitted.
+            $router->post(
+                '/edit/(\d+)',
+                function ($postNum) use ($formController) {
+                    $formController->checkPostForm($postNum);
+                }
+            );
+        }//end if
+    }
+);
+
+
+$router->mount(
+    '/register',
+    function () use ($router, $formController) {
+        // Displays the register form.
+        $router->get(
+            '/',
+            function () use ($formController) {
+                $formController->showRegisterForm();
+            }
+        );
+
+        // The visitor has sent the register form.
+        $router->post(
+            '/',
+            function () use ($formController) {
+                $formController->checkRegisterForm();
+            }
+        );
+    }
+);
+
+$router->mount(
+    '/logIn',
+    function () use ($router, $formController, $userController) {
+        // Displays the login form.
+        $router->get(
+            '/',
+            function () use ($formController) {
+                $formController->showLogInForm();
+            }
+        );
+
+        // The user clicked on the link he received by mail.
+        $router->get(
+            '/mail/([^/<>]+)/verificationCode/(\w+)',
+            function ($mail, $verificationCode) use ($userController) {
+                $userController->confirmMailAddress($mail, $verificationCode);
+            }
+        );
+
+        // The user has submitted the login form.
+        $router->post(
+            '/',
+            function () use ($formController) {
+                $formController->checkLogInForm();
+            }
+        );
+    }
+);
+
+if ($adminController->getSession()->get('isAdmin') === "1") {
+    $router->mount(
+        '/administration',
+        function () use ($router, $adminController) {
+            // Loads the entire page.
+            $router->get(
+                '/',
+                function () use ($adminController) {
+                    $adminController->showAdminPanel();
+                }
+            );
+            // The posts list is reloaded.
+            $router->get(
+                '/posts-page-(\d+)',
+                function ($pageNum) use ($adminController) {
+                    $adminController->reloadPostsList($pageNum);
+                }
+            );
+            // A post is deleted.
+            $router->get(
+                '/delete/post-(\d+)-page-(\d+)',
+                function ($postId, $pageNum) use ($adminController) {
+                    $adminController->deletePost($pageNum, $postId);
+                }
+            );
+            // The comment list is reloaded.
+            $router->get(
+                '/comments-page-(\d+)',
+                function ($pageNum) use ($adminController) {
+                    $adminController->reloadCommentsList($pageNum);
+                }
+            );
+            // The comment is deleted.
+            $router->get(
+                '/delete/comment-(\d+)-page-(\d+)',
+                function ($commentId, $pageNum) use ($adminController) {
+                    $adminController->deleteComment($pageNum, $commentId);
+                }
+            );
+            // The comment is validated.
+            $router->get(
+                '/validate/comment-(\d+)-page-(\d+)',
+                function ($commentId, $pageNum) use ($adminController) {
+                    $adminController->validateComment($pageNum, $commentId);
+                }
+            );
+        }
+    );
+}//end if
+
 
 $router->run();
+var_dump($_SESSION);
+

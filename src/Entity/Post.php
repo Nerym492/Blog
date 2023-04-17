@@ -2,85 +2,195 @@
 
 namespace App\Entity;
 
+use DateTime;
+use Exception;
+
 class Post
 {
-    private int $postId;
-    private int $userId;
-    private string $title;
-    private string $excerpt;
-    private string $content;
-    private \DateTime $lastUpdateDate;
-    private \DateTime $creationDate;
 
-    public function getPostId()
+    /**
+     * @var integer
+     */
+    private int $postId;
+
+    /**
+     * @var integer
+     */
+    private int $userId;
+
+    /**
+     * @var string
+     */
+    private string $title;
+
+    /**
+     * @var string
+     */
+    private string $excerpt;
+
+    /**
+     * @var string
+     */
+    private string $content;
+
+    /**
+     * @var DateTime
+     */
+    private DateTime $lastUpdateDate;
+
+    /**
+     * @var DateTime
+     */
+    private DateTime $creationDate;
+
+
+    /**
+     * @return int
+     */
+    public function getPostId(): int
     {
         return $this->postId;
-    }
 
-    public function setPostId(int $postId)
+    }//end getPostId()
+
+
+    /**
+     * @param int $postId New value of postId
+     * @return void
+     */
+    public function setPostId(int $postId): void
     {
         $this->postId = $postId;
-    }
 
-    public function getUserId()
+    }//end setPostId()
+
+
+    /**
+     * @return int
+     */
+    public function getUserId(): int
     {
         return $this->userId;
-    }
 
-    public function setUserId(int $userId)
+    }//end getUserId()
+
+
+    /**
+     * @param int $userId New value of userId
+     * @return void
+     */
+    public function setUserId(int $userId): void
     {
         $this->userId = $userId;
-    }
 
-    public function getTitle()
+    }//end setUserId()
+
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
     {
         return $this->title;
-    }
 
-    public function setTitle(string $title)
+    }//end getTitle()
+
+
+    /**
+     * @param string $title New value of title
+     * @return void
+     */
+    public function setTitle(string $title): void
     {
         $this->title = $title;
-    }
 
-    public function getExcerpt()
+    }//end setTitle()
+
+
+    /**
+     * @return string
+     */
+    public function getExcerpt(): string
     {
         return $this->excerpt;
-    }
 
-    public function setExcerpt(string $excerpt)
+    }//end getExcerpt()
+
+
+    /**
+     * @param string $excerpt New value of excerpt
+     * @return void
+     */
+    public function setExcerpt(string $excerpt): void
     {
         $this->excerpt = $excerpt;
-    }
 
-    public function getContent()
+    }//end setExcerpt()
+
+
+    /**
+     * @return string
+     */
+    public function getContent(): string
     {
         return $this->content;
-    }
 
-    public function setContent(string $content)
+    }//end getContent()
+
+
+    /**
+     * @param string $content New value of content
+     * @return void
+     */
+    public function setContent(string $content): void
     {
         $this->content = $content;
-    }
 
-    public function getCreationDate()
+    }//end setContent()
+
+
+    /**
+     * @return DateTime
+     */
+    public function getCreationDate(): DateTime
     {
         return $this->creationDate;
-    }
 
-    public function setCreationDate(string $creationDate)
+    }//end getCreationDate()
+
+
+    /**
+     * @param string $creationDate New value of creationDate
+     * @return void
+     * @throws Exception
+     */
+    public function setCreationDate(string $creationDate): void
     {
-        $this->creationDate = new \DateTime($creationDate);
-    }
+        $this->creationDate = new DateTime($creationDate);
 
-    public function getLastUpdateDate()
+    }//end setCreationDate()
+
+
+    /**
+     * @return DateTime
+     */
+    public function getLastUpdateDate(): DateTime
     {
         return $this->lastUpdateDate;
-    }
 
-    public function setLastUpdateDate(string $lastUpdateDate)
+    }//end getLastUpdateDate()
+
+
+    /**
+     * @param string $lastUpdateDate New value of lastUpdateDate
+     * @return void
+     * @throws Exception
+     */
+    public function setLastUpdateDate(string $lastUpdateDate): void
     {
-        $this->lastUpdateDate = new \DateTime($lastUpdateDate);
-    }
+        $this->lastUpdateDate = new DateTime($lastUpdateDate);
+
+    }//end setLastUpdateDate()
 
 
-}
+}//end class

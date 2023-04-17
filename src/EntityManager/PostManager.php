@@ -4,22 +4,28 @@ namespace App\EntityManager;
 
 use App\Entity\Post;
 use App\Lib\DatabaseConnection;
+use DateTime;
+use DateTimeZone;
+use Exception;
+use Throwable;
 
 class PostManager extends Manager
 {
 
+
     /**
-     * @param int $pageNum Page currently being read in the pagination
+     * @param int $pageNum   Page currently being read in the pagination
      * @param int $postLimit Number of rows per page
      * @return array postData, numberOfPosts before being limited, currentPage
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPosts(int $pageNum, int $postLimit): array
     {
+        $pageDelimitation['pageNum'] = $pageNum;
         $postsRowsData = [];
-        $connexion = new DatabaseConnection();
+        $posts = [];
 
-        $statement = $this->connection->getConnection()->prepare(
+        $statement = $this->database->prepare(
             "SELECT COUNT(p.post_id) as 'nbPosts'
                      FROM blog.post p"
         );
@@ -34,25 +40,44 @@ class PostManager extends Manager
                                    p.creation_date, u.pseudo
                             FROM blog.post p
                             LEFT OUTER JOIN blog.user u on p.user_id = u.user_id";
-            $postsRowsData = $connexion->execQueryWithLimit($pageDelimitation['rowsLimit'], $pageDelimitation['offset'], $selectQuery,
-                "post_id", "DESC");
-        } else {
-            $pageDelimitation['pageNum'] = $pageNum;
+            $postsRowsData = DatabaseConnection::getInstance($this->session, $this->env)->execQueryWithLimit(
+                $pageDelimitation['rowsLimit'],
+                $pageDelimitation['offset'],
+                $selectQuery,
+                "post_id",
+                "DESC"
+            );
         }
-
-        $posts = [];
 
         foreach ($postsRowsData as $row) {
             $post = $this->createPostWithRow($row);
-            $posts[$post->getPostId()] = ['post' => $post, 'pseudoUser' => $row['pseudo']];
+            $posts[$post->getPostId()] = [
+                                          'post'       => $post,
+                                          'pseudoUser' => $row['pseudo'],
+                                         ];
         }
 
-        return ['data' => $posts, 'nbLines' => $postsRowsCount, 'currentPage' => $pageDelimitation['pageNum']];
-    }
+        return [
+                'data'        => $posts,
+                'nbLines'     => $postsRowsCount,
+                'currentPage' => $pageDelimitation['pageNum'],
+               ];
 
+    }//end getPosts()
+
+
+    /**
+     * Retrieving a post from the database
+     *
+     * @param int $postId Post id being read
+     * @return Post|null
+     * @throws Exception
+     */
     public function getPost(int $postId): ?Post
     {
-        $statement = $this->connection->getConnection()->prepare(
+        $post = null;
+
+        $statement = $this->database->prepare(
             "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, p.creation_date
             FROM blog.post p
             WHERE p.post_id = :postId"
@@ -61,95 +86,133 @@ class PostManager extends Manager
         $statement->execute([':postId' => $postId]);
         $row = $statement->fetch();
 
-
-        // On vérifie si on récupère bien le post
-        if ($row) {
+        // Checking if the line is not empty.
+        if ($row !== false) {
             $post = $this->createPostWithRow($row);
-        } else {
-            $post = null;
         }
 
         $statement->closeCursor();
 
         return $post;
-    }
 
+    }//end getPost()
+
+
+    /**
+     * Create a new Post
+     *
+     * @param array $form Form data
+     * @return bool True when the post has been created else false
+     * @throws Exception
+     */
     public function createPost(array $form): bool
     {
-        $dateNow = new \DateTime('now', new \DateTimeZone($_ENV['TIMEZONE']));
+        $dateNow = new DateTime('now', new DateTimeZone($this->env->getVar('TIMEZONE')));
         $dateNow = $dateNow->format('Y-m-d H:i:s');
 
         try {
-            $statement = $this->connection->getConnection()->prepare(
+            $statement = $this->database->prepare(
                 "INSERT INTO blog.post
                    (user_id, title, excerpt, content, last_update_date, creation_date)
                    VALUES(:user_id, :title, :excerpt, :content, :last_update_date, :creation_date);"
             );
 
-            $statement->execute([
-                ':user_id' => $_SESSION['user_id'],
-                ':title' => $form['title'],
-                ':excerpt' => $form['excerpt'],
-                ':content' => $form['content'],
-                ':last_update_date' => $dateNow,
-                ':creation_date' => $dateNow
-            ]);
+            $statement->execute(
+                [
+                 ':user_id'          => $this->session->get('user_id'),
+                 ':title'            => $form['title'],
+                 ':excerpt'          => $form['excerpt'],
+                 ':content'          => $form['content'],
+                 ':last_update_date' => $dateNow,
+                 ':creation_date'    => $dateNow,
+                ]
+            );
             $isCreated = $statement->rowCount() == 1;
-        } catch (\Throwable $e) {
-            if (!isset($_SESSION['message'])) {
-                $_SESSION['message'] = "An error occurred while creating the post";
-                $_SESSION['messageClass'] = "danger";
-            }
+            $this->session->set('message', 'The post has been successfully added !');
+            $this->session->set('messageClass', 'success');
+        } catch (Throwable) {
+            $this->session->set('message', 'An error occurred while creating the post');
+            $this->session->set('messageClass', 'danger');
             $isCreated = false;
-        }
-
+        }//end try
 
         return $isCreated;
-    }
+
+    }//end createPost()
+
 
     /**
      * Update title, excerpt and content field in the database
-     * @param Post $post Post object
-     * @return bool True if updated successfully else false
+     *
+     * @param Post $post       Original Post object
+     * @param Post $editedPost Post object after editing
+     * @return void
      */
-    public function updatePost(Post $post): bool
+    public function updatePost(Post $post, Post $editedPost): void
     {
-        $statement = $this->connection->getConnection()->prepare(
-            "UPDATE post
+        $identicalPosts = $this->checkIdenticalPost($post, $editedPost);
+
+        if ($identicalPosts === true) {
+            $this->session->set('message', 'Nothing to update !');
+            $this->session->set('messageClass', 'warning');
+            return;
+        }
+
+        // Posts are different, an update is necessary.
+        if ($identicalPosts === false) {
+            $statement = $this->database->prepare(
+                "UPDATE post
                    SET title=:title, excerpt=:excerpt, content=:content
                    WHERE post_id=:post_id"
-        );
-        $statement->execute([
-            ':title' => $post->getTitle(),
-            ':excerpt' => $post->getExcerpt(),
-            ':content' => $post->getContent(),
-            ':post_id' => $post->getPostId()
-        ]);
+            );
+            $statement->execute(
+                [
+                 ':title'   => $post->getTitle(),
+                 ':excerpt' => $post->getExcerpt(),
+                 ':content' => $post->getContent(),
+                 ':post_id' => $post->getPostId(),
+                ]
+            );
 
-        return $statement->rowCount() == 1;
-    }
+            $updatedRows = $statement->rowCount();
+        }
+
+        if (isset($updatedRows) === true && $updatedRows === 1) {
+            $this->session->set('message', 'The post has been successfully modified !');
+            $this->session->set('messageClass', 'success');
+        }
+
+    }//end updatePost()
+
 
     /**
-     * @param int $postId
+     * Delete a post
+     *
+     * @param int $postId Id of the Post being read
      * @return bool True if deleted else false
      */
     public function deletePost(int $postId): bool
     {
-        $statement = $this->connection->getConnection()->prepare(
+        $statement = $this->database->prepare(
             "DELETE FROM post
                    WHERE post_id=:postId"
         );
 
-        $statement->execute([
-            ':postId' => $postId
-        ]);
+        $statement->execute(
+            [':postId' => $postId]
+        );
 
         return $statement->rowCount() == 1;
-    }
+
+    }//end deletePost()
+
 
     /**
-     * @param array $row
+     * Create a post object with a post row from the database.
+     *
+     * @param array $row Row from the post table in the Database
      * @return Post|null
+     * @throws Exception
      */
     private function createPostWithRow(array $row): ?Post
     {
@@ -164,5 +227,31 @@ class PostManager extends Manager
         $post->setCreationDate($row['creation_date']);
 
         return $post;
-    }
-}
+
+    }//end createPostWithRow()
+
+
+    /**
+     * Compare two post and tells if they are identical
+     *
+     * @param Post $basePost     Post without any modification
+     * @param Post $modifiedPost Post which has been modified
+     *
+     * @return bool
+     */
+    public function checkIdenticalPost(Post $basePost, Post $modifiedPost): bool
+    {
+        $identicalPosts = true;
+        foreach ($basePost as $fieldName => $fieldValue) {
+            if ($fieldValue !== $modifiedPost[$fieldName]) {
+                $identicalPosts = false;
+                break;
+            }
+        }
+
+        return $identicalPosts;
+
+    }//end checkIdenticalPost()
+
+
+}//end class
