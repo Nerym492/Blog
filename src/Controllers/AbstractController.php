@@ -140,6 +140,18 @@ abstract class AbstractController
 
 
     /**
+     * Get the session variable
+     *
+     * @return Session
+     */
+    public function getSession(): Session
+    {
+        return $this->session;
+
+    }//end getSession()
+
+
+    /**
      * Gets all the variables needed to build the pagination
      *
      * @param integer $nbRows       Total number of rows given by the query.

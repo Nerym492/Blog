@@ -8,22 +8,13 @@ use App\Controllers\PostController;
 use App\Controllers\FormController;
 use App\Controllers\UserController;
 use App\Controllers\AdminController;
+use Bramus\Router\Router;
 
-$loader = new \Twig\Loader\FilesystemLoader('../Templates');
-$twig   = new \Twig\Environment(
-    $loader,
-    [
-     'debug' => true,
-     'cache' => '../tmp',
-    ]
-);
-
-
-// $twig->addGlobal('session', $session);
-$router = new \Bramus\Router\Router();
+$router = new Router();
 
 $formController = new FormController();
 $userController = new UserController();
+$adminController = new AdminController();
 
 $router->set404(
     function () {
@@ -101,7 +92,7 @@ $router->mount(
         );
 
         // Enable post form if the user is an admin.
-        if (isset($_SESSION['isAdmin']) === true && $_SESSION['isAdmin'] === true) {
+        if ($formController->getSession()->get('isAdmin') === "1") {
             // Displays the post form.
             $router->get(
                 '/create',
@@ -140,11 +131,11 @@ $router->mount(
 
 $router->mount(
     '/register',
-    function () use ($router, $twig, $formController) {
+    function () use ($router, $formController) {
         // Displays the register form.
         $router->get(
             '/',
-            function () use ($twig, $formController) {
+            function () use ($formController) {
                 $formController->showRegisterForm();
             }
         );
@@ -161,7 +152,7 @@ $router->mount(
 
 $router->mount(
     '/logIn',
-    function () use ($router, $twig, $formController, $userController) {
+    function () use ($router, $formController, $userController) {
         // Displays the login form.
         $router->get(
             '/',
@@ -181,22 +172,21 @@ $router->mount(
         // The user has submitted the login form.
         $router->post(
             '/',
-            function () use ($twig, $formController) {
+            function () use ($formController) {
                 $formController->checkLogInForm();
             }
         );
     }
 );
 
-if (isset($_SESSION['isAdmin']) === true && $_SESSION['isAdmin'] === true) {
+if ($adminController->getSession()->get('isAdmin') === "1") {
     $router->mount(
         '/administration',
-        function () use ($router, $twig) {
-            $adminController = new AdminController();
+        function () use ($router, $adminController) {
             // Loads the entire page.
             $router->get(
                 '/',
-                function () use ($twig, $adminController) {
+                function () use ($adminController) {
                     $adminController->showAdminPanel();
                 }
             );
@@ -217,7 +207,7 @@ if (isset($_SESSION['isAdmin']) === true && $_SESSION['isAdmin'] === true) {
             // The comment list is reloaded.
             $router->get(
                 '/comments-page-(\d+)',
-                function ($pageNum) use ($twig, $adminController) {
+                function ($pageNum) use ($adminController) {
                     $adminController->reloadCommentsList($pageNum);
                 }
             );
@@ -241,3 +231,5 @@ if (isset($_SESSION['isAdmin']) === true && $_SESSION['isAdmin'] === true) {
 
 
 $router->run();
+var_dump($_SESSION);
+

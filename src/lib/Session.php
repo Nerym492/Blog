@@ -64,9 +64,9 @@ class Session
     {
         $sessionValue = null;
 
-        if (isset($_SESSION) === true && $key !== "") {
+        if ($key !== "" && isset($_SESSION[$key]) === true) {
             $sessionValue = filter_var($_SESSION[$key], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        } else if (isset($_SESSION) === true && $key === "") {
+        } else if ($key === "" && isset($_SESSION) === true) {
             $sessionValue = filter_var_array($_SESSION, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         }
 
@@ -83,7 +83,7 @@ class Session
      *
      * @return void
      */
-    public function set(string $key, string $value): void
+    public function set(string $key, mixed $value): void
     {
         $key   = htmlspecialchars($key);
         $value = htmlspecialchars($value);
