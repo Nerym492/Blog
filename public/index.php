@@ -231,5 +231,3 @@ if ($adminController->getSession()->get('isAdmin') === "1") {
 
 
 $router->run();
-var_dump($_SESSION);
-

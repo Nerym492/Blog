@@ -6,7 +6,7 @@
                     <div class="card-body p-4">
                         <h4 class="text-center mb-4 pb-2">Leave a comment</h4>
                         <form class="d-flex flex-column align-items-end mb-4 needs-validation" method="post"
-                              action="/blog/public/posts/{{ post.postId }}" novalidate>
+                              action="{{ paths.public }}/posts/{{ post.postId }}" novalidate>
                             <div class="form-floating mb-2 w-100" id="group-message-post">
                                 <textarea class="form-control" name="comment" id="message-post"
                                           placeholder="Your message"

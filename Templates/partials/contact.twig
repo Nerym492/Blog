@@ -1,7 +1,7 @@
 <h2 class="my-4 text-center">Contact</h2>
 
 <form class="container form-container mb-5 justify-content-center needs-validation" method="post"
-      action="/blog/public/home/#form-contact" id="form-contact" novalidate>
+      action="{{ paths.public }}/home/#form-contact" id="form-contact" novalidate>
     <div class="form-floating mb-3" id="group-full-name-contact">
         <input type="text" class="form-control" name="fullName" id="full-name-contact" placeholder="Full Name"
                value="{{ form.fullName }}" pattern="([A-z]){3,25}\s([A-z]){3,25}" required>

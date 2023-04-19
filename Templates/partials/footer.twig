@@ -30,13 +30,15 @@
                 </ul>
                 <div class="small text-center text-muted fst-italic">Copyright &copy; Your Website 2022</div>
                 {% if session.isAdmin %}
-                    <p class="text-center link-brown fw-bold"><a href="/blog/public/administration/">Administration</a></p>
+                    <p class="text-center link-brown fw-bold">
+                        <a href="{{ paths.public }}/administration/">Administration</a>
+                    </p>
                 {% endif %}
             </div>
         </div>
     </div>
 </footer>
 <!-- Bootstrap core JS-->
-<script src="/blog/node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+<script src="{{ paths.root }}/vendor/twbs/bootstrap/dist/js/bootstrap.bundle.js"></script>
 <!-- Core theme JS-->
-<script src="/blog/public/assets/js/scripts.js"></script>
+<script src="{{ paths.public }}/assets/js/scripts.js"></script>

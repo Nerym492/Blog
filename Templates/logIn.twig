@@ -5,7 +5,7 @@
     <h2 class="text-center mb-5">Log in</h2>
 
     <form class="container form-container mb-5 justify-content-center needs-validation" method="post"
-          action="/blog/public/logIn/#form-log-in" id="form-log-in" novalidate>
+          action="{{ paths.public }}/logIn/#form-log-in" id="form-log-in" novalidate>
         <div class="form-floating mb-3" id="group-mail-log-in">
             <input type="text" class="form-control" name="mail" id="mail-log-in" placeholder="name@example.com"
                    value="{{ form.mail }}" required>
