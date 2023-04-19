@@ -81,8 +81,8 @@ abstract class AbstractController
             ]
         );
         $this->twig->addExtension(new DebugExtension());
-        $this->setTwigSessionGlobals();
         $this->env = new Environment();
+        $this->setTwigSessionGlobals();
         $this->postManager    = new PostManager($this->session, $this->env);
         $this->commentManager = new CommentManager($this->session, $this->env);
         $this->userManager = new UserManager($this->session, $this->env);
@@ -135,6 +135,12 @@ abstract class AbstractController
     public function setTwigSessionGlobals(): void
     {
         $this->twig->addGlobal('session', $this->session->get());
+        $this->twig->addGlobal(
+            'paths', [
+                      'root'   => $this->env->getVar('ROOT_PATH'),
+                      'public' => $this->env->getVar('PUBLIC_PATH'),
+                     ]
+        );
 
     }//end setTwigSessionGlobals()
 

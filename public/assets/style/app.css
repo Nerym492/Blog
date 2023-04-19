@@ -171,14 +171,17 @@ header.masthead .post-heading .meta a {
   font-weight: 500;
 }
 
-.post-link {
+.post-link,
+.comment-link {
   color: #212529;
   text-decoration: none;
   transition: all 200ms ease-in-out;
 }
 
 .post-link:focus,
-.post-link:hover {
+.post-link:hover,
+.comment-link:focus,
+.comment-link:hover {
   text-decoration: none;
   color: #8C5C4A;
 }

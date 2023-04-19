@@ -6,7 +6,8 @@
     "vlucas/phpdotenv": "^5.5",
     "ext-openssl": "*",
     "php-pagination/php-pagination": "^2.0",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "twbs/bootstrap": "^5.2"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.16",
