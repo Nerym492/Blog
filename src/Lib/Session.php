@@ -41,7 +41,7 @@ class Session
      *
      * @return void
      */
-    public static function clearKeys(array $keys): void
+    public function clearKeys(array $keys): void
     {
         foreach ($keys as $key) {
             if (isset($_SESSION[$key]) === true) {

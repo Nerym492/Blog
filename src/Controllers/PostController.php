@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use Exception;
+use Throwable;
 use Twig\Environment as Twig;
 use App\EntityManager\PostManager;
 use App\EntityManager\UserManager;
@@ -19,7 +21,7 @@ class PostController extends AbstractController
      * Display the posts page.
      *
      * @return void
-     * @throws \Exception Database error.
+     * @throws Exception Database error.
      */
     public function showPostsPage(): void
     {
@@ -45,7 +47,7 @@ class PostController extends AbstractController
      * @param integer $pageNum Number of the page in the post list pagination.
      *
      * @return void
-     * @throws \Exception Database error.
+     * @throws Exception Database error.
      */
     public function reloadPostsList(int $pageNum): void
     {
@@ -68,7 +70,7 @@ class PostController extends AbstractController
      * @param integer $pageNum Number of the page in the post list pagination.
      *
      * @return array
-     * @throws \Exception Database error.
+     * @throws Exception Database error.
      */
     private function getPostsListData(int $pageNum=1): array
     {
@@ -97,18 +99,22 @@ class PostController extends AbstractController
      */
     public function showPost(int $postId): void
     {
-        $post           = $this->postManager->getPost($postId);
-        $userPost       = $this->userManager->getUser(userId: $post->getUserId());
-        $comments       = $this->commentManager->getCommentsByPost($postId);
+        try {
+            $post           = $this->postManager->getPost($postId);
+            $userPost       = $this->userManager->getUser(userId: $post->getUserId());
+            $comments       = $this->commentManager->getCommentsByPost($postId);
 
-        $this->renderView(
-            'post.twig',
-            [
-             'post'     => $post,
-             'userPost' => $userPost,
-             'comments' => $comments,
-            ]
-        );
+            $this->renderView(
+                'post.twig',
+                [
+                 'post'     => $post,
+                 'userPost' => $userPost,
+                 'comments' => $comments,
+                ]
+            );
+        } catch (Throwable) {
+            $this->redirectTo($this->env->getVar('PUBLIC_PATH')."/posts/");
+        }
 
         $this->session->clearKeys(['message', 'messageClass']);
 
@@ -116,4 +122,3 @@ class PostController extends AbstractController
 
 
 }//end class
-

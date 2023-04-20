@@ -86,11 +86,12 @@ class CommentManager extends Manager
     /**
      * Create a new comment
      *
-     * @param int $postId Id of the Post that is currently been read
+     * @param int    $postId  Id of the Post that is currently been read
+     * @param string $comment Comment
      * @return bool True is the comment has been created else false
      * @throws \Exception
      */
-    public function createComment(int $postId): bool
+    public function createComment(int $postId, string $comment): bool
     {
         $statement = $this->database->prepare(
             "INSERT INTO blog.comment
@@ -105,7 +106,7 @@ class CommentManager extends Manager
             [
              ':post_id'       => $postId,
              ':user_id'       => $this->session->get('user_id'),
-             ':comment'       => filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+             ':comment'       => $comment,
              ':creation_date' => $dateNow,
              ':valid'         => 0,
             ]

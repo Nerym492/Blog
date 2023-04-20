@@ -110,6 +110,7 @@ abstract class AbstractController
         }
 
         echo $render;
+        $this->session->clearKeys(['message', 'messageClass']);
 
     }//end renderView()
 
