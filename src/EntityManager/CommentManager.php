@@ -94,7 +94,7 @@ class CommentManager extends Manager
     public function createComment(int $postId, string $comment): bool
     {
         $statement = $this->database->prepare(
-            "INSERT INTO blog.comment
+            "INSERT INTO ".$this->env->getVar('DB_NAME').".comment
                    (post_id, user_id, comment, creation_date, valid)
                    VALUES(:post_id, :user_id, :comment, :creation_date, :valid);"
         );
@@ -135,7 +135,7 @@ class CommentManager extends Manager
     public function deleteComment(int $commentId): bool
     {
         $statement = $this->database->prepare(
-            "DELETE FROM blog.comment 
+            "DELETE FROM ".$this->env->getVar('DB_NAME').".comment 
                    WHERE comment_id=:commentId"
         );
 
@@ -155,7 +155,7 @@ class CommentManager extends Manager
     public function validateComment(int $commentId): bool
     {
         $statement = $this->database->prepare(
-            "UPDATE blog.comment
+            "UPDATE ".$this->env->getVar('DB_NAME').".comment
                    SET valid = 1 
                    WHERE comment_id=:commentId"
         );

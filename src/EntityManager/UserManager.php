@@ -26,7 +26,7 @@ class UserManager extends Manager
         $verificationCode = bin2hex(openssl_random_pseudo_bytes(20));
 
         $statement = $this->database->prepare(
-            "INSERT INTO blog.`user`
+            "INSERT INTO ".$this->env->getVar('DB_NAME').".user
                 (mail, pseudo, last_name, first_name, password, verification_code, confirmed_mail, user_type_id)
                 VALUES(:mail, :pseudo, :last_name, :first_name, :password, 
                        :verification_code, :confirmed_mail, :user_type_id);"
@@ -64,7 +64,7 @@ class UserManager extends Manager
     public function confirmMail(string $mail, string $verificationCode): void
     {
         $statement = $this->database->prepare(
-            "UPDATE blog.`user`
+            "UPDATE ".$this->env->getVar('DB_NAME').".`user`
                    SET confirmed_mail=:confirmed_mail, verification_code=:reset_verification_code
                    WHERE mail=:mail AND verification_code=:verification_code
             "

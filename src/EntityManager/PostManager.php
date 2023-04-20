@@ -28,7 +28,7 @@ class PostManager extends Manager
         try {
             $statement = $this->database->prepare(
                 "SELECT COUNT(p.post_id) as 'nbPosts'
-                     FROM blog.post p"
+                     FROM ".$this->env->getVar('DB_NAME').".post p"
             );
 
             $statement->execute();
@@ -39,8 +39,8 @@ class PostManager extends Manager
 
                 $selectQuery = "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, 
                                    p.creation_date, u.pseudo
-                            FROM blog.post p
-                            LEFT OUTER JOIN blog.user u on p.user_id = u.user_id";
+                            FROM ".$this->env->getVar('DB_NAME').".post p
+                            LEFT OUTER JOIN ".$this->env->getVar('DB_NAME').".user u on p.user_id = u.user_id";
                 $postsRowsData = DatabaseConnection::getInstance($this->session, $this->env)->execQueryWithLimit(
                     $pageDelimitation['rowsLimit'],
                     $pageDelimitation['offset'],
@@ -83,7 +83,7 @@ class PostManager extends Manager
 
         $statement = $this->database->prepare(
             "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, p.creation_date
-            FROM blog.post p
+            FROM ".$this->env->getVar('DB_NAME').".post p
             WHERE p.post_id = :postId"
         );
 
@@ -116,7 +116,7 @@ class PostManager extends Manager
 
         try {
             $statement = $this->database->prepare(
-                "INSERT INTO blog.post
+                "INSERT INTO ".$this->env->getVar('DB_NAME').".post
                    (user_id, title, excerpt, content, last_update_date, creation_date)
                    VALUES(:user_id, :title, :excerpt, :content, :last_update_date, :creation_date);"
             );
