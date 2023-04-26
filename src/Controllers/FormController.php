@@ -18,9 +18,11 @@ class FormController extends AbstractController
      * Display the register form.
      *
      * @return void
+     * @throws Exception
      */
     public function showRegisterForm(): void
     {
+        $this->generateToken();
         $this->renderView('signIn.twig');
 
     }//end showRegisterForm()
@@ -30,9 +32,11 @@ class FormController extends AbstractController
      * Displays the login form page
      *
      * @return void
+     * @throws Exception
      */
     public function showLogInForm(): void
     {
+        $this->generateToken();
         $this->renderView('logIn.twig');
 
     }//end showLogInForm()
@@ -45,9 +49,12 @@ class FormController extends AbstractController
      * @param integer|null $postNum The post id if the user is editing the post.
      *
      * @return void
+     * @throws Exception
      */
     public function showPostForm(?int $postNum=null): void
     {
+        $this->generateToken();
+
         $post           = null;
         $formTitle      = 'Create a new post';
         $formButtonText = 'Create';
@@ -80,6 +87,7 @@ class FormController extends AbstractController
      * @param integer $postId Post being read.
      *
      * @return void
+     * @throws Exception
      */
     public function checkCommentForm(int $postId): void
     {
@@ -91,7 +99,6 @@ class FormController extends AbstractController
             $comments = $this->commentManager->getCommentsByPost($postId);
             $userPost = $this->userManager->getUser(userId: $post->getUserId());
 
-            $this->setTwigSessionGlobals();
             $this->renderView(
                 'post.twig',
                 [
@@ -127,6 +134,12 @@ class FormController extends AbstractController
      */
     public function checkLogInForm(): void
     {
+        $tokenVerified = $this->verifyToken($this->env->getVar('PUBLIC_PATH').'/logIn');
+
+        if ($tokenVerified === false) {
+            return;
+        }
+
         $mail     = filter_input(INPUT_POST, 'mail', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
@@ -134,14 +147,12 @@ class FormController extends AbstractController
         if ($loginIsValid === false) {
             $this->session->set('message', 'Your email or password is not valid !');
             $this->session->set('messageClass', 'danger');
-            $this->setTwigSessionGlobals();
             $this->renderView('logIn.twig');
             return;
         }
 
         // Connect the user.
         $this->userManager->connectUser($mail);
-        $this->setTwigSessionGlobals();
         // Displays home page and "Log in" is replaced by "Log out" in the navbar.
         $this->redirectTo($this->env->getVar('PUBLIC_PATH').'/home/');
 
@@ -156,6 +167,11 @@ class FormController extends AbstractController
      */
     public function checkContactForm(): void
     {
+        $verifiedToken = $this->verifyToken($this->env->getVar('PUBLIC_PATH').'/home/#form-contact');
+        if ($verifiedToken === false) {
+            return;
+        }
+
         $mailStatus['mailSent'] = [];
         $mailStatus['message']  = '';
 
@@ -212,6 +228,12 @@ class FormController extends AbstractController
      */
     public function checkRegisterForm(): void
     {
+        $verifiedToken = $this->verifyToken($this->env->getVar('PUBLIC_PATH').'/register/');
+
+        if ($verifiedToken === false) {
+           return;
+        }
+
         $patterns = [
                      'pseudo'   => '/^[A-z\d]{3,25}$/',
                      'fullName' => '/^([A-z]){3,25}\s([A-z]){3,25}$/',
@@ -263,8 +285,6 @@ class FormController extends AbstractController
             }//end if
         }//end if
 
-        $this->setTwigSessionGlobals();
-
         // Passwords are not returned for security reasons (even if it's encrypted).
         $checkForm['form']['password']        = '';
         $checkForm['form']['passwordConfirm'] = '';
@@ -292,6 +312,16 @@ class FormController extends AbstractController
      */
     public function checkPostForm(?int $postId=null): void
     {
+        $url = $this->env->getVar('PUBLIC_PATH').'/posts/create/#alert-box';
+        if ($postId !== null) {
+            $url = $this->env->getVar('PUBLIC_PATH').'/posts/edit/'.$postId.'/#alert-box';
+        }
+
+        $verifiedToken = $this->verifyToken($url);
+        if ($verifiedToken === false) {
+            return;
+        }
+
         $checkForm = ['isValid' => true];
 
         foreach (filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS) as $inputName => $inputValue) {
@@ -331,6 +361,7 @@ class FormController extends AbstractController
      * @param int|null $postId    Id of the post being read
      * @param array    $checkForm Form data
      * @return bool True if has been edited, otherwise false.
+     * @throws Exception
      */
     private function checkEditedPost(?int $postId, array $checkForm) :bool
     {
@@ -348,8 +379,6 @@ class FormController extends AbstractController
             // Comparing edited post with old post and update it if necessary.
             $this->postManager->updatePost($post, $editedPost);
 
-            $this->setTwigSessionGlobals();
-
             $this->renderView(
                 'postForm.twig',
                 [
@@ -359,7 +388,7 @@ class FormController extends AbstractController
                  'formButtonText' => 'Edit',
                 ]
             );
-            $this->session->clearKeys(['message', 'messageClass']);
+
             return true;
         }//end if
 

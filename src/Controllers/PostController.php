@@ -76,9 +76,6 @@ class PostController extends AbstractController
     {
         // Number of posts per page.
         $posts       = $this->postManager->getPosts($pageNum, self::POST_LIMIT);
-
-        $this->setTwigSessionGlobals();
-
         // Use pagination class with results, per page and page.
         $paginationMenu = $this->getPagination($posts['nbLines'], self::POST_LIMIT, $pageNum);
 

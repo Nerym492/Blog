@@ -2,6 +2,7 @@
 
 <form class="container form-container mb-5 justify-content-center needs-validation" method="post"
       action="{{ paths.public }}/home/#form-contact" id="form-contact" novalidate>
+    <input type="hidden" name="formToken" value="{{ session.formToken }}">
     <div class="form-floating mb-3" id="group-full-name-contact">
         <input type="text" class="form-control" name="fullName" id="full-name-contact" placeholder="Full Name"
                value="{{ form.fullName }}" pattern="([A-z]){3,25}\s([A-z]){3,25}" required>

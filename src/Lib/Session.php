@@ -2,6 +2,8 @@
 
 namespace App\Lib;
 
+use Exception;
+
 /**
  * Management of the session variable
  */

@@ -8,6 +8,7 @@
     <form class="container form-container mb-5 justify-content-center needs-validation" method="post"
           action="{{ paths.public }}/register/#form-register"
           id="form-register" novalidate>
+        <input type="hidden" name="formToken" value="{{ session.formToken }}">
         <div class="form-floating mb-3" id="group-pseudo-register">
             <input type="text" class="form-control" name="pseudo" id="pseudo-register" placeholder="Pseudo"
                    value="{{ form.pseudo }}" pattern="[A-z\d]{3,25}" required>

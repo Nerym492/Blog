@@ -4,19 +4,20 @@ namespace App\EntityManager;
 
 use App\Entity\Comment;
 use App\Lib\DatabaseConnection;
-use App\Lib\Session;
 use DateTime;
 use DateTimeZone;
+use Exception;
 
 class CommentManager extends Manager
 {
 
 
     /**
-     * Gets all comments for a given post
+     * Gets all valid comments for a given post
      *
      * @param int $postId Id of the post
      * @return array|null
+     * @throws Exception
      */
     public function getCommentsByPost(int $postId): ?array
     {
@@ -25,7 +26,8 @@ class CommentManager extends Manager
             "SELECT c.*, u.pseudo
              FROM comment c 
              LEFT OUTER JOIN user u ON c.user_id = u.user_id
-             WHERE post_id = :post_id"
+             WHERE post_id = :post_id
+             AND valid = 1"
         );
 
         $statement->execute([':post_id' => $postId]);
@@ -89,7 +91,7 @@ class CommentManager extends Manager
      * @param int    $postId  Id of the Post that is currently been read
      * @param string $comment Comment
      * @return bool True is the comment has been created else false
-     * @throws \Exception
+     * @throws Exception
      */
     public function createComment(int $postId, string $comment): bool
     {
@@ -172,6 +174,7 @@ class CommentManager extends Manager
      *
      * @param array $rows Rows from the comment table
      * @return array
+     * @throws Exception
      */
     private function createCommentsWithRows(array $rows): array
     {
