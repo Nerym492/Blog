@@ -7,7 +7,7 @@ Création d'un blog utilisant une architecture MVC.
 
 ## Informations
 
-Pour ce projet, j’ai utilisé le moteur de templates Twig ainsi que thème « [Clean blog](https://startbootstrap.com/previews/clean-blog)  » de Bootstrap.
+Pour ce projet, j’ai utilisé le moteur de templates Twig ainsi que le thème « [Clean blog](https://startbootstrap.com/previews/clean-blog)  » de Bootstrap.
 
 ## Installation
 
@@ -31,11 +31,11 @@ sélectionnant au préalable la base de données qui vient d’être créée.
 Cliquer sur le lien pour confirmer l’inscription.
 11. Pour passer le compte en administrateur se rendre dans la base de données et exécuter la requête suivante en 
 remplaçant « adminmail@example.com » par l’adresse mail utilisée : 
-   ```sql
+    ```sql
     UPDATE user SET user_type_id = 1 WHERE mail = 'adminmail@example.com'.
-   ```
+    ```
 12.	Pour se connecter, entrer ses identifiants sur la page « logIn » . 
 Une fois la connexion faite, un lien « Administration » apparaît en bas de chaque page.
 (uniquement pour le compte Administrateur)
 
-Un exemple de ce site est disponible à l'adresse suivante : https://my-blog.florian-pohu-49.fr/home/
+Un exemple de ce site est disponible à l'adresse suivante : https://my-blog.florian-pohu-49.fr/home/  
