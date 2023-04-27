@@ -14,13 +14,13 @@
                 <li class="nav-item">
                     <a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ paths.public }}/posts/">Posts</a>
                 </li>
-                {% if session is empty %}
+                {% if session.user_id is empty %}
                     <li class="nav-item">
                         <a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ paths.public }}/register/">Sign in</a>
                     </li>
                 {% endif %}
                 <li class="nav-item dropdown" id="login-nav-item">
-                    {% if session %}
+                    {% if session.user_id %}
                         <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
                             <i class="fa-regular fa-circle-user fa-2xl"></i>

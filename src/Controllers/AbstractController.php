@@ -7,7 +7,7 @@ use App\EntityManager\PostManager;
 use App\EntityManager\UserManager;
 use App\Lib\Environment;
 use App\Lib\Session;
-use Dotenv\Dotenv;
+use Exception;
 use Pagination\Pagination;
 use Pagination\StrategySimple;
 use Throwable;
@@ -82,7 +82,6 @@ abstract class AbstractController
         );
         $this->twig->addExtension(new DebugExtension());
         $this->env = new Environment();
-        $this->setTwigSessionGlobals();
         $this->postManager    = new PostManager($this->session, $this->env);
         $this->commentManager = new CommentManager($this->session, $this->env);
         $this->userManager = new UserManager($this->session, $this->env);
@@ -101,6 +100,8 @@ abstract class AbstractController
      */
     public function renderView(string $twigFile, array $params=[]): void
     {
+        $this->setTwigGlobals();
+
         try {
             $render = $this->twig->render($twigFile, $params);
         } catch (Throwable) {
@@ -110,6 +111,7 @@ abstract class AbstractController
         }
 
         echo $render;
+        $this->session->clearKeys(['message', 'messageClass']);
 
     }//end renderView()
 
@@ -132,17 +134,16 @@ abstract class AbstractController
      *
      * @return void
      */
-    public function setTwigSessionGlobals(): void
+    public function setTwigGlobals(): void
     {
-        $this->twig->addGlobal('session', $this->session->get());
         $this->twig->addGlobal(
             'paths', [
-                      'root'   => $this->env->getVar('ROOT_PATH'),
                       'public' => $this->env->getVar('PUBLIC_PATH'),
                      ]
         );
+        $this->twig->addGlobal('session', $this->session->get());
 
-    }//end setTwigSessionGlobals()
+    }//end setTwigGlobals()
 
 
     /**
@@ -198,6 +199,44 @@ abstract class AbstractController
         return $pagesNumbers;
 
     }//end getPagination()
+
+
+    /**
+     * Generate a token in the session
+     *
+     * @throws Exception
+     * @return void
+     */
+    public function generateToken(): void
+    {
+        $token = bin2hex(random_bytes(32));
+        $this->session->set('formToken', $token);
+        $this->setTwigGlobals();
+
+    }//end generateToken()
+
+
+    /**
+     * Check if the token is valid
+     *
+     * @param string $url Redirect to this url if the token is not valid
+     * @return bool
+     */
+    public function verifyToken(string $url): bool
+    {
+        $postFormToken = filter_input(INPUT_POST, 'formToken', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $sessionFormToken = $this->session->get('formToken');
+        $this->session->clearKeys(['formToken']);
+        if ($sessionFormToken !== html_entity_decode($postFormToken)) {
+            $this->session->set('message', 'The CSRF token is not valid');
+            $this->session->set('messageClass', 'danger');
+            $this->redirectTo($url);
+            return false;
+        }
+
+        return true;
+
+    }//end verifyToken()
 
 
 }//end class

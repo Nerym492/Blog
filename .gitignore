@@ -1,6 +1,7 @@
 /vendor/
 /tmp/
 /.vscode/
-.env
+/.env
 /node_modules/
 /.idea/
+/public/.htaccess

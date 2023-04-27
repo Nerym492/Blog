@@ -1,6 +1,6 @@
 <div class="row gx-4 gx-lg-5 justify-content-center">
     <div class="col-10">
-        {% if session.isAdmin %}
+        {% if session.isAdmin and page == 'admin' %}
         <a class="d-flex align-items-center link-brown justify-content-center my-3"
            href="{{ paths.public }}/posts/create/#title-post-form">
             <i class="fa-regular fa-plus fa-2xl fa-lh-unset me-2"></i>

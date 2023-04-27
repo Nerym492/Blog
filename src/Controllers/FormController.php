@@ -18,9 +18,11 @@ class FormController extends AbstractController
      * Display the register form.
      *
      * @return void
+     * @throws Exception
      */
     public function showRegisterForm(): void
     {
+        $this->generateToken();
         $this->renderView('signIn.twig');
 
     }//end showRegisterForm()
@@ -30,9 +32,11 @@ class FormController extends AbstractController
      * Displays the login form page
      *
      * @return void
+     * @throws Exception
      */
     public function showLogInForm(): void
     {
+        $this->generateToken();
         $this->renderView('logIn.twig');
 
     }//end showLogInForm()
@@ -45,9 +49,12 @@ class FormController extends AbstractController
      * @param integer|null $postNum The post id if the user is editing the post.
      *
      * @return void
+     * @throws Exception
      */
     public function showPostForm(?int $postNum=null): void
     {
+        $this->generateToken();
+
         $post           = null;
         $formTitle      = 'Create a new post';
         $formButtonText = 'Create';
@@ -80,6 +87,7 @@ class FormController extends AbstractController
      * @param integer $postId Post being read.
      *
      * @return void
+     * @throws Exception
      */
     public function checkCommentForm(int $postId): void
     {
@@ -91,7 +99,6 @@ class FormController extends AbstractController
             $comments = $this->commentManager->getCommentsByPost($postId);
             $userPost = $this->userManager->getUser(userId: $post->getUserId());
 
-            $this->setTwigSessionGlobals();
             $this->renderView(
                 'post.twig',
                 [
@@ -103,15 +110,17 @@ class FormController extends AbstractController
             return;
         }
 
-        $commentContent = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_SPECIAL_CHARS);
+        $commentContent = html_entity_decode(
+            filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+        );
 
         if (empty($commentContent) === false) {
-            $commentIsCreated = $this->commentManager->createComment($postId);
+            $commentIsCreated = $this->commentManager->createComment($postId, $commentContent);
         }//end if
 
         if (isset($commentIsCreated) === true && $commentIsCreated === true) {
             // PRG pattern (Post/Redirect/Get).
-            $this->redirectTo('/blog/public/posts/'.$postId.'#comments-box-post');
+            $this->redirectTo($this->env->getVar('PUBLIC_PATH').'/posts/'.$postId.'#comments-box-post');
         }
 
     }//end checkCommentForm()
@@ -125,30 +134,27 @@ class FormController extends AbstractController
      */
     public function checkLogInForm(): void
     {
-        $mail     = filter_input(INPUT_POST, 'mail', FILTER_SANITIZE_SPECIAL_CHARS);
-        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
+        $tokenVerified = $this->verifyToken($this->env->getVar('PUBLIC_PATH').'/logIn');
+
+        if ($tokenVerified === false) {
+            return;
+        }
+
+        $mail     = filter_input(INPUT_POST, 'mail', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         $loginIsValid = $this->userManager->checkLogin($mail, $password);
         if ($loginIsValid === false) {
-            $message = 'Your email or password is not valid !';
-            $messageClass = 'danger';
-
-            // Displays a red alert box on the login page.
-            $this->renderView(
-                'logIn.twig',
-                [
-                 'message'      => $message,
-                 'messageClass' => $messageClass,
-                ]
-            );
+            $this->session->set('message', 'Your email or password is not valid !');
+            $this->session->set('messageClass', 'danger');
+            $this->renderView('logIn.twig');
             return;
         }
 
         // Connect the user.
         $this->userManager->connectUser($mail);
-        $this->setTwigSessionGlobals();
         // Displays home page and "Log in" is replaced by "Log out" in the navbar.
-        $this->redirectTo('/blog/public/home/');
+        $this->redirectTo($this->env->getVar('PUBLIC_PATH').'/home/');
 
     }//end checkLogInForm()
 
@@ -161,6 +167,11 @@ class FormController extends AbstractController
      */
     public function checkContactForm(): void
     {
+        $verifiedToken = $this->verifyToken($this->env->getVar('PUBLIC_PATH').'/home/#form-contact');
+        if ($verifiedToken === false) {
+            return;
+        }
+
         $mailStatus['mailSent'] = [];
         $mailStatus['message']  = '';
 
@@ -174,7 +185,7 @@ class FormController extends AbstractController
         $checkForm = $this->checkFormPatterns($patterns);
 
         // We add the comment data.
-        $checkForm['form']['comment'] = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_SPECIAL_CHARS);
+        $checkForm['form']['comment'] = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         // We check if the field is not empty only if the form is still valid.
         if (empty($checkForm['form']['comment']) === true && $checkForm['isValid'] === true) {
@@ -217,6 +228,12 @@ class FormController extends AbstractController
      */
     public function checkRegisterForm(): void
     {
+        $verifiedToken = $this->verifyToken($this->env->getVar('PUBLIC_PATH').'/register/');
+
+        if ($verifiedToken === false) {
+           return;
+        }
+
         $patterns = [
                      'pseudo'   => '/^[A-z\d]{3,25}$/',
                      'fullName' => '/^([A-z]){3,25}\s([A-z]){3,25}$/',
@@ -233,9 +250,6 @@ class FormController extends AbstractController
         );
 
         $identicalPasswords = ($checkForm['form']['password'] === $checkForm['form']['passwordConfirm']);
-        // Passwords are not returned for security reasons (even if it's encrypted).
-        $checkForm['form']['password']        = '';
-        $checkForm['form']['passwordConfirm'] = '';
 
         if ($identicalPasswords === false && $checkForm['isValid'] === true) {
             // Passwords are not the same -> form not valid.
@@ -258,8 +272,7 @@ class FormController extends AbstractController
                     );
                     $this->session->set(
                         'message',
-                        'Your account has been successfully created !\n'
-                        . 'Please confirm your email address by clicking on the link that was sent to you.'
+                        'Your account has been successfully created !\n'.'Please confirm your email address by clicking on the link that was sent to you.'
                     );
                     $this->session->set('messageClass', 'success');
 
@@ -271,6 +284,10 @@ class FormController extends AbstractController
                 }//end try
             }//end if
         }//end if
+
+        // Passwords are not returned for security reasons (even if it's encrypted).
+        $checkForm['form']['password']        = '';
+        $checkForm['form']['passwordConfirm'] = '';
 
         $this->renderView(
             'signIn.twig',
@@ -295,14 +312,24 @@ class FormController extends AbstractController
      */
     public function checkPostForm(?int $postId=null): void
     {
+        $url = $this->env->getVar('PUBLIC_PATH').'/posts/create/#alert-box';
+        if ($postId !== null) {
+            $url = $this->env->getVar('PUBLIC_PATH').'/posts/edit/'.$postId.'/#alert-box';
+        }
+
+        $verifiedToken = $this->verifyToken($url);
+        if ($verifiedToken === false) {
+            return;
+        }
+
         $checkForm = ['isValid' => true];
 
-        foreach (filter_input_array(INPUT_POST, FILTER_SANITIZE_SPECIAL_CHARS) as $inputName => $inputValue) {
+        foreach (filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS) as $inputName => $inputValue) {
             if ($inputValue === '' && $checkForm['isValid'] === true) {
                 $checkForm['isValid'] = false;
             }
 
-            $checkForm['form'][$inputName] = strip_tags($inputValue);
+            $checkForm['form'][$inputName] = html_entity_decode($inputValue);
         }
 
         // Checks if the post has been edited and if so, saves the modification.
@@ -312,7 +339,7 @@ class FormController extends AbstractController
 
         // Create a new post.
         if ($checkForm['isValid'] === true && $this->postManager->createPost($checkForm['form']) === true) {
-            $this->redirectTo('/blog/public/posts/#site-heading');
+            $this->redirectTo($this->env->getVar('PUBLIC_PATH').'/posts/#site-heading');
             return;
         }
 
@@ -334,6 +361,7 @@ class FormController extends AbstractController
      * @param int|null $postId    Id of the post being read
      * @param array    $checkForm Form data
      * @return bool True if has been edited, otherwise false.
+     * @throws Exception
      */
     private function checkEditedPost(?int $postId, array $checkForm) :bool
     {
@@ -351,8 +379,6 @@ class FormController extends AbstractController
             // Comparing edited post with old post and update it if necessary.
             $this->postManager->updatePost($post, $editedPost);
 
-            $this->setTwigSessionGlobals();
-
             $this->renderView(
                 'postForm.twig',
                 [
@@ -362,14 +388,13 @@ class FormController extends AbstractController
                  'formButtonText' => 'Edit',
                 ]
             );
-            $this->session->clearKeys(['message', 'messageClass']);
+
             return true;
         }//end if
 
         return false;
 
     }//end checkEditedPost()
-
 
 
     /**
@@ -411,7 +436,7 @@ class FormController extends AbstractController
             // Sender's address.
             $mail->setFrom('florianpohu49@gmail.com', 'Florian Pohu');
             // Recipient's address.
-            $mail->addAddress($sendersMail, $recipientsFirstName . ' ' . $recipientsLastName);
+            $mail->addAddress($sendersMail, $recipientsFirstName.' '.$recipientsLastName);
             // Set email format to HTML.
             $mail->isHTML();
             // We can format the mail using html.
@@ -448,7 +473,9 @@ class FormController extends AbstractController
 
         foreach ($formPatterns as $fieldName => $pattern) {
             // We add the name of the fields and their value in this array + html tags deletion.
-            $formErrors[$fieldName] = filter_input(INPUT_POST, $fieldName, FILTER_SANITIZE_SPECIAL_CHARS);
+            $formErrors[$fieldName] = html_entity_decode(
+                filter_input(INPUT_POST, $fieldName, FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+            );
             // Check the patterns.
             if (preg_match($pattern, $formErrors[$fieldName]) === false && $isValid === true) {
                 $isValid = false;

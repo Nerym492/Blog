@@ -5,6 +5,6 @@
     <div class="container px-4 px-lg-5" id="posts-container">
         {% include 'partials/alertBox.twig' with {'message': session.message , 'messageClass': session.messageClass} %}
 
-        {% include 'partials/postsList.twig' %}
+        {% include 'partials/postsList.twig' with {'page': 'posts'} %}
     </div>
 {% endblock %}

@@ -4,19 +4,20 @@ namespace App\EntityManager;
 
 use App\Entity\Comment;
 use App\Lib\DatabaseConnection;
-use App\Lib\Session;
 use DateTime;
 use DateTimeZone;
+use Exception;
 
 class CommentManager extends Manager
 {
 
 
     /**
-     * Gets all comments for a given post
+     * Gets all valid comments for a given post
      *
      * @param int $postId Id of the post
      * @return array|null
+     * @throws Exception
      */
     public function getCommentsByPost(int $postId): ?array
     {
@@ -25,7 +26,8 @@ class CommentManager extends Manager
             "SELECT c.*, u.pseudo
              FROM comment c 
              LEFT OUTER JOIN user u ON c.user_id = u.user_id
-             WHERE post_id = :post_id"
+             WHERE post_id = :post_id
+             AND valid = 1"
         );
 
         $statement->execute([':post_id' => $postId]);
@@ -86,14 +88,15 @@ class CommentManager extends Manager
     /**
      * Create a new comment
      *
-     * @param int $postId Id of the Post that is currently been read
+     * @param int    $postId  Id of the Post that is currently been read
+     * @param string $comment Comment
      * @return bool True is the comment has been created else false
-     * @throws \Exception
+     * @throws Exception
      */
-    public function createComment(int $postId): bool
+    public function createComment(int $postId, string $comment): bool
     {
         $statement = $this->database->prepare(
-            "INSERT INTO blog.comment
+            "INSERT INTO ".$this->env->getVar('DB_NAME').".comment
                    (post_id, user_id, comment, creation_date, valid)
                    VALUES(:post_id, :user_id, :comment, :creation_date, :valid);"
         );
@@ -105,7 +108,7 @@ class CommentManager extends Manager
             [
              ':post_id'       => $postId,
              ':user_id'       => $this->session->get('user_id'),
-             ':comment'       => filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+             ':comment'       => $comment,
              ':creation_date' => $dateNow,
              ':valid'         => 0,
             ]
@@ -134,7 +137,7 @@ class CommentManager extends Manager
     public function deleteComment(int $commentId): bool
     {
         $statement = $this->database->prepare(
-            "DELETE FROM blog.comment 
+            "DELETE FROM ".$this->env->getVar('DB_NAME').".comment 
                    WHERE comment_id=:commentId"
         );
 
@@ -154,7 +157,7 @@ class CommentManager extends Manager
     public function validateComment(int $commentId): bool
     {
         $statement = $this->database->prepare(
-            "UPDATE blog.comment
+            "UPDATE ".$this->env->getVar('DB_NAME').".comment
                    SET valid = 1 
                    WHERE comment_id=:commentId"
         );
@@ -171,6 +174,7 @@ class CommentManager extends Manager
      *
      * @param array $rows Rows from the comment table
      * @return array
+     * @throws Exception
      */
     private function createCommentsWithRows(array $rows): array
     {

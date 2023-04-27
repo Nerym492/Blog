@@ -6,6 +6,7 @@
 
     <form class="container form-container mb-5 justify-content-center needs-validation" method="post"
           action="{{ paths.public }}/logIn/#form-log-in" id="form-log-in" novalidate>
+        <input type="hidden" name="formToken" value="{{ session.formToken }}">
         <div class="form-floating mb-3" id="group-mail-log-in">
             <input type="text" class="form-control" name="mail" id="mail-log-in" placeholder="name@example.com"
                    value="{{ form.mail }}" required>

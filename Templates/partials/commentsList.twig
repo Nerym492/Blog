@@ -1,10 +1,5 @@
 <div class="comments-list col-10 {{ commentCssClass.commentListMargin }}">
     {% for comment in comments %}
-        {% if comment.post %}
-            {% set flexDirection = 'flex-column badge-active' %}
-        {% else %}
-            {% set flexDirection = 'flex-start' %}
-        {% endif %}
         <div class="d-flex mb-4 {{ commentCssClass.commentLine }} flex-wrap-reverse">
             {% if comment.post %}
                 <div  class="d-flex flex-column justify-content-evenly badge-comment-container">
@@ -26,7 +21,9 @@
             {% endif %}
             <div class="d-flex {{ commentCssClass.flexDirection }}">
                 {% if comment.post %}
-                    <h3 class="mb-2">{{ comment.post.title }}</h3>
+                    <a class="post-link" href="{{ paths.public }}/posts/{{ comment.post.postId }}">
+                        <h3 class="mb-2">{{ comment.post.title }}</h3>
+                    </a>
                 {% else %}
                     <i class="fa-solid fa-circle-user fa-avatar me-3"></i>
                 {% endif %}

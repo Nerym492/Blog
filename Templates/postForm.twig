@@ -8,6 +8,7 @@
     <form class="container mb-5 justify-content-center needs-validation" method="post"
           action="#alert-box"
           id="form-post" novalidate>
+        <input type="hidden" name="formToken" value="{{ session.formToken }}">
         <div class="form-floating mb-3" id="group-title-post">
             <input type="text" class="form-control" name="title" id="title-post" placeholder="Title"
                    value="{{ form.title }}" required>

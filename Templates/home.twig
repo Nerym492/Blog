@@ -2,36 +2,38 @@
 
 {% block content %}
 	<!-- Post Content-->
-    <h2 class="text-center mb-5">About Me</h2>
-    <div class="presentation">
-        <div class="d-flex flex-column me-3">
+    <div id="home-content">
+        <h2 class="text-center mb-5">About Me</h2>
+        <div class="presentation">
+            <div class="d-flex flex-column me-3">
                 <img id="photo-home" src="{{ paths.public }}/assets/images/photo_profil.jpg" alt="profile_photo">
                 <p class="text-center">
-                    Florian Pohu,<br> 
-                    Creator of this blog. 
+                    Florian Pohu,<br>
+                    Creator of this blog.
                 </p>
+            </div>
+            <div>
+                <p>
+                    Welcome to my blog !
+
+                    Donec sapien nunc, accumsan fermentum tempor quis, ullamcorper vitae arcu.
+                    Nullam vel sapien et sapien maximus ornare vel eu purus. Suspendisse eu
+                    ligula sed quam efficitur vestibulum vel in sapien. Nulla ac elementum orci.
+                    Cras in neque porta, rhoncus sapien sit amet, tincidunt tellus. Integer neque
+                    est, faucibus sed velit sed, posuere lobortis odio. Praesent molestie ultrices augue,
+                    ac sodales tellus congue ut. Maecenas iaculis lorem hendrerit rutrum finibus.
+                    Pellentesque vel lobortis libero. Suspendisse maximus lorem ac lorem sodales,
+                    id commodo mauris finibus. In dictum viverra turpis, nec luctus risus suscipit eget.
+                </p>
+                <p id="resume">
+                    To have more information about my professional carrer :
+                    <a href="{{ paths.public }}/assets/documents/CV_informatique.pdf">See my resume</a>
+                </p>
+            </div>
         </div>
-        <article>
-            <p>
-                Welcome to my blog !
 
-                Donec sapien nunc, accumsan fermentum tempor quis, ullamcorper vitae arcu. 
-                Nullam vel sapien et sapien maximus ornare vel eu purus. Suspendisse eu 
-                ligula sed quam efficitur vestibulum vel in sapien. Nulla ac elementum orci. 
-                Cras in neque porta, rhoncus sapien sit amet, tincidunt tellus. Integer neque
-                est, faucibus sed velit sed, posuere lobortis odio. Praesent molestie ultrices augue, 
-                ac sodales tellus congue ut. Maecenas iaculis lorem hendrerit rutrum finibus. 
-                Pellentesque vel lobortis libero. Suspendisse maximus lorem ac lorem sodales, 
-                id commodo mauris finibus. In dictum viverra turpis, nec luctus risus suscipit eget.
-            </p>
-            <p id="resume">
-                To have more information about my professional carrer :  
-                <a href="{{ paths.public }}/assets/documents/CV informatique.pdf">See my resume</a>
-            </p>
-        </article>
+
+    {% include 'partials/alertBox.twig' with {'message': session.message, 'messageClass': session.messageClass} %}
+    {% include 'partials/contact.twig' %}
     </div>
-
-
-    {% include "partials/contact.twig" %}
-
 {% endblock %}

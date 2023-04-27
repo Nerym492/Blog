@@ -316,7 +316,7 @@ Array.prototype.slice.call(forms)
       let filledFields = 0;
       // Submitted values(only available when the form is not valid)
       for (const fieldName in data) {
-        if (data[fieldName] !== "") {
+        if (data[fieldName] !== "" && fieldName !== "formToken") {
           filledFields++;
         }
       }

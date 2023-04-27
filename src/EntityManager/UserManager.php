@@ -20,13 +20,13 @@ class UserManager extends Manager
         $firstName = $fullName[1];
 
         // Creating a hash for the password.
-        $formRegister['password'] = password_hash($formRegister['password'], PASSWORD_DEFAULT);
+        $formRegister['password'] = password_hash($formRegister['password'], PASSWORD_BCRYPT);
 
         // Generates a code that will be used in the confirmation link sent by email.
         $verificationCode = bin2hex(openssl_random_pseudo_bytes(20));
 
         $statement = $this->database->prepare(
-            "INSERT INTO blog.`user`
+            "INSERT INTO ".$this->env->getVar('DB_NAME').".user
                 (mail, pseudo, last_name, first_name, password, verification_code, confirmed_mail, user_type_id)
                 VALUES(:mail, :pseudo, :last_name, :first_name, :password, 
                        :verification_code, :confirmed_mail, :user_type_id);"
@@ -45,7 +45,10 @@ class UserManager extends Manager
             ]
         );
 
-        return "http://localhost/blog/public/register/".$formRegister['mail']."/".$verificationCode;
+        $rootUrl = $this->env->getVar('ROOT_URL');
+        $publicPath = $this->env->getVar('PUBLIC_PATH');
+
+        return $rootUrl.$publicPath."/logIn/mail/".$formRegister['mail']."/verificationCode/".$verificationCode;
 
     }//end createUser()
 
@@ -61,7 +64,7 @@ class UserManager extends Manager
     public function confirmMail(string $mail, string $verificationCode): void
     {
         $statement = $this->database->prepare(
-            "UPDATE blog.`user`
+            "UPDATE ".$this->env->getVar('DB_NAME').".`user`
                    SET confirmed_mail=:confirmed_mail, verification_code=:reset_verification_code
                    WHERE mail=:mail AND verification_code=:verification_code
             "
@@ -97,7 +100,7 @@ class UserManager extends Manager
      * @param string $mail   Mail of the user
      * @return User|null
      */
-    public function getUser(int $userId = 0, string $mail = ""): ?User
+    public function getUser(int $userId=0, string $mail=""): ?User
     {
         $user = null;
 
@@ -146,7 +149,7 @@ class UserManager extends Manager
         $result = $statement->fetch();
 
         if ($result['nbLines'] === 1) {
-            $this->session->set('message', 'This'.$field.'is already used !');
+            $this->session->set('message', 'This '.$field.' is already used !');
             $this->session->set('messageClass', 'danger');
             return [
                     'alreadyExists' => true,
@@ -169,7 +172,7 @@ class UserManager extends Manager
      * @param string $password User's password
      * @return bool
      */
-    public function checkLogin(string $mail , string $password): bool
+    public function checkLogin(string $mail, string $password): bool
     {
         $statement = $this->database->prepare(
             "SELECT password as 'password_hash'

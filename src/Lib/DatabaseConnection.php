@@ -2,7 +2,6 @@
 
 namespace App\Lib;
 
-use App\EntityManager\Manager;
 use \PDO;
 
 
@@ -31,7 +30,8 @@ class DatabaseConnection
     {
         try {
             $this->database = new PDO(
-                'mysql:host='.$env->getVar('DB_HOST').';dbname='.$env->getVar('DB_NAME').';charset=utf8', $env->getVar('DB_USER'), $env->getVar('DB_PASS')
+                'mysql:host='.$env->getVar('DB_HOST').';dbname='.$env->getVar('DB_NAME').';charset=utf8',
+                $env->getVar('DB_USER'), $env->getVar('DB_PASS')
             );
         } catch (\Exception $e) {
             $session->set('message', 'An error occurred while connecting to the database.\nPlease try again later.');
@@ -86,7 +86,7 @@ class DatabaseConnection
         int $offset,
         string $selectQuery,
         string $orderBy,
-        string $orderBySuffix = "",
+        string $orderBySuffix="",
 ): array {
         $orderByString = "ORDER BY ".$orderBy;
 
