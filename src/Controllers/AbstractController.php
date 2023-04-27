@@ -138,7 +138,6 @@ abstract class AbstractController
     {
         $this->twig->addGlobal(
             'paths', [
-                      'root'   => $this->env->getVar('ROOT_PATH'),
                       'public' => $this->env->getVar('PUBLIC_PATH'),
                      ]
         );
