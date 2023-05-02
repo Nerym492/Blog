@@ -34,7 +34,7 @@ class DatabaseConnection
                 $env->getVar('DB_USER'), $env->getVar('DB_PASS')
             );
         } catch (\Exception $e) {
-            $session->set('message', 'An error occurred while connecting to the database.\nPlease try again later.');
+            $session->set('message', "An error occurred while connecting to the database.\nPlease try again later.");
             $session->set('messageClass', 'danger');
         }
 

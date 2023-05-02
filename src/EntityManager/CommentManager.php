@@ -115,12 +115,12 @@ class CommentManager extends Manager
         );
 
         if ($statement->rowCount() === 0) {
-            $this->session->set('message', 'An error occurred while adding the comment.\nPlease try again later.');
+            $this->session->set('message', "An error occurred while adding the comment.\nPlease try again later.");
             $this->session->set('messageClass', 'danger');
             return false;
         }
 
-        $this->session->set('message', 'Your comment has been added !');
+        $this->session->set('message', 'Your comment has been taken into account and is awaiting validation.');
         $this->session->set('messageClass', 'success');
 
         return true;
