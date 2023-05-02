@@ -272,14 +272,14 @@ class FormController extends AbstractController
                     );
                     $this->session->set(
                         'message',
-                        'Your account has been successfully created !\n'.'Please confirm your email address by clicking on the link that was sent to you.'
+                        "Your account has been successfully created !\nPlease confirm your email address by clicking on the link that was sent to you."
                     );
                     $this->session->set('messageClass', 'success');
 
                     // Form data is cleared because not needed anymore.
                     $checkForm['form'] = [];
                 } catch (Exception) {
-                    $this->session->set('message', 'An error occurred while creating your account.\nPlease try again later.');
+                    $this->session->set('message', "An error occurred while creating your account.\nPlease try again later.");
                     $this->session->set('messageClass', 'danger');
                 }//end try
             }//end if
@@ -379,15 +379,7 @@ class FormController extends AbstractController
             // Comparing edited post with old post and update it if necessary.
             $this->postManager->updatePost($post, $editedPost);
 
-            $this->renderView(
-                'postForm.twig',
-                [
-                 'page'           => 'Edit post',
-                 'form'           => $checkForm['form'],
-                 'formTitle'      => 'Edit a post',
-                 'formButtonText' => 'Edit',
-                ]
-            );
+            $this->redirectTo($this->env->getVar('PUBLIC_PATH').'/posts/edit/'.$postId.'/#alert-box');
 
             return true;
         }//end if
