@@ -193,4 +193,14 @@ class Post
     }//end setLastUpdateDate()
 
 
+    /**
+     * @return array Return an associative array of the object
+     */
+    public function getProperties(): array
+    {
+        return get_object_vars($this);
+
+    }//end getProperties()
+
+
 }//end class

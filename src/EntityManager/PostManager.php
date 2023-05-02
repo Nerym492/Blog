@@ -171,10 +171,10 @@ class PostManager extends Manager
             );
             $statement->execute(
                 [
-                 ':title'   => $post->getTitle(),
-                 ':excerpt' => $post->getExcerpt(),
-                 ':content' => $post->getContent(),
-                 ':post_id' => $post->getPostId(),
+                 ':title'   => $editedPost->getTitle(),
+                 ':excerpt' => $editedPost->getExcerpt(),
+                 ':content' => $editedPost->getContent(),
+                 ':post_id' => $editedPost->getPostId(),
                 ]
             );
 
@@ -246,8 +246,21 @@ class PostManager extends Manager
     public function checkIdenticalPost(Post $basePost, Post $modifiedPost): bool
     {
         $identicalPosts = true;
-        foreach ($basePost as $fieldName => $fieldValue) {
-            if ($fieldValue !== $modifiedPost[$fieldName]) {
+        $basePostArray = $basePost->getProperties();
+        $modifiedPostArray = $modifiedPost->getProperties();
+
+        foreach ($basePostArray as $fieldName => $fieldValue) {
+            if (isset($modifiedPostArray[$fieldName]) === true &&
+                ($fieldValue instanceof DateTime) === false &&
+                $fieldValue !== $modifiedPostArray[$fieldName]) {
+                $identicalPosts = false;
+                break;
+            }
+
+            // Comparison of 2 dates.
+            if ((isset($modifiedPostArray[$fieldName]) === true &&
+                ($fieldValue instanceof DateTime) === true &&
+                $fieldValue->format('Y-m-d H:i:s') !== $modifiedPostArray[$fieldName]->format('Y-m-d H:i:s'))) {
                 $identicalPosts = false;
                 break;
             }
