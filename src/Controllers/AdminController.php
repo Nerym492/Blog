@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use Exception;
-use Twig\Environment as Twig;
 
 
 class AdminController extends AbstractController
@@ -72,6 +71,7 @@ class AdminController extends AbstractController
      * @param integer $pageNum Number of the page in the post list pagination.
      *
      * @return void
+     * @throws Exception
      */
     public function reloadCommentsList(int $pageNum): void
     {
@@ -125,6 +125,7 @@ class AdminController extends AbstractController
      * @param integer $commentId Comment that the user wants to validate.
      *
      * @return void
+     * @throws Exception
      */
     public function validateComment(int $pageNum, int $commentId): void
     {
@@ -152,6 +153,7 @@ class AdminController extends AbstractController
      * @param integer $commentId Comment that the user wants to delete.
      *
      * @return void
+     * @throws Exception
      */
     public function deleteComment(int $pageNum, int $commentId): void
     {
@@ -178,6 +180,7 @@ class AdminController extends AbstractController
      * @param integer $pageNum Page being read in the comments list pagination.
      *
      * @return array Access to comments with 'comments' key and pagination with 'paginationMenu' key
+     * @throws Exception
      */
     private function getCommentsContainer(int $pageNum): array
     {

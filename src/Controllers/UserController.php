@@ -2,8 +2,6 @@
 
 namespace App\Controllers;
 
-use App\EntityManager\UserManager;
-
 /**
  * User Controller, used when the user log in and log out
  */

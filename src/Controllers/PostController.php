@@ -4,10 +4,6 @@ namespace App\Controllers;
 
 use Exception;
 use Throwable;
-use Twig\Environment as Twig;
-use App\EntityManager\PostManager;
-use App\EntityManager\UserManager;
-use App\EntityManager\CommentManager;
 
 /**
  * Post Controller, used only when the url contains 'posts/'
