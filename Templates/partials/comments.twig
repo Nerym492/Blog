@@ -4,25 +4,34 @@
             <div class="col-md-12 col-lg-10 col-xl-8">
                 <div class="card">
                     <div class="card-body p-4">
-                        <h4 class="text-center mb-4 pb-2">Leave a comment</h4>
-                        <form class="d-flex flex-column align-items-end mb-4 needs-validation" method="post"
-                              action="{{ paths.public }}/posts/{{ post.postId }}" novalidate>
-                            <div class="form-floating mb-2 w-100" id="group-message-post">
+                        {% if session.user_id %}
+                            <h4 class="text-center mb-4 pb-2">Leave a comment</h4>
+                            <form class="d-flex flex-column align-items-end mb-4 needs-validation" method="post"
+                                  action="{{ paths.public }}/posts/{{ post.postId }}" novalidate>
+                                <div class="form-floating mb-2 w-100" id="group-message-post">
                                 <textarea class="form-control" name="comment" id="message-post"
                                           placeholder="Your message"
                                           required=""></textarea>
-                                <small id="pseudo-register-help" class="form-text">
-                                    Please enter a comment
-                                </small>
-                                <label for="message-post">Your message</label>
-                            </div>
-                            <button class="btn btn-form" type="submit">
+                                    <small id="pseudo-register-help" class="form-text">
+                                        Please enter a comment
+                                    </small>
+                                    <label for="message-post">Your message</label>
+                                </div>
+                                <button class="btn btn-form" type="submit">
                                 <span>
                                     <i class="fa fa-paper-plane-o m-r-6" aria-hidden="true"></i>
                                     Send
                                  </span>
-                            </button>
-                        </form>
+                                </button>
+                            </form>
+                        {% else %}
+                            <p class="text-center">Please <a href="{{ paths.public }}/logIn/"
+                                                             class="link-brown fw-bold">login</a> to leave a comment.
+                                <br>
+                                Don't have an account ? <a href="{{ paths.public }}/register/"
+                                                          class="link-brown fw-bold">Create one here.</a>
+                            </p>
+                        {% endif %}
 
                         {% include 'partials/alertBox.twig'
                             with {'message': session.message,'messageClass': session.messageClass} %}
