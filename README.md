@@ -27,14 +27,14 @@ sélectionnant au préalable la base de données qui vient d’être créée.
     composer install --no-dev
     ```
 9.  Créer un utilisateur sur le site en se rendant sur la page « Sign in »
-10.  Un mail de confirmation est envoyé sur l’adresse mail utilisée. 
+10. Un mail de confirmation est envoyé sur l’adresse mail utilisée. 
 Cliquer sur le lien pour confirmer l’inscription.
-11.  Pour passer le compte en administrateur se rendre dans la base de données et exécuter la requête suivante en 
+11. Pour passer le compte en administrateur se rendre dans la base de données et exécuter la requête suivante en 
 remplaçant « adminmail@example.com » par l’adresse mail utilisée : 
-     ```sql
-     UPDATE user SET user_type_id = 1 WHERE mail = 'adminmail@example.com'.
-     ```
-12.	 Pour se connecter, entrer ses identifiants sur la page « logIn » . 
+    ```sql
+    UPDATE user SET user_type_id = 1 WHERE mail = 'adminmail@example.com'.
+    ```
+12.	Pour se connecter, entrer ses identifiants sur la page « logIn » . 
 Une fois la connexion faite, un lien « Administration » apparaît en bas de chaque page.
 (uniquement pour le compte Administrateur)
 
