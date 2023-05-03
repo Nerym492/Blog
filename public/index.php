@@ -218,11 +218,18 @@ if ($adminController->getSession()->get('isAdmin') === "1") {
                     $adminController->deleteComment($pageNum, $commentId);
                 }
             );
-            // The comment is validated.
+            // The comment status is set to validated.
             $router->get(
                 '/validate/comment-(\d+)-page-(\d+)',
                 function ($commentId, $pageNum) use ($adminController) {
                     $adminController->validateComment($pageNum, $commentId);
+                }
+            );
+            // The comment status is reset to Pending.
+            $router->get(
+                '/validate/comment-(\d+)-page-(\d+)/cancel',
+                function ($commentId, $pageNum) use ($adminController) {
+                    $adminController->validateComment($pageNum, $commentId, true);
                 }
             );
         }

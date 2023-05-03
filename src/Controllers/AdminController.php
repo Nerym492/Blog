@@ -121,15 +121,15 @@ class AdminController extends AbstractController
     /**
      * Validate a comment
      *
-     * @param integer $pageNum   Page being read in the comments list pagination.
-     * @param integer $commentId Comment that the user wants to validate.
-     *
+     * @param integer $pageNum       Page being read in the comments list pagination.
+     * @param integer $commentId     Comment that the user wants to validate.
+     * @param bool    $cancelComment Reset the comment status when true.
      * @return void
      * @throws Exception
      */
-    public function validateComment(int $pageNum, int $commentId): void
+    public function validateComment(int $pageNum, int $commentId, bool $cancelComment=false): void
     {
-        $this->commentManager->validateComment($commentId);
+        $this->commentManager->setCommentValidity($commentId, $cancelComment);
 
         $commentsContainer = $this->getCommentsContainer($pageNum);
         $commentCssClass       = $this->getCommentCssClass();
@@ -193,10 +193,10 @@ class AdminController extends AbstractController
             $commentIsValid = $comments['data'][$commentKey]['line']->getValid();
             if ($commentIsValid === 0) {
                 $comments['data'][$commentKey]['badgeClass'] = 'warning';
-                $comments['data'][$commentKey]['badgeText']  = 'En attente';
+                $comments['data'][$commentKey]['badgeText']  = 'Pending';
             } else if ($commentIsValid === 1) {
                 $comments['data'][$commentKey]['badgeClass'] = 'success';
-                $comments['data'][$commentKey]['badgeText']  = 'Validé';
+                $comments['data'][$commentKey]['badgeText']  = 'Validated';
             }
         }
 

@@ -671,10 +671,19 @@ header.masthead .post-heading .meta a {
 }
 
 .comment-link-xmark,
-.comment-link-check {
+.comment-link-check,
+.comment-link-cancel {
   cursor: pointer;
   color: black;
+}
+
+.comment-link-xmark,
+.comment-link-check {
   transition: all 200ms ease-in-out;
+}
+
+.comment-link-cancel {
+  transition: rotate 500ms cubic-bezier(0.42,0,0.58,1);
 }
 
 .comment-link-check:hover {
@@ -688,4 +697,8 @@ header.masthead .post-heading .meta a {
 .comment-link-xmark:hover,
 .comment-link-check:hover {
   scale: 1.2;
+}
+
+.comment-link-cancel:hover {
+  rotate: -240deg;
 }

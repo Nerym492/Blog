@@ -151,22 +151,28 @@ class CommentManager extends Manager
     /**
      * Validate a comment
      *
-     * @param int $commentId Id of the comment to validate
+     * @param int  $commentId     Id of the comment to validate
+     * @param bool $cancelComment Reset the comment status when true
      * @return bool
      */
-    public function validateComment(int $commentId): bool
+    public function setCommentValidity(int $commentId, bool $cancelComment): bool
     {
+        $valid = 1;
+        if ($cancelComment === true) {
+            $valid = 0 ;
+        }
+
         $statement = $this->database->prepare(
             "UPDATE ".$this->env->getVar('DB_NAME').".comment
-                   SET valid = 1 
+                   SET valid =:valid 
                    WHERE comment_id=:commentId"
         );
 
-        $statement->execute([':commentId' => $commentId]);
+        $statement->execute([':commentId' => $commentId, ':valid' => $valid]);
 
         return $statement->rowCount() == 1;
 
-    }//end validateComment()
+    }//end setCommentValidity()
 
 
     /**

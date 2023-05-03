@@ -2,7 +2,7 @@
     {% for comment in comments %}
         <div class="d-flex mb-4 {{ commentCssClass.commentLine }} flex-wrap-reverse">
             {% if comment.post %}
-                <div  class="d-flex flex-column justify-content-evenly badge-comment-container">
+                <div class="d-flex flex-column justify-content-evenly badge-comment-container">
                     <span class="badge text-bg-{{ comment.badgeClass }} badge-comment">{{ comment.badgeText }}</span>
                     {% if comment.badgeClass == "warning" %}
                         <div class="d-flex justify-content-evenly">
@@ -16,6 +16,11 @@
                                 <i class="fa-solid fa-xmark fa-lg"></i>
                             </a>
                         </div>
+                    {% else %}
+                        <a class="comment-link-cancel validate-comment-link text-center" tabindex="0" role="button">
+                            <span class="d-none">comment-{{ comment.line.commentId }}-page-{{ paginationMenu.activePage }}</span>
+                            <i class="fa-solid fa-rotate-left fa-spin-reverse fa-lg"></i>
+                        </a>
                     {% endif %}
                 </div>
             {% endif %}

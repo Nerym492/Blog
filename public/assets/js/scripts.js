@@ -143,6 +143,9 @@ function setReloadContainerListeners (containerToReload, listType, deleteListene
             // Add a slide effect on the new page
             addSlideEffect(listType, oldPage, nextPage);
             setReloadContainerListeners(containerToReload, listType, deleteListeners);
+            if (listType === "comment") {
+              setValidationListeners();
+            }
           }
         };
         xmlHttp.open("GET", listType + "s-page-" + nextPage, true);
@@ -159,10 +162,15 @@ function setValidationListeners () {
       xmlHttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
           commentsContainerAdminPage.innerHTML = this.responseText;
+          setReloadContainerListeners(commentsContainerAdminPage, "comment", true);
           setValidationListeners();
         }
       };
-      xmlHttp.open("GET", "validate/" + validateLink.firstElementChild.innerHTML, true);
+      if (validateLink.classList.contains("comment-link-cancel")) {
+        xmlHttp.open("GET", "validate/" + validateLink.firstElementChild.innerHTML + "/cancel", true);
+      } else {
+        xmlHttp.open("GET", "validate/" + validateLink.firstElementChild.innerHTML, true);
+      }
       xmlHttp.send();
     });
   });
