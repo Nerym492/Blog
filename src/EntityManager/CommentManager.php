@@ -44,18 +44,21 @@ class CommentManager extends Manager
     /**
      * Gets a specific number of comments in ascending or descending order
      *
-     * @param int $pageNum      Number of the page currently being read
+     * @param int $pageNum Number of the page currently being read
      * @param int $commentLimit Limit of comments
      * @return array|null
+     * @throws Exception
      */
     public function getCommentsListWithLimit(int $pageNum, int $commentLimit): ?array
     {
         $pageDelimitation['pageNum'] = $pageNum;
         $rows = [];
+        $orderBy = 'creation_date';
 
         $selectQuery = "SELECT c.*, u.pseudo
                         FROM comment c 
-                        LEFT OUTER JOIN user u ON c.user_id = u.user_id";
+                        LEFT OUTER JOIN user u ON c.user_id = u.user_id
+                        ORDER BY ".$orderBy;
 
         $countQuery = "SELECT COUNT(*) as 'rowsCount'
                        FROM (".$selectQuery.") sq";
@@ -69,7 +72,7 @@ class CommentManager extends Manager
             $pageDelimitation = $this->calcPageAndOffset($commentLimit, $pageNum, $commentsRowsCount, "DESC");
             $rows = DatabaseConnection::getInstance($this->session, $this->env)->execQueryWithLimit(
                 $pageDelimitation['rowsLimit'], $pageDelimitation['offset'], $selectQuery,
-                "comment_id", "DESC"
+                $orderBy, "DESC"
             );
         }
 
