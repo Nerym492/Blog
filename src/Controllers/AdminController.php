@@ -57,6 +57,7 @@ class AdminController extends AbstractController
         $this->renderView(
             'partials/postsList.twig',
             [
+             'page'           => 'Administration',
              'posts'          => $posts['data'],
              'paginationMenu' => $paginationMenu,
             ]

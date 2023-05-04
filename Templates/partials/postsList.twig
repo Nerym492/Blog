@@ -1,6 +1,6 @@
 <div class="row gx-4 gx-lg-5 justify-content-center">
     <div class="col-10">
-        {% if session.isAdmin and page == 'admin' %}
+        {% if session.isAdmin and page == 'Administration' %}
         <a class="d-flex align-items-center link-brown justify-content-center my-3"
            href="{{ paths.public }}/posts/create/#title-post-form">
             <i class="fa-regular fa-plus fa-2xl fa-lh-unset me-2"></i>
@@ -12,7 +12,7 @@
             {% for post in posts %}
                 <!-- Post preview-->
                 <div class="d-flex">
-                    {% if session.isAdmin %}
+                    {% if session.isAdmin and page == 'Administration' %}
                         <div class="d-flex flex-column align-self-center me-4">
                             <a class="link-brown" href="{{ paths.public }}/posts/edit/{{ post.post.postId }}#title-post-form">
                                 <i class="fa-solid fa-pencil fa-xl"></i>
