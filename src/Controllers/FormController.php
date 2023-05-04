@@ -198,7 +198,7 @@ class FormController extends AbstractController
             $mailStatus = $this->sendMail(
                 $checkForm['form']['mail'],
                 $checkForm['form']['fullName'],
-                'Here is the subject',
+                'Contact request - Blog',
                 $checkForm['form']['comment']
             );
             // The form can be deleted, the comment has been sent.
