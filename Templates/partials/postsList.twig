@@ -14,10 +14,12 @@
                 <div class="d-flex">
                     {% if session.isAdmin and page == 'Administration' %}
                         <div class="d-flex flex-column align-self-center me-4">
-                            <a class="link-brown" href="{{ paths.public }}/posts/edit/{{ post.post.postId }}#title-post-form">
+                            <a class="link-brown" href="{{ paths.public }}/posts/edit/{{ post.post.postId }}#title-post-form"
+                               aria-label="edit">
                                 <i class="fa-solid fa-pencil fa-xl"></i>
                             </a>
-                            <a class="link-brown mt-4 delete-post-link" data-bs-toggle="modal" href="#modal-confirm">
+                            <a class="link-brown mt-4 delete-post-link" data-bs-toggle="modal" href="#modal-confirm"
+                               aria-label="delete">
                                 <span class="d-none">post-{{ post.post.postId }}-page-{{ paginationMenu.activePage }}</span>
                                 <i class="fa-regular fa-trash-can fa-xl"></i>
                             </a>
