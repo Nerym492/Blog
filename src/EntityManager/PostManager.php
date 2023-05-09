@@ -24,6 +24,7 @@ class PostManager extends Manager
         $pageDelimitation['pageNum'] = $pageNum;
         $postsRowsData = [];
         $posts = [];
+        $orderBy = 'creation_date';
 
         try {
             $statement = $this->database->prepare(
@@ -40,12 +41,13 @@ class PostManager extends Manager
                 $selectQuery = "SELECT p.post_id, p.user_id, p.title, p.excerpt, p.content, p.last_update_date, 
                                    p.creation_date, u.pseudo
                             FROM ".$this->env->getVar('DB_NAME').".post p
-                            LEFT OUTER JOIN ".$this->env->getVar('DB_NAME').".user u on p.user_id = u.user_id";
+                            LEFT OUTER JOIN ".$this->env->getVar('DB_NAME').".user u on p.user_id = u.user_id
+                            ORDER BY ".$orderBy;
                 $postsRowsData = DatabaseConnection::getInstance($this->session, $this->env)->execQueryWithLimit(
                     $pageDelimitation['rowsLimit'],
                     $pageDelimitation['offset'],
                     $selectQuery,
-                    "post_id",
+                    $orderBy,
                     "DESC"
                 );
             }
