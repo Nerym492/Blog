@@ -57,9 +57,7 @@ class UserManager extends Manager
      * Confirm the user's Mail
      * @param string $mail             Mail which needs to be verified
      * @param string $verificationCode Code associated with the mail to confirm it
-     * @return array
-     * $array['message'] -> status of the mail confirmation,
-     * $array['messageClass'] CSS class of the message
+     * @return void
      */
     public function confirmMail(string $mail, string $verificationCode): void
     {

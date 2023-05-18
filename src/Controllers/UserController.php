@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use Exception;
+
 /**
  * User Controller, used when the user log in and log out
  */
@@ -16,9 +18,11 @@ class UserController extends AbstractController
      * @param string $verificationCode Verification code.
      *
      * @return void
+     * @throws Exception
      */
     public function confirmMailAddress(string $mail, string $verificationCode): void
     {
+        $this->generateToken();
         $this->userManager->confirmMail($mail, $verificationCode);
 
         $this->renderView('logIn.twig');
